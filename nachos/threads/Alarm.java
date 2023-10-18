@@ -9,6 +9,7 @@ import nachos.machine.*;
 public class Alarm {
 
 	private PriorityQueue<Pair> waitQueue;
+	private ThreadComparator comp;
 
 
 	/**
@@ -19,7 +20,7 @@ public class Alarm {
 	 * <b>Note</b>: Nachos will not function correctly with more than one alarm.
 	 */
 	public Alarm() {
-		waitQueue = new PriorityQueue<Pair>(0, null);
+		waitQueue = new PriorityQueue<Pair>(0, comp);
 
 		Machine.timer().setInterruptHandler(new Runnable() {
 			public void run() {
