@@ -80,6 +80,13 @@ public class Alarm {
 	 * @param thread the thread whose timer should be cancelled.
 	 */
     public boolean cancel(KThread thread) {
+		for (Pair t : waitQueue) {
+			if (t.getThread() == thread) {
+				t.getThread().ready();
+				waitQueue.remove(t);
+				return true;
+			}
+		}
 		return false;
 	}
 }
