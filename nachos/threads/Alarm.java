@@ -8,7 +8,7 @@ import nachos.machine.*;
  */
 public class Alarm {
 
-	private PriorityQueue waitQueue = new PriorityQueue<>(0, null);
+	private PriorityQueue<Pair> waitQueue;
 
 
 	/**
@@ -19,6 +19,8 @@ public class Alarm {
 	 * <b>Note</b>: Nachos will not function correctly with more than one alarm.
 	 */
 	public Alarm() {
+		waitQueue = new PriorityQueue<Pair>(0, null);
+
 		Machine.timer().setInterruptHandler(new Runnable() {
 			public void run() {
 				timerInterrupt();
@@ -33,6 +35,11 @@ public class Alarm {
 	 * should be run.
 	 */
 	public void timerInterrupt() {
+		while(waitQueue.peek().getWakeTime() <= Machine.timer().getTime()) {
+			Pair wakingThread = waitQueue.peek();
+			waitQueue.remove(wakingThread);
+			wakingThread.getThread().ready();
+		}
 		KThread.currentThread().yield();
 	}
 
@@ -57,8 +64,8 @@ public class Alarm {
 		KThread toAdd = KThread.currentThread(); 
 		toAdd.sleep();
 		long wakeTime = Machine.timer().getTime() + x;
-		Pair pToAdd = new Pair(toAdd, wakeTime);
-
+		Pair pToAdd = new Pair(wakeTime, toAdd);
+		waitQueue.add(pToAdd);
 		// while (wakeTime > Machine.timer().getTime())
 		// KThread.yield();
 	}

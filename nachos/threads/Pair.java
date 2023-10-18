@@ -8,4 +8,12 @@ public class Pair {
         this.wakeTime = wakeTime;
         this.thread = thread;
     }
+
+    public Long getWakeTime() {
+        return this.wakeTime;
+    }
+
+    public KThread getThread() {
+        return this.thread;
+    }
 }
