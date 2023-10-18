@@ -10,7 +10,7 @@ public class Alarm {
 
 	private PriorityQueue waitQueue = new PriorityQueue<>(0, null);
 
-	
+
 	/**
 	 * Allocate a new Alarm. Set the machine's timer interrupt handler to this
 	 * alarm's callback.
@@ -54,8 +54,10 @@ public class Alarm {
 			return;
 		}
 
-		KThread.currentThread().sleep(); 
+		KThread toAdd = KThread.currentThread(); 
+		toAdd.sleep();
 		long wakeTime = Machine.timer().getTime() + x;
+		Pair pToAdd = new Pair(toAdd, wakeTime);
 
 		// while (wakeTime > Machine.timer().getTime())
 		// KThread.yield();
