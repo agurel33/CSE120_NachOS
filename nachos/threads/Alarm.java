@@ -1,5 +1,5 @@
 package nachos.threads;
-
+import java.util.*;
 import nachos.machine.*;
 
 /**
@@ -7,6 +7,10 @@ import nachos.machine.*;
  * until a certain time.
  */
 public class Alarm {
+
+	private PriorityQueue waitQueue = new PriorityQueue<>(0, null);
+
+	
 	/**
 	 * Allocate a new Alarm. Set the machine's timer interrupt handler to this
 	 * alarm's callback.
@@ -46,12 +50,18 @@ public class Alarm {
 	 */
 	public void waitUntil(long x) {
 		// for now, cheat just to get something working (busy waiting is bad)
+		if (x <=0){
+			return;
+		}
+
+		KThread.currentThread().sleep(); 
 		long wakeTime = Machine.timer().getTime() + x;
-		while (wakeTime > Machine.timer().getTime())
-			KThread.yield();
+
+		// while (wakeTime > Machine.timer().getTime())
+		// KThread.yield();
 	}
 
-        /**
+    /**
 	 * Cancel any timer set by <i>thread</i>, effectively waking
 	 * up the thread immediately (placing it in the scheduler
 	 * ready set) and returning true.  If <i>thread</i> has no
@@ -60,7 +70,7 @@ public class Alarm {
 	 * <p>
 	 * @param thread the thread whose timer should be cancelled.
 	 */
-        public boolean cancel(KThread thread) {
+    public boolean cancel(KThread thread) {
 		return false;
 	}
 }
