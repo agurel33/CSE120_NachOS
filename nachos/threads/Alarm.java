@@ -36,7 +36,7 @@ public class Alarm {
 	 * should be run.
 	 */
 	public void timerInterrupt() {
-		while(waitQueue.peek().getWakeTime() <= Machine.timer().getTime()) {
+		while(!waitQueue.isEmpty() && waitQueue.peek().getWakeTime() <= Machine.timer().getTime()) {
 			Pair wakingThread = waitQueue.peek();
 			waitQueue.remove(wakingThread);
 			wakingThread.getThread().ready();
@@ -61,7 +61,6 @@ public class Alarm {
 		if (x <=0){
 			return;
 		}
-
 		KThread toAdd = KThread.currentThread(); 
 		toAdd.sleep();
 		long wakeTime = Machine.timer().getTime() + x;
