@@ -279,6 +279,7 @@ public class KThread {
 	 * Waits for this thread to finish. If this thread is already finished,
 	 * return immediately. This method must only be called once; the second call
 	 * is not guaranteed to return. This thread must not be the current thread.
+	 * @throws InterruptedException
 	 */
 	public void join() {
 		Lib.debug(dbgThread, "Joining to thread: " + toString());
@@ -288,10 +289,7 @@ public class KThread {
 			return;
 		}
 		else {
-			// currentThread.status = statusBlocked;
-			// while(this.status != statusFinished) {}
-			// currentThread.status = statusReady;
-			
+			while(this.status != statusFinished) {}
 			return;
 		}
 		
