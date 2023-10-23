@@ -290,7 +290,6 @@ public class KThread {
 		Lib.debug(dbgThread, "Joining to thread: " + toString());
 		Lib.assertTrue(this != currentThread);
 		Lib.assertTrue(this.joined == null);
-
 		this.joined = currentThread;
 		if(this.status == statusFinished) {
 			Machine.interrupt().restore(status);
@@ -301,7 +300,6 @@ public class KThread {
 			Machine.interrupt().restore(status);
 			return;
 		}
-		
 	}
 
 	    // Place Join test code in the KThread class and invoke test methods
@@ -333,16 +331,12 @@ public class KThread {
 	public static void joinTest2() {
 		KThread child1 = new KThread( new Runnable () {
 			public void run() {
-				for (int i = 0; i < 100; i++) {
+				for (int i = 0; i < 5; i++) {
 					System.out.println ("busy...");
 				}
 			}
 			});
 		child1.setName("child1").fork();
-		System.out.println("I (thumbs up) Nachos!");
-		System.out.println("I (thumbs down) Nachos!");
-		System.out.println("I (thumbs right) Nachos!");
-		System.out.println("I (thumbs left) Nachos!");
 		child1.join();
 		System.out.println("After joining, child1 should be finished.");
 		System.out.println("is it? " + (child1.status == statusFinished));
