@@ -1,5 +1,5 @@
 package nachos.threads;
-
+import java.util.*;
 import nachos.machine.*;
 
 /**
@@ -7,6 +7,11 @@ import nachos.machine.*;
  * until a certain time.
  */
 public class Alarm {
+
+	private PriorityQueue<Pair> waitQueue;
+	private ThreadComparator comp;
+
+
 	/**
 	 * Allocate a new Alarm. Set the machine's timer interrupt handler to this
 	 * alarm's callback.
@@ -15,6 +20,8 @@ public class Alarm {
 	 * <b>Note</b>: Nachos will not function correctly with more than one alarm.
 	 */
 	public Alarm() {
+		waitQueue = new PriorityQueue<Pair>(0, comp);
+
 		Machine.timer().setInterruptHandler(new Runnable() {
 			public void run() {
 				timerInterrupt();
@@ -29,6 +36,11 @@ public class Alarm {
 	 * should be run.
 	 */
 	public void timerInterrupt() {
+		while(!waitQueue.isEmpty() && waitQueue.peek().getWakeTime() <= Machine.timer().getTime()) {
+			Pair wakingThread = waitQueue.peek();
+			waitQueue.remove(wakingThread);
+			wakingThread.getThread().ready();
+		}
 		KThread.currentThread().yield();
 	}
 
@@ -46,12 +58,19 @@ public class Alarm {
 	 */
 	public void waitUntil(long x) {
 		// for now, cheat just to get something working (busy waiting is bad)
+		if (x <=0){
+			return;
+		}
+		KThread toAdd = KThread.currentThread(); 
+		toAdd.sleep();
 		long wakeTime = Machine.timer().getTime() + x;
-		while (wakeTime > Machine.timer().getTime())
-			KThread.yield();
+		Pair pToAdd = new Pair(wakeTime, toAdd);
+		waitQueue.add(pToAdd);
+		// while (wakeTime > Machine.timer().getTime())
+		// KThread.yield();
 	}
 
-        /**
+    /**
 	 * Cancel any timer set by <i>thread</i>, effectively waking
 	 * up the thread immediately (placing it in the scheduler
 	 * ready set) and returning true.  If <i>thread</i> has no
@@ -60,7 +79,37 @@ public class Alarm {
 	 * <p>
 	 * @param thread the thread whose timer should be cancelled.
 	 */
-        public boolean cancel(KThread thread) {
+    public boolean cancel(KThread thread) {
+		for (Pair t : waitQueue) {
+			if (t.getThread() == thread) {
+				t.getThread().ready();
+				waitQueue.remove(t);
+				return true;
+			}
+		}
 		return false;
 	}
+
+	 // Add Alarm testing code to the Alarm class
+    
+	 public static void alarmTest1() {
+		int durations[] = {1000, 10*1000, 100*1000};
+		long t0, t1;
+	
+		for (int d : durations) {
+			t0 = Machine.timer().getTime();
+			ThreadedKernel.alarm.waitUntil (d);
+			t1 = Machine.timer().getTime();
+			System.out.println ("alarmTest1: waited for " + (t1 - t0) + " ticks");
+		}
+		}
+	
+		// Implement more test methods here ...
+	
+		// Invoke Alarm.selfTest() from ThreadedKernel.selfTest()
+		public static void selfTest() {
+		alarmTest1();
+	
+		// Invoke your other test methods here ...
+		}
 }
