@@ -285,16 +285,20 @@ public class KThread {
 	 * @throws InterruptedException
 	 */
 	public void join() {
+		boolean status = Machine.interrupt().disable();
+		//A = this, B = currentThread
 		Lib.debug(dbgThread, "Joining to thread: " + toString());
 		Lib.assertTrue(this != currentThread);
-		//A = this, B = currentThread
 		Lib.assertTrue(this.joined == null);
+
 		this.joined = currentThread;
 		if(this.status == statusFinished) {
+			Machine.interrupt().restore(status);
 			return;
 		}
 		else {
 			sleep();
+			Machine.interrupt().restore(status);
 			return;
 		}
 		
