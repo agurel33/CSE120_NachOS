@@ -36,12 +36,15 @@ public class Alarm {
 	 * should be run.
 	 */
 	public void timerInterrupt() {
+		ArrayList<MyPair> removal = new ArrayList<>();
 		for (MyPair curr:waitQueue) {
 			if (curr.getWakeTime() <= Machine.timer().getTime()){
 				curr.getThread().ready();
-				waitQueue.remove(curr);
+				removal.add(curr);
 			}
-
+		}
+		for(MyPair curr:removal) {
+			waitQueue.remove(curr);
 		}
 		KThread.yield();
 	}
