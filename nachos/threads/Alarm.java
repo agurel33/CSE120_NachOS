@@ -8,7 +8,7 @@ import nachos.machine.*;
  */
 public class Alarm {
 
-	private PriorityQueue<Pair> waitQueue;
+	private PriorityQueue<MyPair> waitQueue;
 	private ThreadComparator comp;
 
 
@@ -21,7 +21,7 @@ public class Alarm {
 	 */
 	public Alarm() {
 		this.comp = new ThreadComparator();
-		waitQueue = new PriorityQueue<Pair>(0, this.comp);
+		waitQueue = new PriorityQueue<MyPair>(0, this.comp);
 
 		Machine.timer().setInterruptHandler(new Runnable() {
 			public void run() {
@@ -38,7 +38,7 @@ public class Alarm {
 	 */
 	public void timerInterrupt() {
 		while(!waitQueue.isEmpty() && waitQueue.peek().getWakeTime() <= Machine.timer().getTime()) {
-			Pair wakingThread = waitQueue.peek();
+			MyPair wakingThread = waitQueue.peek();
 			waitQueue.remove(wakingThread);
 			wakingThread.getThread().ready();
 		}
@@ -65,7 +65,7 @@ public class Alarm {
 		KThread toAdd = KThread.currentThread(); 
 		toAdd.sleep();
 		long wakeTime = Machine.timer().getTime() + x;
-		Pair pToAdd = new Pair(wakeTime, toAdd);
+		MyPair pToAdd = new MyPair(wakeTime, toAdd);
 		waitQueue.add(pToAdd);
 		// while (wakeTime > Machine.timer().getTime())
 		// KThread.yield();
@@ -81,7 +81,7 @@ public class Alarm {
 	 * @param thread the thread whose timer should be cancelled.
 	 */
     public boolean cancel(KThread thread) {
-		for (Pair t : waitQueue) {
+		for (MyPair t : waitQueue) {
 			if (t.getThread() == thread) {
 				t.getThread().ready();
 				waitQueue.remove(t);
