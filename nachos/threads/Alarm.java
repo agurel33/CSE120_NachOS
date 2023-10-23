@@ -63,11 +63,13 @@ public class Alarm {
 		if (x <=0){
 			return;
 		}
+		boolean status = Machine.interrupt().disable();
 		KThread toAdd = KThread.currentThread(); 
 		long wakeTime = Machine.timer().getTime() + x;
 		MyPair pToAdd = new MyPair(wakeTime, toAdd);
 		waitQueue.add(pToAdd);
 		KThread.sleep();
+		Machine.interrupt().restore(status);
 		// while (wakeTime > Machine.timer().getTime())
 		// KThread.yield();
 	}
