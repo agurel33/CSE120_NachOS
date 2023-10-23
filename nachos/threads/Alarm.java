@@ -20,7 +20,8 @@ public class Alarm {
 	 * <b>Note</b>: Nachos will not function correctly with more than one alarm.
 	 */
 	public Alarm() {
-		waitQueue = new PriorityQueue<Pair>(0, comp);
+		this.comp = new ThreadComparator();
+		waitQueue = new PriorityQueue<Pair>(0, this.comp);
 
 		Machine.timer().setInterruptHandler(new Runnable() {
 			public void run() {
