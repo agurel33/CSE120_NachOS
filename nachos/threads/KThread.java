@@ -285,6 +285,8 @@ public class KThread {
 		Lib.debug(dbgThread, "Joining to thread: " + toString());
 		Lib.assertTrue(this != currentThread);
 		//A = this, B = currentThread
+		Lib.assertTrue(this.joined == false);
+		this.joined = true;
 		if(this.status == statusFinished) {
 			return;
 		}
@@ -292,6 +294,7 @@ public class KThread {
 			while(this.status != statusFinished) {}
 			return;
 		}
+		
 	}
 
 	    // Place Join test code in the KThread class and invoke test methods
@@ -307,21 +310,18 @@ public class KThread {
 			}
 			});
 		child1.setName("child1").fork();
-	
 		// We want the child to finish before we call join.  Although
 		// our solutions to the problems cannot busy wait, our test
 		// programs can!
-	
 		for (int i = 0; i < 5; i++) {
 			System.out.println ("busy...");
 			KThread.yield();
 		}
-	
 		child1.join();
 		System.out.println("After joining, child1 should be finished.");
 		System.out.println("is it? " + (child1.status == statusFinished));
 		Lib.assertTrue((child1.status == statusFinished), " Expected child1 to be finished.");
-		}
+	}
 
 	/**
 	 * Create the idle thread. Whenever there are no threads ready to be run,
@@ -479,6 +479,8 @@ public class KThread {
 	 * the ready queue and not running).
 	 */
 	private int status = statusNew;
+	
+	private boolean joined = false;
 
 	private String name = "(unnamed thread)";
 
