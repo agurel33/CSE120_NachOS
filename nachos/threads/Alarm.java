@@ -43,7 +43,7 @@ public class Alarm {
 			}
 
 		}
-		KThread.currentThread().yield();
+		KThread.yield();
 	}
 
 	/**
@@ -64,10 +64,10 @@ public class Alarm {
 			return;
 		}
 		KThread toAdd = KThread.currentThread(); 
-		toAdd.sleep();
 		long wakeTime = Machine.timer().getTime() + x;
 		MyPair pToAdd = new MyPair(wakeTime, toAdd);
 		waitQueue.add(pToAdd);
+		KThread.sleep();
 		// while (wakeTime > Machine.timer().getTime())
 		// KThread.yield();
 	}
