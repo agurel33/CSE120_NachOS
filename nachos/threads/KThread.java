@@ -333,8 +333,8 @@ public class KThread {
 			});
 		child1.setName("child1").fork();
 		System.out.println("I (thumbs up) Nachos!");
-		child1.join();
 		KThread.yield();
+		child1.join();
 		System.out.println("After joining, child1 should be finished.");
 		System.out.println("is it? " + (child1.status == statusFinished));
 		Lib.assertTrue((child1.status == statusFinished), " Expected child1 to be finished.");
