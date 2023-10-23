@@ -8,7 +8,7 @@ import nachos.machine.*;
  */
 public class Alarm {
 
-	private PriorityQueue<MyPair> waitQueue;
+	private ArrayList<MyPair> waitQueue;
 	private ThreadComparator comp;
 
 
@@ -20,8 +20,7 @@ public class Alarm {
 	 * <b>Note</b>: Nachos will not function correctly with more than one alarm.
 	 */
 	public Alarm() {
-		this.comp = new ThreadComparator();
-		waitQueue = new PriorityQueue<MyPair>(0, this.comp);
+		waitQueue = new ArrayList<MyPair>();
 
 		Machine.timer().setInterruptHandler(new Runnable() {
 			public void run() {
@@ -37,10 +36,12 @@ public class Alarm {
 	 * should be run.
 	 */
 	public void timerInterrupt() {
-		while(!waitQueue.isEmpty() && waitQueue.peek().getWakeTime() <= Machine.timer().getTime()) {
-			MyPair wakingThread = waitQueue.peek();
-			waitQueue.remove(wakingThread);
-			wakingThread.getThread().ready();
+		for (MyPair curr:waitQueue) {
+			if (curr.getWakeTime() <= Machine.timer().getTime()){
+				curr.getThread().ready();
+				waitQueue.remove(curr);
+			}
+
 		}
 		KThread.currentThread().yield();
 	}
