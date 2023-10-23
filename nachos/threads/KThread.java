@@ -323,6 +323,23 @@ public class KThread {
 		Lib.assertTrue((child1.status == statusFinished), " Expected child1 to be finished.");
 	}
 
+	public static void joinTest2() {
+		KThread child1 = new KThread( new Runnable () {
+			public void run() {
+				for (int i = 0; i < 5; i++) {
+					System.out.println ("busy...");
+					KThread.yield();
+				}
+			}
+			});
+		child1.setName("child1").fork();
+		System.out.println("I (thumbs up) Nachos!");
+		child1.join();
+		System.out.println("After joining, child1 should be finished.");
+		System.out.println("is it? " + (child1.status == statusFinished));
+		Lib.assertTrue((child1.status == statusFinished), " Expected child1 to be finished.");
+	}
+
 	/**
 	 * Create the idle thread. Whenever there are no threads ready to be run,
 	 * and <tt>runNextThread()</tt> is called, it will run the idle thread. The
@@ -452,6 +469,7 @@ public class KThread {
 		new KThread(new PingTest(1)).setName("forked thread").fork();
 		new PingTest(0).run();
 		joinTest1();
+		joinTest2();
 	}
 
 	private static final char dbgThread = 't';
