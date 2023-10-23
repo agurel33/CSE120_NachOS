@@ -203,6 +203,9 @@ public class KThread {
 
 		currentThread.status = statusFinished;
 
+		if(currentThread.joined != null) {
+			currentThread.joined.ready();
+		}
 		sleep();
 	}
 
@@ -285,13 +288,13 @@ public class KThread {
 		Lib.debug(dbgThread, "Joining to thread: " + toString());
 		Lib.assertTrue(this != currentThread);
 		//A = this, B = currentThread
-		Lib.assertTrue(this.joined == false);
-		this.joined = true;
+		Lib.assertTrue(this.joined == null);
+		this.joined = currentThread;
 		if(this.status == statusFinished) {
 			return;
 		}
 		else {
-			while(this.status != statusFinished) {}
+			sleep();
 			return;
 		}
 		
@@ -498,7 +501,7 @@ public class KThread {
 	 */
 	private int status = statusNew;
 	
-	private boolean joined = false;
+	private KThread joined = null;
 
 	private String name = "(unnamed thread)";
 
