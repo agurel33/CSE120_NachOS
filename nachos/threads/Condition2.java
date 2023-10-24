@@ -250,7 +250,7 @@ public class Condition2 {
 			public void run() {
 				System.out.println("poopie pants is working!");
 				lock.acquire();
-				cv.wakeAll();
+				cv.wake();
 			}
 		});
 	
