@@ -63,10 +63,10 @@ public class Condition2 {
 				woken = waitQueue.pop();
 			}
 			if(!woken.isReady()) {
+				woken.ready();
 				if(ThreadedKernel.alarm.isWaiting(woken)) {
 					ThreadedKernel.alarm.cancel(woken);
 				}
-				woken.ready();
 			}
 		}
 		Machine.interrupt().restore(intStatus);
