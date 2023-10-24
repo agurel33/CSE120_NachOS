@@ -341,7 +341,7 @@ public class KThread {
 		long t0 = Machine.timer().getTime();
 		child1.join();
 		long t1 = Machine.timer().getTime();
-		System.out.println ("alarmTest1: waited for " + (t1 - t0) + " ticks");
+		System.out.println ("jointest2: waited for " + (t1 - t0) + " ticks");
 		System.out.println("After joining, child1 should be finished.");
 		System.out.println("is it? " + (child1.status == statusFinished));
 		Lib.assertTrue((child1.status == statusFinished), " Expected child1 to be finished.");
