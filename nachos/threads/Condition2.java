@@ -249,6 +249,7 @@ public class Condition2 {
 		KThread poopie = new KThread(new Runnable () {
 			public void run() {
 				System.out.println("poopie pants is working!");
+				lock.acquire();
 				cv.wakeAll();
 			}
 		});
