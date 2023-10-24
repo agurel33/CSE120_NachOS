@@ -127,8 +127,8 @@ public class Condition {
 
     public static void cvTest5() {
         final Lock lock = new Lock();
-        // final Condition empty = new Condition(lock);
-        final Condition2 empty = new Condition2(lock);
+        final Condition empty = new Condition(lock);
+        //final Condition2 empty = new Condition2(lock);
         final LinkedList<Integer> list = new LinkedList<>();
 
         KThread consumer = new KThread( new Runnable () {
@@ -140,7 +140,7 @@ public class Condition {
                     Lib.assertTrue(list.size() == 5, "List should have 5 values.");
                     while(!list.isEmpty()) {
                         // context swith for the fun of it
-                        KThread.currentThread().yield();
+                        KThread.yield();
                         System.out.println("Removed " + list.removeFirst());
                     }
                     lock.release();
@@ -154,7 +154,7 @@ public class Condition {
                         list.add(i);
                         System.out.println("Added " + i);
                         // context swith for the fun of it
-                        KThread.currentThread().yield();
+                        KThread.yield();
                     }
                     empty.wake();
                     lock.release();
