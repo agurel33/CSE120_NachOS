@@ -278,6 +278,10 @@ public class KThread {
 		Machine.autoGrader().readyThread(this);
 	}
 
+
+	public boolean isReady() {
+		return status == statusReady;
+	}
 	/**
 	 * Waits for this thread to finish. If this thread is already finished,
 	 * return immediately. This method must only be called once; the second call

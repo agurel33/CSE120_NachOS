@@ -97,6 +97,15 @@ public class Alarm {
 		return false;
 	}
 
+	public boolean isWaiting(KThread thread) {
+		for(MyPair t: waitQueue) {
+			if(t.getThread() == thread) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	 // Add Alarm testing code to the Alarm class
     
 	 public static void alarmTest1() {

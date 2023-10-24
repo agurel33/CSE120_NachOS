@@ -38,13 +38,13 @@ public class Condition2 {
 		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
 
 		boolean intStatus = Machine.interrupt().disable();
-
 		conditionLock.release();
+
 		KThread curr = KThread.currentThread();
 		waitQueue.add(curr);
 		KThread.sleep();
-		conditionLock.acquire();
 
+		conditionLock.acquire();
 		Machine.interrupt().restore(intStatus);
 	}
 
@@ -56,9 +56,18 @@ public class Condition2 {
 		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
 
 		boolean intStatus = Machine.interrupt().disable();
+
 		if(!waitQueue.isEmpty()) {
 			KThread woken = waitQueue.pop();
-			woken.ready();
+			while(!waitQueue.isEmpty() && woken.isReady()) {
+				woken = waitQueue.pop();
+			}
+			if(!woken.isReady()) {
+				if(ThreadedKernel.alarm.isWaiting(woken)) {
+					ThreadedKernel.alarm.cancel(woken);
+				}
+				woken.ready();
+			}
 		}
 		Machine.interrupt().restore(intStatus);
 	}
@@ -85,8 +94,18 @@ public class Condition2 {
 	 * the lock before <tt>sleep()</tt> returns.
 	 */
         public void sleepFor(long timeout) {
-		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
-	}
+			Lib.assertTrue(conditionLock.isHeldByCurrentThread());
+			boolean intStatus = Machine.interrupt().disable();
+			conditionLock.release();
+
+			KThread curr = KThread.currentThread();
+			waitQueue.add(curr);
+
+			ThreadedKernel.alarm.waitUntil(timeout);
+
+			conditionLock.acquire();
+			Machine.interrupt().restore(intStatus);
+		}
 
         private Lock conditionLock;
 
@@ -206,10 +225,27 @@ public class Condition2 {
     }
 
     // Invoke Condition2.selfTest() from ThreadedKernel.selfTest()
+	    // Place sleepFor test code inside of the Condition2 class.
 
+	private static void sleepForTest1 () {
+		Lock lock = new Lock();
+		Condition2 cv = new Condition2(lock);
+	
+		lock.acquire();
+		long t0 = Machine.timer().getTime();
+		System.out.println (KThread.currentThread().getName() + " sleeping");
+		// no other thread will wake us up, so we should time out
+		cv.sleepFor(2000);
+		long t1 = Machine.timer().getTime();
+		System.out.println (KThread.currentThread().getName() +
+					" woke up, slept for " + (t1 - t0) + " ticks");
+		lock.release();
+	}
+			
     public static void selfTest() {
         //new InterlockTest();
-		cvTest5();
+		sleepForTest1();
+		//cvTest5();
     }
 }
 
