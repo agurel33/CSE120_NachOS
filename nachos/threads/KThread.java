@@ -280,6 +280,7 @@ public class KThread {
 
 
 	public boolean isReady() {
+		System.out.println(status == statusReady);
 		return status == statusReady;
 	}
 	/**
