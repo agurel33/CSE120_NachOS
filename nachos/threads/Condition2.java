@@ -227,7 +227,7 @@ public class Condition2 {
     // Invoke Condition2.selfTest() from ThreadedKernel.selfTest()
 	    // Place sleepFor test code inside of the Condition2 class.
 
-	private static void sleepForTest1 () {
+	private static void sleepForTest1() {
 		Lock lock = new Lock();
 		Condition2 cv = new Condition2(lock);
 	
@@ -241,10 +241,34 @@ public class Condition2 {
 					" woke up, slept for " + (t1 - t0) + " ticks");
 		lock.release();
 	}
+
+	private static void sleepForTest2() {
+		Lock lock = new Lock();
+		Condition2 cv = new Condition2(lock);
+
+		KThread poopie = new KThread(new Runnable () {
+			public void run() {
+				System.out.println("poopie pants is working!");
+				cv.wakeAll();
+			}
+		});
+	
+		lock.acquire();
+		long t0 = Machine.timer().getTime();
+		System.out.println (KThread.currentThread().getName() + " sleeping");
+		// no other thread will wake us up, so we should time out
+		poopie.fork();
+		cv.sleepFor(2000);
+		long t1 = Machine.timer().getTime();
+		System.out.println (KThread.currentThread().getName() +
+					" woke up again, slept for " + (t1 - t0) + " ticks");
+		lock.release();
+	}
 			
     public static void selfTest() {
         //new InterlockTest();
 		sleepForTest1();
+		sleepForTest2();
 		//cvTest5();
     }
 }
