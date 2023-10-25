@@ -353,6 +353,16 @@ public class KThread {
 		Lib.assertTrue((child1.status == statusFinished), " Expected child1 to be finished.");
 	}
 
+	public static void joinTest3() {
+		try {
+			Thread.currentThread().join();
+		}
+		catch (Exception e) {
+			System.out.println(e.toString());
+		}
+		
+	}
+
 	/**
 	 * Create the idle thread. Whenever there are no threads ready to be run,
 	 * and <tt>runNextThread()</tt> is called, it will run the idle thread. The
@@ -483,6 +493,7 @@ public class KThread {
 		new PingTest(0).run();
 		joinTest1();
 		joinTest2();
+		joinTest3();
 	}
 
 	private static final char dbgThread = 't';
