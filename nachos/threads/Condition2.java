@@ -259,7 +259,7 @@ public class Condition2 {
 		System.out.println (KThread.currentThread().getName() + " sleeping");
 		// no other thread will wake us up, so we should time out
 		poopie.fork();
-		cv.sleepFor(2000000000);
+		cv.sleepFor(2000);
 		long t1 = Machine.timer().getTime();
 		System.out.println (KThread.currentThread().getName() +
 					" woke up again, slept for " + (t1 - t0) + " ticks");
