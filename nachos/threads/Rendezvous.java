@@ -44,23 +44,66 @@ public class Rendezvous {
         if(valueMappy.containsKey(tag) && !usedMappy.get(tag)) {
             int to_return = valueMappy.get(tag);
             valueMappy.replace(tag, value);
-            condy.wakeAll();
             usedMappy.replace(tag, true);
+            condy.wakeAll();
             return to_return;
         }
         else {
             valueMappy.put(tag, value);
             usedMappy.put(tag,false);
             condy.sleep();
-            if (usedMappy.get(tag)) {
-                usedMappy.replace(tag, false);
-                int to_return = valueMappy.get(tag);
-                valueMappy.remove(tag);
-                return to_return;
-            } else {
-                condy.sleep();
+            while(true) {
+                if (usedMappy.get(tag)) {
+                    usedMappy.replace(tag, false);
+                    int to_return = valueMappy.get(tag);
+                    valueMappy.remove(tag);
+                    return to_return;
+                } else {
+                    condy.sleep();
+                }
             }
         }
-        return 0;
+    }
+
+     // Place Rendezvous test code inside of the Rendezvous class.
+
+     public static void rendezTest1() {
+        final Rendezvous r = new Rendezvous();
+    
+        KThread t1 = new KThread( new Runnable () {
+            public void run() {
+                int tag = 0;
+                int send = -1;
+    
+                System.out.println ("Thread " + KThread.currentThread().getName() + " exchanging " + send);
+                int recv = r.exchange (tag, send);
+                Lib.assertTrue (recv == 1, "Was expecting " + 1 + " but received " + recv);
+                System.out.println ("Thread " + KThread.currentThread().getName() + " received " + recv);
+            }
+            });
+        t1.setName("t1");
+        KThread t2 = new KThread( new Runnable () {
+            public void run() {
+                int tag = 0;
+                int send = 1;
+    
+                System.out.println ("Thread " + KThread.currentThread().getName() + " exchanging " + send);
+                int recv = r.exchange (tag, send);
+                Lib.assertTrue (recv == -1, "Was expecting " + -1 + " but received " + recv);
+                System.out.println ("Thread " + KThread.currentThread().getName() + " received " + recv);
+            }
+            });
+        t2.setName("t2");
+    
+        t1.fork(); t2.fork();
+        // assumes join is implemented correctly
+        t1.join(); t2.join();
+    }
+    
+        // Invoke Rendezvous.selfTest() from ThreadedKernel.selfTest()
+    
+    public static void selfTest() {
+    // place calls to your Rendezvous tests that you implement here
+        rendezTest1();
     }
 }
