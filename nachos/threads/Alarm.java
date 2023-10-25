@@ -118,14 +118,75 @@ public class Alarm {
 			t1 = Machine.timer().getTime();
 			System.out.println ("alarmTest1: waited for " + (t1 - t0) + " ticks");
 		}
-		}
-	
+	}
+
+	public static void alarmTest2() {
+		long t0,t1;
+
+		t0 = Machine.timer().getTime();
+		ThreadedKernel.alarm.waitUntil(-10);
+		t1 = Machine.timer().getTime();
+		System.out.println("alarmTest2 (is -10): waited for " + (t1-t0) + " ticks");
+	}
+ 
+	public static void alarmTest3() {
+		long t0,t1;
+
+		t0 = Machine.timer().getTime();
+		ThreadedKernel.alarm.waitUntil(0);
+		t1 = Machine.timer().getTime();
+		System.out.println("alarmTest3 (is 0): waited for " + (t1-t0) + " ticks");
+	}
+
+	public static void alarmTest4() {
+		KThread threadyy = new KThread(new Runnable () {
+			public void run() {
+				ThreadedKernel.alarm.waitUntil(50000);
+				System.out.println("Threadyy printed! (3)");
+			}
+		});
+
+		KThread kreadyy = new KThread(new Runnable () {
+			public void run() {
+				ThreadedKernel.alarm.waitUntil(5000);
+				System.out.println("Kreadyy printed! (1)");
+			}
+		});
+		threadyy.fork();
+		kreadyy.fork();
+		ThreadedKernel.alarm.waitUntil(10000);
+		System.out.println("Main printed! (2)");
+		kreadyy.join();
+		threadyy.join();
+	}
+
+	public static void alarmTest5() {
+		KThread trd = new KThread(new Runnable() {
+			public void run() {
+				long t2 = Machine.timer().getTime();
+				ThreadedKernel.alarm.waitUntil(10000);
+				long t3 = Machine.timer().getTime();
+				System.out.println("trd is printing: " + (t3-t2));
+			}
+		});
+
+		long t0 = Machine.timer().getTime();
+		trd.fork();
+		ThreadedKernel.alarm.waitUntil(10000);
+		long t1 = Machine.timer().getTime();
+		trd.join();
+
+		System.out.println("time waited for main: " + (t1-t0));
+	}
 		// Implement more test methods here ...
 	
 		// Invoke Alarm.selfTest() from ThreadedKernel.selfTest()
-		public static void selfTest() {
+	public static void selfTest() {
 		alarmTest1();
-	
+		alarmTest2();
+		alarmTest3();
+		alarmTest4();
+		alarmTest5();
 		// Invoke your other test methods here ...
-		}
+	}
 }

@@ -337,15 +337,17 @@ public class KThread {
 	public static void joinTest2() {
 		KThread child1 = new KThread( new Runnable () {
 			public void run() {
+				ThreadedKernel.alarm.waitUntil(10000);
 				for (int i = 0; i < 5; i++) {
 					System.out.println ("busy...");
 				}
-				ThreadedKernel.alarm.waitUntil(10000);
 			}
 			});
 		child1.setName("child1").fork();
 		long t0 = Machine.timer().getTime();
+		System.out.println("before join: " + Machine.timer().getTime());
 		child1.join();
+		System.out.println("after join: " + Machine.timer().getTime());
 		long t1 = Machine.timer().getTime();
 		System.out.println ("jointest2: waited for " + (t1 - t0) + " ticks");
 		System.out.println("After joining, child1 should be finished.");
