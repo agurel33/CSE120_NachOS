@@ -152,8 +152,8 @@ public class Alarm {
 				System.out.println("Kreadyy printed! (1)");
 			}
 		});
-		kreadyy.fork();
 		threadyy.fork();
+		kreadyy.fork();
 		ThreadedKernel.alarm.waitUntil(10000);
 		System.out.println("Main printed! (2)");
 		kreadyy.join();
