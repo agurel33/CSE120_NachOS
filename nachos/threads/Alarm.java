@@ -185,6 +185,7 @@ public class Alarm {
 		alarmTest2();
 		alarmTest3();
 		alarmTest4();
+		alarmTest5();
 		// Invoke your other test methods here ...
 	}
 }
