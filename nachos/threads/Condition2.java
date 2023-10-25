@@ -341,17 +341,25 @@ public class Condition2 {
 			}
 		});
 
+		KThread dingus4 = new KThread(new Runnable () {
+			public void run() {
+				lock.acquire();
+				cv.wakeAll();
+				lock.release();
+			}
+		});
+
 		dingus1.fork();
 		dingus2.fork();
 		dingus3.fork();
+		dingus4.fork();
 
-		lock.acquire();
-		cv.wakeAll();
-		lock.release();
+		dingus4.join();
 		dingus1.join();
 		dingus2.join();
 		dingus3.join();
-		System.out.println("test3 complete!");
+
+		System.out.println("test4 complete!");
 	}
 			
     public static void selfTest() {
