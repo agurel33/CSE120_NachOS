@@ -269,7 +269,7 @@ public class KThread {
 		Lib.debug(dbgThread, "Ready thread: " + toString());
 
 		Lib.assertTrue(Machine.interrupt().disabled());
-		System.out.println(isReady());
+		//System.out.println(isReady());
 		Lib.assertTrue(status != statusReady);
 
 		status = statusReady;
@@ -281,7 +281,7 @@ public class KThread {
 
 
 	public boolean isReady() {
-		System.out.println(status == statusReady);
+		//System.out.println(status == statusReady);
 		return status == statusReady;
 	}
 	/**

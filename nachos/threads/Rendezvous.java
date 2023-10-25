@@ -9,7 +9,15 @@ public class Rendezvous {
     /**
      * Allocate a new Rendezvous.
      */
+
+    private Lock locky;
+    private Condition2 condVar;
+    int size;
+
     public Rendezvous () {
+        locky = new Lock();
+        condVar = new Condition2(locky);
+        size = 0;
     }
 
     /**
@@ -29,6 +37,13 @@ public class Rendezvous {
      * @param value the integer to exchange.
      */
     public int exchange (int tag, int value) {
-	return 0;
+        if(size == 0) {
+            size++;
+            condVar.sleep();
+        }
+        else {
+
+        }
+        return 0;
     }
 }
