@@ -89,7 +89,9 @@ public class Alarm {
     public boolean cancel(KThread thread) {
 		for (MyPair t : waitQueue) {
 			if (t.getThread() == thread) {
-				t.getThread().ready();
+				if(!t.getThread().isReady()) {
+					t.getThread().ready();
+				}
 				waitQueue.remove(t);
 				return true;
 			}
