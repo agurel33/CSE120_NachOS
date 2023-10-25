@@ -365,6 +365,21 @@ public class KThread {
 		
 	}
 
+	public static void joinTest4() {
+		KThread child1 = new KThread( new Runnable () {
+			public void run() {
+				ThreadedKernel.alarm.waitUntil(10000);
+			}
+		});
+		KThread child2 = new KThread( new Runnable () {
+			public void run() {
+				child1.join();
+			}
+		});
+		child2.fork();
+		child1.join();
+	}
+
 	/**
 	 * Create the idle thread. Whenever there are no threads ready to be run,
 	 * and <tt>runNextThread()</tt> is called, it will run the idle thread. The
@@ -495,7 +510,8 @@ public class KThread {
 		new PingTest(0).run();
 		//joinTest1();
 		//joinTest2();
-		joinTest3();
+		//joinTest3();
+		joinTest4();
 	}
 
 	private static final char dbgThread = 't';
