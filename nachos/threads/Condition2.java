@@ -249,7 +249,7 @@ public class Condition2 {
 		KThread poopie = new KThread(new Runnable () {
 			public void run() {
 				System.out.println("poopie pants is working!");
-				lock.acquire();
+				//lock.acquire();
 				cv.wake();
 			}
 		});
@@ -263,7 +263,6 @@ public class Condition2 {
 		long t1 = Machine.timer().getTime();
 		System.out.println (KThread.currentThread().getName() +
 					" woke up again, slept for " + (t1 - t0) + " ticks");
-		lock.release();
 	}
 			
     public static void selfTest() {
