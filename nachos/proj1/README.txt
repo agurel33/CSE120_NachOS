@@ -8,8 +8,7 @@ semaphores in the Condition class. This also included a sleepFor method in the C
 to again, give control of how long a thread was put to sleep. Lastly we also implemented the Rendezvous class which allows for threads
 to, in a safe way, trade variables between them managing concurency.
 
-At the moment we have used the basic tests provided and a minimal number of our own tests, however everything appears to be functioning 
-properly, we are using this submission to ensure it compiles properly on gradescope and we pass public tests. Will make future submissions
-with heavier testing for hidden tests.
+We have created tests for each individual part covering the specified teating cases and ensured they all pass verifying proper and 
+complete functionality. Additionally all public tests pass.
 
 Group members worked together on this project, almost exclusively pair programing and collaborating to find solutions
