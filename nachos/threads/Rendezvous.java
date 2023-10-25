@@ -1,5 +1,7 @@
 package nachos.threads;
 
+import java.util.HashMap;
+
 import nachos.machine.*;
 
 /**
@@ -11,13 +13,15 @@ public class Rendezvous {
      */
 
     private Lock locky;
-    private Condition2 condVar;
-    int size;
+    private Condition2 condy;
+    HashMap<Integer, Integer> valueMappy;
+    HashMap<Integer, Boolean> usedMappy;
 
     public Rendezvous () {
         locky = new Lock();
-        condVar = new Condition2(locky);
-        size = 0;
+        condy = new Condition2(locky);
+        valueMappy = new HashMap<>();
+        usedMappy = new HashMap<>();
     }
 
     /**
@@ -37,12 +41,25 @@ public class Rendezvous {
      * @param value the integer to exchange.
      */
     public int exchange (int tag, int value) {
-        if(size == 0) {
-            size++;
-            condVar.sleep();
+        if(valueMappy.containsKey(tag) && !usedMappy.get(tag)) {
+            int to_return = valueMappy.get(tag);
+            valueMappy.replace(tag, value);
+            condy.wakeAll();
+            usedMappy.replace(tag, true);
+            return to_return;
         }
         else {
-
+            valueMappy.put(tag, value);
+            usedMappy.put(tag,false);
+            condy.sleep();
+            if (usedMappy.get(tag)) {
+                usedMappy.replace(tag, false);
+                int to_return = valueMappy.get(tag);
+                valueMappy.remove(tag);
+                return to_return;
+            } else {
+                condy.sleep();
+            }
         }
         return 0;
     }
