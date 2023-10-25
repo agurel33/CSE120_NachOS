@@ -268,8 +268,8 @@ public class Condition2 {
 			
     public static void selfTest() {
         //new InterlockTest();
-		sleepForTest1();
-		//sleepForTest2();
+		//sleepForTest1();
+		sleepForTest2();
 		//cvTest5();
     }
 }
