@@ -294,8 +294,8 @@ public class KThread {
 		boolean status = Machine.interrupt().disable();
 		//A = this, B = currentThread
 		Lib.debug(dbgThread, "Joining to thread: " + toString());
-		Lib.assertTrue(this != currentThread);
-		Lib.assertTrue(this.joined == null);
+		Lib.assertTrue(this != currentThread, "Cannot join with itself!");
+		Lib.assertTrue(this.joined == null, "Is already joining with another thread");
 		this.joined = currentThread;
 		if(this.status == statusFinished) {
 			Machine.interrupt().restore(status);
@@ -357,10 +357,10 @@ public class KThread {
 
 	public static void joinTest3() {
 		try {
-			Thread.currentThread().join();
+			KThread.currentThread().join();
 		}
-		catch (Exception e) {
-			System.out.println(e.toString());
+		catch (AssertionError e) {
+			System.out.println(e.getMessage());
 		}
 		
 	}
