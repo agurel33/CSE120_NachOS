@@ -174,6 +174,7 @@ public class Alarm {
 		trd.fork();
 		ThreadedKernel.alarm.waitUntil(100);
 		long t1 = Machine.timer().getTime();
+		trd.join();
 
 		System.out.println("time waited for main: " + (t1-t0));
 	}
