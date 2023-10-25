@@ -45,12 +45,19 @@ public class Rendezvous {
             int to_return = valueMappy.get(tag);
             valueMappy.replace(tag, value);
             usedMappy.replace(tag, true);
+            if(!locky.isHeldByCurrentThread()) {
+                locky.acquire();
+            }
             condy.wakeAll();
+            locky.release();
             return to_return;
         }
         else {
             valueMappy.put(tag, value);
             usedMappy.put(tag,false);
+            if(!locky.isHeldByCurrentThread()) {
+                locky.acquire();
+            }
             condy.sleep();
             while(true) {
                 if (usedMappy.get(tag)) {
@@ -59,6 +66,9 @@ public class Rendezvous {
                     valueMappy.remove(tag);
                     return to_return;
                 } else {
+                    if(!locky.isHeldByCurrentThread()) {
+                        locky.acquire();
+                    }
                     condy.sleep();
                 }
             }
