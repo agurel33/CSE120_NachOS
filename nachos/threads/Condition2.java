@@ -266,11 +266,59 @@ public class Condition2 {
 					" woke up again, slept for " + (t1 - t0) + " ticks");
 		lock.release();
 	}
+
+	private static void sleepForTest3() {
+		Lock lock = new Lock();
+		Condition2 cv = new Condition2(lock);
+
+		KThread dingus1 = new KThread(new Runnable () {
+			public void run() {
+				System.out.println("before dingus1 sleep: " + Machine.timer().getTime());
+				lock.acquire();
+				cv.sleepFor(10000);
+				lock.release();
+				System.out.println("dingus1 post: " + Machine.timer().getTime());
+			}
+		});
+		KThread dingus2 = new KThread(new Runnable () {
+			public void run() {
+				System.out.println("before dingus2 sleep: " + Machine.timer().getTime());
+				lock.acquire();
+				cv.sleepFor(50000);
+				lock.release();
+				System.out.println("dingus2 post: " + Machine.timer().getTime());
+			}
+		});
+		KThread dingus3 = new KThread(new Runnable () {
+			public void run() {
+				System.out.println("before dingus3 sleep: " + Machine.timer().getTime());
+				lock.acquire();
+				cv.sleepFor(100000);
+				lock.release();
+				System.out.println("dingus3post : " + Machine.timer().getTime());
+			}
+		});
+
+		dingus1.fork();
+		dingus2.fork();
+		dingus3.fork();
+
+		dingus1.join();
+		dingus2.join();
+		dingus3.join();
+		System.out.println("test3 complete!");
+	}
+
+	private static void sleepForTest4() {
+
+	}
 			
     public static void selfTest() {
         //new InterlockTest();
 		//sleepForTest1();
-		sleepForTest2();
+		//sleepForTest2();
+		sleepForTest3();
+		sleepForTest4();
 		//cvTest5();
     }
 }
