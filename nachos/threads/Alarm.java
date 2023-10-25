@@ -156,6 +156,8 @@ public class Alarm {
 		threadyy.fork();
 		ThreadedKernel.alarm.waitUntil(10000);
 		System.out.println("Main printed! (2)");
+		kreadyy.join();
+		threadyy.join();
 	}
 		// Implement more test methods here ...
 	
