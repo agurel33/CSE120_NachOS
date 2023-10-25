@@ -164,7 +164,7 @@ public class Alarm {
 		KThread trd = new KThread(new Runnable() {
 			public void run() {
 				long t2 = Machine.timer().getTime();
-				ThreadedKernel.alarm.waitUntil(100);
+				ThreadedKernel.alarm.waitUntil(10000);
 				long t3 = Machine.timer().getTime();
 				System.out.println("trd is printing: " + (t3-t2));
 			}
@@ -172,7 +172,7 @@ public class Alarm {
 
 		long t0 = Machine.timer().getTime();
 		trd.fork();
-		ThreadedKernel.alarm.waitUntil(100);
+		ThreadedKernel.alarm.waitUntil(10000);
 		long t1 = Machine.timer().getTime();
 		trd.join();
 
