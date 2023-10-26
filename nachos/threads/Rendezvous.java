@@ -171,6 +171,7 @@ public class Rendezvous {
 
     public static void selfTest() {
     // place calls to your Rendezvous tests that you implement here
-        rendezTest1();
+        //rendezTest1();
+        ourRendeTest1();
     }
 }
