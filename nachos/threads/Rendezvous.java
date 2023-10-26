@@ -15,7 +15,7 @@ public class Rendezvous {
     private Lock locky;
     private Condition2 condy;
     HashMap<Integer, Integer> valueMappy;
-    HashMap<Integer, Boolean> usedMappy;
+    HashMap<Integer, Integer> usedMappy;
 
     public Rendezvous () {
         locky = new Lock();
@@ -41,10 +41,10 @@ public class Rendezvous {
      * @param value the integer to exchange.
      */
     public int exchange (int tag, int value) {
-        if(valueMappy.containsKey(tag) && !usedMappy.get(tag)) {
+        if(valueMappy.containsKey(tag) && usedMappy.get(tag) > 0) {
             int to_return = valueMappy.get(tag);
             valueMappy.replace(tag, value);
-            usedMappy.replace(tag, true);
+            usedMappy.replace(tag, usedMappy.get(tag) - 1);
             if(!locky.isHeldByCurrentThread()) {
                 locky.acquire();
             }
@@ -54,14 +54,17 @@ public class Rendezvous {
         }
         else {
             valueMappy.put(tag, value);
-            usedMappy.put(tag,false);
+            if(usedMappy.get(tag) == null) {
+                usedMappy.put(tag,0);
+            }
+            usedMappy.replace(tag,usedMappy.get(tag) + 1);
             if(!locky.isHeldByCurrentThread()) {
                 locky.acquire();
             }
             condy.sleep();
             while(true) {
-                if (usedMappy.get(tag)) {
-                    usedMappy.replace(tag, false);
+                if (usedMappy.get(tag) > 0) {
+                    usedMappy.replace(tag, usedMappy.get(tag) - 1);
                     int to_return = valueMappy.get(tag);
                     valueMappy.remove(tag);
                     return to_return;
