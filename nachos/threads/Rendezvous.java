@@ -55,7 +55,7 @@ public class Rendezvous {
         else {
             valueMappy.put(tag, value);
             if(usedMappy.get(tag) == null) {
-                usedMappy.put(tag,2);
+                usedMappy.put(tag,10);
             }
             usedMappy.replace(tag,usedMappy.get(tag) + 1);
             if(!locky.isHeldByCurrentThread()) {
