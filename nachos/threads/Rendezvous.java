@@ -11,17 +11,18 @@ public class Rendezvous {
     /**
      * Allocate a new Rendezvous.
      */
-
-    private Lock locky;
-    private Condition2 condy;
     HashMap<Integer, Integer> valueMappy;
     HashMap<Integer, Integer> usedMappy;
+    
+    HashMap<Integer,Lock> groupLocky;
+    HashMap<Integer, Condition2> groupCondy;
 
     public Rendezvous () {
-        locky = new Lock();
-        condy = new Condition2(locky);
         valueMappy = new HashMap<>();
         usedMappy = new HashMap<>();
+
+        groupLocky = new HashMap<>();
+        groupCondy = new HashMap<>();
     }
 
     /**
@@ -42,19 +43,27 @@ public class Rendezvous {
      */
     public int exchange (int tag, int value) {
         if(valueMappy.containsKey(tag) && usedMappy.get(tag) > 0) {
-            if(!locky.isHeldByCurrentThread()) {
-                locky.acquire();
+            if(!groupLocky.get(tag).isHeldByCurrentThread()) {
+                groupLocky.get(tag).acquire();
             }
             int to_return = valueMappy.get(tag);
             valueMappy.replace(tag, value);
             //usedMappy.replace(tag, usedMappy.get(tag));
-            condy.wakeAll();
-            locky.release();
+            groupCondy.get(tag).wakeAll();
+            groupLocky.get(tag).release();
             return to_return;
         }
         else {
-            if(!locky.isHeldByCurrentThread()) {
-                locky.acquire();
+            if(groupLocky.get(tag) == null) {
+                Lock locky = new Lock();
+                groupLocky.put(tag,locky);
+            }
+            if(groupCondy.get(tag) == null) {
+                Condition2 condy = new Condition2(groupLocky.get(tag));
+                groupCondy.put(tag,condy);
+            }
+            if(!groupLocky.get(tag).isHeldByCurrentThread()) {
+                groupLocky.get(tag).acquire();
             }
             valueMappy.put(tag, value);
             if(usedMappy.get(tag) == null) {
@@ -62,7 +71,7 @@ public class Rendezvous {
             }
             usedMappy.replace(tag,usedMappy.get(tag) + 1);
             
-            condy.sleep();
+            groupCondy.get(tag).sleep();
             while(true) {
                 if (usedMappy.get(tag) > 0) {
                     usedMappy.replace(tag, usedMappy.get(tag) - 1);
@@ -70,10 +79,10 @@ public class Rendezvous {
                     valueMappy.remove(tag);
                     return to_return;
                 } else {
-                    if(!locky.isHeldByCurrentThread()) {
-                        locky.acquire();
+                    if(!groupLocky.get(tag).isHeldByCurrentThread()) {
+                        groupLocky.get(tag).acquire();
                     }
-                    condy.sleep();
+                     groupCondy.get(tag).sleep();
                 }
             }
         }
