@@ -42,25 +42,26 @@ public class Rendezvous {
      */
     public int exchange (int tag, int value) {
         if(valueMappy.containsKey(tag) && usedMappy.get(tag) > 0) {
-            int to_return = valueMappy.get(tag);
-            valueMappy.replace(tag, value);
-            //usedMappy.replace(tag, usedMappy.get(tag));
             if(!locky.isHeldByCurrentThread()) {
                 locky.acquire();
             }
+            int to_return = valueMappy.get(tag);
+            valueMappy.replace(tag, value);
+            //usedMappy.replace(tag, usedMappy.get(tag));
             condy.wakeAll();
             locky.release();
             return to_return;
         }
         else {
-            valueMappy.put(tag, value);
-            if(usedMappy.isEmpty()) {
-                usedMappy.put(tag,0);
-            }
-            usedMappy.replace(tag,usedMappy.get(tag) + 1);
             if(!locky.isHeldByCurrentThread()) {
                 locky.acquire();
             }
+            valueMappy.put(tag, value);
+            if(usedMappy.get(tag) == null) {
+                usedMappy.put(tag,0);
+            }
+            usedMappy.replace(tag,usedMappy.get(tag) + 1);
+            
             condy.sleep();
             while(true) {
                 if (usedMappy.get(tag) > 0) {
