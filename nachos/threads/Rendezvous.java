@@ -55,7 +55,7 @@ public class Rendezvous {
         else {
             valueMappy.put(tag, value);
             if(usedMappy.get(tag) == null) {
-                usedMappy.put(tag,10);
+                usedMappy.put(tag,1);
             }
             usedMappy.replace(tag,usedMappy.get(tag) + 1);
             if(!locky.isHeldByCurrentThread()) {
@@ -66,7 +66,7 @@ public class Rendezvous {
                 if (usedMappy.get(tag) > 0) {
                     usedMappy.replace(tag, usedMappy.get(tag) - 1);
                     int to_return = valueMappy.get(tag);
-                    valueMappy.remove(tag);
+                    //valueMappy.remove(tag);
                     return to_return;
                 } else {
                     if(!locky.isHeldByCurrentThread()) {
