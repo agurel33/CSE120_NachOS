@@ -72,19 +72,23 @@ public class Rendezvous {
             usedMappy.replace(tag,usedMappy.get(tag) + 1);
             
             groupCondy.get(tag).sleep();
-            while(true) {
-                if (usedMappy.get(tag) > 0) {
-                    usedMappy.replace(tag, usedMappy.get(tag) - 1);
-                    int to_return = valueMappy.get(tag);
-                    valueMappy.remove(tag);
-                    return to_return;
-                } else {
-                    if(!groupLocky.get(tag).isHeldByCurrentThread()) {
-                        groupLocky.get(tag).acquire();
-                    }
-                     groupCondy.get(tag).sleep();
-                }
-            }
+
+            usedMappy.replace(tag, usedMappy.get(tag) - 1);
+            int to_return = valueMappy.get(tag);
+            valueMappy.remove(tag);
+            return to_return;
+
+            //while(true) {
+                //if (usedMappy.get(tag) > 0) {
+                    
+                //} 
+                // else {
+                //     if(!groupLocky.get(tag).isHeldByCurrentThread()) {
+                //         groupLocky.get(tag).acquire();
+                //     }
+                //      groupCondy.get(tag).sleep();
+                // }
+            //}
         }
     }
 
