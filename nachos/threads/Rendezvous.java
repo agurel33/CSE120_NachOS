@@ -75,11 +75,12 @@ public class Rendezvous {
             
             groupCondy.get(tag).sleep();
 
-            groupLocky.get(tag).release();
 
             usedMappy.replace(tag, usedMappy.get(tag) - 1);
             int to_return = valueMappy.get(tag);
             valueMappy.remove(tag);
+            groupLocky.get(tag).release();
+
             return to_return;
 
             //while(true) {
