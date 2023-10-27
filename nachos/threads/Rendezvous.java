@@ -227,14 +227,12 @@ public class Rendezvous {
         // assumes join is implemented correctly
         t1.join(); t2.join(); t3.join(); t4.join();
     }
-    
-        
-    }
 
 
     public static void selfTest() {
     // place calls to your Rendezvous tests that you implement here
         //rendezTest1();
-        ourRendeTest1();
+        //ourRendeTest1();
+        superDopeTest();
     }
 }
