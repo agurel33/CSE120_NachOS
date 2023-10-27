@@ -111,6 +111,8 @@ public class Rendezvous {
         t1.fork(); t2.fork();
         // assumes join is implemented correctly
         t1.join(); t2.join();
+
+        System.out.println("One pair of threads works");
     }
     
         // Invoke Rendezvous.selfTest() from ThreadedKernel.selfTest()
@@ -169,6 +171,8 @@ public class Rendezvous {
         t1.fork(); t2.fork(); t3.fork(); t4.fork();
         // assumes join is implemented correctly
         t1.join(); t2.join(); t3.join(); t4.join();
+        System.out.println("Multiple thread works");
+
     }
 
     private static void superDopeTest() {
@@ -226,13 +230,14 @@ public class Rendezvous {
         t1.fork(); t2.fork(); t3.fork(); t4.fork();
         // assumes join is implemented correctly
         t1.join(); t2.join(); t3.join(); t4.join();
+        System.out.println("Super dope test works");
     }
 
 
     public static void selfTest() {
     // place calls to your Rendezvous tests that you implement here
         rendezTest1();
-        //ourRendeTest1();
-        //superDopeTest();
+        ourRendeTest1();
+        superDopeTest();
     }
 }
