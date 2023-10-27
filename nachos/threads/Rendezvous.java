@@ -45,12 +45,14 @@ public class Rendezvous {
         if(valueMappy.containsKey(tag) && usedMappy.get(tag) > 0 ) {
             if(!groupLocky.get(tag).isHeldByCurrentThread()) {
                 groupLocky.get(tag).acquire();
+                System.out.println(tag + " tag acquired lock");
             }
             int to_return = valueMappy.get(tag);
             valueMappy.replace(tag, value);
             //usedMappy.replace(tag, usedMappy.get(tag));
             groupCondy.get(tag).wakeAll();
             groupLocky.get(tag).release();
+            System.out.println(tag + " tag released lock");
             return to_return;
         }
         else {
@@ -66,6 +68,7 @@ public class Rendezvous {
 
             if(!groupLocky.get(tag).isHeldByCurrentThread()) {
                 groupLocky.get(tag).acquire();
+                System.out.println(tag + " tag acquired lock");
             }
             valueMappy.put(tag, value);
             if(usedMappy.get(tag) == null) {
@@ -79,7 +82,8 @@ public class Rendezvous {
             usedMappy.replace(tag, usedMappy.get(tag) - 1);
             int to_return = valueMappy.get(tag);
             valueMappy.remove(tag);
-            groupLocky.get(tag).release();
+            groupLocky.get(tag).release();                
+            System.out.println(tag + " tag released lock");
 
             return to_return;
 
