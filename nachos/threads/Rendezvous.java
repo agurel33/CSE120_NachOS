@@ -42,7 +42,7 @@ public class Rendezvous {
      * @param value the integer to exchange.
      */
     public int exchange (int tag, int value) {
-        if(valueMappy.containsKey(tag) && usedMappy.get(tag) ) {
+        if(valueMappy.containsKey(tag) && usedMappy.get(tag) > 0 ) {
             if(!groupLocky.get(tag).isHeldByCurrentThread()) {
                 groupLocky.get(tag).acquire();
             }
