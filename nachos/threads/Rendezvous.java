@@ -42,7 +42,7 @@ public class Rendezvous {
      * @param value the integer to exchange.
      */
     public int exchange (int tag, int value) {
-        if(valueMappy.containsKey(tag) && usedMappy.get(tag) > 0) {
+        if(valueMappy.containsKey(tag) && usedMappy.get(tag) ) {
             if(!groupLocky.get(tag).isHeldByCurrentThread()) {
                 groupLocky.get(tag).acquire();
             }
@@ -62,6 +62,8 @@ public class Rendezvous {
                 Condition2 condy = new Condition2(groupLocky.get(tag));
                 groupCondy.put(tag,condy);
             }
+
+
             if(!groupLocky.get(tag).isHeldByCurrentThread()) {
                 groupLocky.get(tag).acquire();
             }
@@ -72,6 +74,8 @@ public class Rendezvous {
             usedMappy.replace(tag,usedMappy.get(tag) + 1);
             
             groupCondy.get(tag).sleep();
+
+            groupLocky.get(tag).release();
 
             usedMappy.replace(tag, usedMappy.get(tag) - 1);
             int to_return = valueMappy.get(tag);
