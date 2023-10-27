@@ -54,7 +54,7 @@ public class Rendezvous {
         }
         else {
             valueMappy.put(tag, value);
-            if(usedMappy.get(tag) == null) {
+            if(usedMappy.isEmpty()) {
                 usedMappy.put(tag,0);
             }
             usedMappy.replace(tag,usedMappy.get(tag) + 1);
@@ -236,7 +236,7 @@ public class Rendezvous {
 
     public static void selfTest() {
     // place calls to your Rendezvous tests that you implement here
-        //rendezTest1();
+        rendezTest1();
         ourRendeTest1();
         superDopeTest();
     }
