@@ -397,6 +397,38 @@ public class UserProcess {
 		return 0;
 	}
 
+	private int handleWrite(int fd, int pt, int size) {
+		byte[] temp = new byte[size];
+		int success = readVirtualMemory(pt, temp, 0, size);
+		if(success != size) {
+			return -1;
+		}
+		if(fileTable[fd] == null) {
+			return -1;
+		}
+		int greatSuccess = fileTable[fd].write(temp,0,size);
+		if(greatSuccess != size) {
+			return -1;
+		}
+		return greatSuccess;
+	}
+
+	private int handleRead(int fd, int pt, int size) {
+		byte[] temp = new byte[size];
+		if(fileTable[fd] == null) {
+			return -1;
+		}
+		int success = fileTable[fd].read(temp,0,size);
+		if(success != size) {
+			return -1;
+		}
+		int greatSuccess = writeVirtualMemory(pt, temp);
+		if(greatSuccess != size) {
+			return -1;
+		}
+		return greatSuccess;
+	}
+
 	private static final int syscallHalt = 0, syscallExit = 1, syscallExec = 2,
 			syscallJoin = 3, syscallCreate = 4, syscallOpen = 5,
 			syscallRead = 6, syscallWrite = 7, syscallClose = 8,
@@ -469,6 +501,11 @@ public class UserProcess {
 			return handleHalt();
 		case syscallExit:
 			return handleExit(a0);
+		case syscallWrite:
+			return handleWrite(a0,a1,a2);
+		case syscallRead:
+			return handleRead(a0,a1,a2);
+		
 
 		default:
 			Lib.debug(dbgProcess, "Unknown syscall " + syscall);
@@ -510,6 +547,9 @@ public class UserProcess {
 
 	/** This process's page table. */
 	protected TranslationEntry[] pageTable;
+
+	/** This process's file table. */
+	protected OpenFile[] fileTable;
 
 	/** The number of contiguous pages occupied by the program. */
 	protected int numPages;
