@@ -454,7 +454,7 @@ public class UserProcess {
 	private int handleCreate(int name_pointer) {
 		//what value to choose for byte array size?
 		byte[] name_byte = new byte[256];
-		int success = readVirtualMemory(name_pointer, name_byte, 0, );
+		int success = readVirtualMemory(name_pointer, name_byte);
 		if(success <= 0) {
 			return -1;
 		}
