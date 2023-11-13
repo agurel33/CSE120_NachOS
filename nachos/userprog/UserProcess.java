@@ -458,10 +458,9 @@ public class UserProcess {
 		if(success <= 0) {
 			return -1;
 		}
-		System.out.println(name_byte);
 		String name = new String(name_byte);
 		name = name.substring(0, name.indexOf(".out") + 4);
-		System.out.println("create name:" + name);
+		//System.out.println("create name:" + name);
 		int index = -1;
 		for(int i = 2; i < 16; i++) {
 			if(fileTable[i] == null && index == -1) {
@@ -494,7 +493,7 @@ public class UserProcess {
 		String name = new String(name_byte);
 		int index = -1;
 		for(int i = 0; i < 16; i++) {
-			if(fileTable[i].getName().equals(name)) {
+			if(fileTable[i] != null && fileTable[i].getName().equals(name)) {
 				return i;
 			}
 			else if(fileTable[i] == null && index != -1) {
@@ -527,7 +526,7 @@ public class UserProcess {
 		String name = new String(name_byte);
 		fs.remove(name);
 		for(int i=0; i < 16; i++) {
-			if(fileTable[i].getName().equals(name)) {
+			if(fileTable[i] != null && fileTable[i].getName().equals(name)) {
 				fileTable[i] = null;
 			}
 		}
