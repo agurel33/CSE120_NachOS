@@ -418,6 +418,7 @@ public class UserProcess {
 			return -3;
 		}
 		if(fileTable[fd] == null) {
+			System.out.println(fd);
 			return -4;
 		}
 		int greatSuccess = fileTable[fd].write(temp,0,size);
