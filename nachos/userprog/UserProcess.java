@@ -461,7 +461,7 @@ public class UserProcess {
 			if(fileTable[i] == null && index == -1) {
 				index = i;
 			}
-			else if(fileTable[i].getName().equals(name)) {
+			else if(fileTable[i] != null && fileTable[i].getName().equals(name)) {
 				fs.remove(name);
 				OpenFile newfile = fs.open(name,true);
 				fileTable[i] = newfile;
