@@ -503,6 +503,7 @@ public class UserProcess {
 		if(index != -1) {
 			OpenFile newfile = fs.open(name, false);
 			fileTable[index] = newfile;
+			return index;
 		}
 		return -1;
 	}
