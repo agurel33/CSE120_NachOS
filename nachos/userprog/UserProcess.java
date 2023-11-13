@@ -402,6 +402,7 @@ public class UserProcess {
 	}
 
 	private int handleWrite(int fd, int pt, int size) {
+		System.out.println("checkpoint");
 		if(size == 0) {
 			return 0;
 		}
