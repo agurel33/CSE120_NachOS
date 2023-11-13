@@ -26,6 +26,10 @@ public class UserProcess {
 	public UserProcess() {
 		int numPhysPages = Machine.processor().getNumPhysPages();
 		pageTable = new TranslationEntry[numPhysPages];
+		fileTable = new OpenFile[16];
+		fileTable[0] = UserKernel.console.openForReading();
+		fileTable[1] = UserKernel.console.openForWriting();
+		fs = ThreadedKernel.fileSystem;
 		for (int i = 0; i < numPhysPages; i++)
 			pageTable[i] = new TranslationEntry(i, i, true, false, false, false);
 	}
@@ -398,6 +402,15 @@ public class UserProcess {
 	}
 
 	private int handleWrite(int fd, int pt, int size) {
+		if(size == 0) {
+			return 0;
+		}
+		if(size < 0) {
+			return -1;
+		}
+		if(pt == 0) {
+			return -1;
+		}
 		byte[] temp = new byte[size];
 		int success = readVirtualMemory(pt, temp, 0, size);
 		if(success != size) {
@@ -414,6 +427,12 @@ public class UserProcess {
 	}
 
 	private int handleRead(int fd, int pt, int size) {
+		if(size == 0) {
+			return 0;
+		}
+		if(size < 1) {
+			return -1;
+		}
 		byte[] temp = new byte[size];
 		if(fileTable[fd] == null) {
 			return -1;
@@ -427,6 +446,82 @@ public class UserProcess {
 			return -1;
 		}
 		return greatSuccess;
+	}
+
+	private int handleCreate(int name_pointer) {
+		//what value to choose for byte array size?
+		byte[] name_byte = new byte[257];
+		int success = readVirtualMemory(name_pointer, name_byte);
+		if(success <= 0 || success = 257) {
+			return -1;
+		}
+		String name = new String(name_byte);
+		int index = -1;
+		for(int i = 0; i < 16; i++) {
+			if(fileTable[i] == null && index == -1) {
+				index = i;
+			}
+			else if(fileTable[i].getName().equals(name)) {
+				fs.remove(name);
+				OpenFile newfile = fs.open(name,true);
+				fileTable[i] = newfile;
+				return i;
+			}
+		}
+		if(index != -1) {
+			OpenFile newfile = fs.open(name, true);
+			fileTable[index] = newfile;
+		}
+		return -1;
+	}
+
+	private int handleOpen(int name_pointer) {
+		byte[] name_byte = new byte[256];
+		int success = readVirtualMemory(name_pointer, name_byte);
+		if(success <= 0) {
+			return -1;
+		}
+		String name = new String(name_byte);
+		int index = -1;
+		for(int i = 0; i < 16; i++) {
+			if(fileTable[i].getName().equals(name)) {
+				return i;
+			}
+			else if(fileTable[i] == null && index != -1) {
+				index = i; 
+			}
+		}
+		if(index != -1) {
+			OpenFile newfile = fs.open(name, false);
+			fileTable[index] = newfile;
+		}
+		return -1;
+	}
+
+	private int handleClose(int fd) {
+		if(fileTable[fd] == null) {
+			return -1;
+		}
+		OpenFile oldFile = fileTable[fd];
+		oldFile.close();
+		fileTable[fd] = null;
+		return 0;
+	}
+
+	private int handleUnlink(int name_pointer) {
+		byte[] name_byte = new byte[256];
+		int success = readVirtualMemory(name_pointer, name_byte);
+		if(success <= 0) {
+			return -1;
+		}
+		String name = new String(name_byte);
+		fs.remove(name);
+		for(int i=0; i < 16; i++) {
+			if(fileTable[i].getName().equals(name)) {
+				fileTable[i] = null;
+			}
+		}
+		return 0;
 	}
 
 	private static final int syscallHalt = 0, syscallExit = 1, syscallExec = 2,
@@ -505,6 +600,15 @@ public class UserProcess {
 			return handleWrite(a0,a1,a2);
 		case syscallRead:
 			return handleRead(a0,a1,a2);
+		case syscallCreate:
+			return handleCreate(a0);
+		case syscallOpen:
+			return handleOpen(a0);
+		case syscallClose:
+			return handleClose(a0);
+		case syscallUnlink:
+			return handleUnlink(a0);
+
 		
 
 		default:
@@ -550,6 +654,8 @@ public class UserProcess {
 
 	/** This process's file table. */
 	protected OpenFile[] fileTable;
+
+	protected StubFileSystem fs;
 
 	/** The number of contiguous pages occupied by the program. */
 	protected int numPages;
