@@ -27,7 +27,7 @@ public class StubFileSystem implements FileSystem {
 
 	public OpenFile open(String name, boolean truncate) {
 		if (!checkName(name)) {
-			System.out.println("checkpoint 1");
+			System.out.println("checkpoint 1: " + name);
 			return null;
 		}
 
