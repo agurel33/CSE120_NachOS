@@ -472,11 +472,11 @@ public class UserProcess {
 			}
 		}
 		if(index != -1) {
-			System.out.println("checkpoint (" + index + ")");
+			//System.out.println("checkpoint (" + index + ")");
 			OpenFile newfile = fs.open(name, true);
 			fileTable[index] = newfile;
 			//System.out.println("Filename1: " + fileTable[index].getName());
-			System.out.println("Filename2: " + newfile.getName());
+			//System.out.println("Filename2: " + newfile.getName());
 			return index;
 		}
 		return -1;
