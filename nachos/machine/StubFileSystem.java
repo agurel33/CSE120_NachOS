@@ -26,19 +26,15 @@ public class StubFileSystem implements FileSystem {
 	}
 
 	public OpenFile open(String name, boolean truncate) {
-		if (!checkName(name)) {
-			System.out.println("checkpoint 1: " + name);
+		if (!checkName(name)) 
 			return null;
-		}
 
 		delay();
 
 		try {
-			System.out.println("checkpoint 2");
 			return new StubOpenFile(name, truncate);
 		}
 		catch (IOException e) {
-			System.out.println("checkpoint 3");
 			return null;
 		}
 	}
