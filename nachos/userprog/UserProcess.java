@@ -402,6 +402,9 @@ public class UserProcess {
 	}
 
 	private int handleWrite(int fd, int pt, int size) {
+		if(fd < 0 || fd > 15) {
+			return -1;
+		}
 		if(size == 0) {
 			return 0;
 		}
@@ -430,6 +433,9 @@ public class UserProcess {
 	}
 
 	private int handleRead(int fd, int pt, int size) {
+		if(fd < 0 || fd > 15) {
+			return -1;
+		}
 		if(size == 0) {
 			return 0;
 		}
@@ -510,6 +516,9 @@ public class UserProcess {
 	}
 
 	private int handleClose(int fd) {
+		if(fd < 0 || fd > 15) {
+			return -1;
+		}
 		if(fileTable[fd] == null) {
 			return -1;
 		}
