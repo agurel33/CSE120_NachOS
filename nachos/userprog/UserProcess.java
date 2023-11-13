@@ -29,7 +29,7 @@ public class UserProcess {
 		fileTable = new OpenFile[16];
 		fileTable[0] = UserKernel.console.openForReading();
 		fileTable[1] = UserKernel.console.openForWriting();
-		fs = ThreadedKernel.fileSystem;
+		fs = (StubFileSystem) ThreadedKernel.fileSystem;
 		for (int i = 0; i < numPhysPages; i++)
 			pageTable[i] = new TranslationEntry(i, i, true, false, false, false);
 	}
@@ -452,7 +452,7 @@ public class UserProcess {
 		//what value to choose for byte array size?
 		byte[] name_byte = new byte[257];
 		int success = readVirtualMemory(name_pointer, name_byte);
-		if(success <= 0 || success = 257) {
+		if(success <= 0 || success == 257) {
 			return -1;
 		}
 		String name = new String(name_byte);
