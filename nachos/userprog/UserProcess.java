@@ -506,7 +506,7 @@ public class UserProcess {
 			fileTable[index] = newfile;
 			return index;
 		}
-		return -1;
+		return -2;
 	}
 
 	private int handleClose(int fd) {
