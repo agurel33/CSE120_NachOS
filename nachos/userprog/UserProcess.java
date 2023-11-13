@@ -459,7 +459,8 @@ public class UserProcess {
 			return -1;
 		}
 		System.out.println(name_byte);
-		String name = name_byte.toString();//new String(name_byte);
+		String name = new String(name_byte);
+		name = name.substring(0, name.indexOf(".out") + 3);
 		System.out.println("create name:" + name + "MMMM");
 		int index = -1;
 		for(int i = 2; i < 16; i++) {
