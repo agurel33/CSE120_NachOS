@@ -497,7 +497,7 @@ public class UserProcess {
 			if(fileTable[i] != null && fileTable[i].getName().equals(name)) {
 				return i;
 			}
-			else if(fileTable[i] == null && index != -1) {
+			else if(fileTable[i] == null && index == -1) {
 				index = i; 
 			}
 		}
@@ -506,7 +506,7 @@ public class UserProcess {
 			fileTable[index] = newfile;
 			return index;
 		}
-		return -2;
+		return -1;
 	}
 
 	private int handleClose(int fd) {
