@@ -402,7 +402,6 @@ public class UserProcess {
 	}
 
 	private int handleWrite(int fd, int pt, int size) {
-		System.out.println("checkpoint");
 		if(size == 0) {
 			return 0;
 		}
@@ -460,7 +459,7 @@ public class UserProcess {
 		}
 		String name = new String(name_byte);
 		int index = -1;
-		for(int i = 0; i < 16; i++) {
+		for(int i = 2; i < 16; i++) {
 			if(fileTable[i] == null && index == -1) {
 				index = i;
 			}
@@ -472,6 +471,7 @@ public class UserProcess {
 			}
 		}
 		if(index != -1) {
+			System.out.println("checkpoint (" + index + ")");
 			OpenFile newfile = fs.open(name, true);
 			fileTable[index] = newfile;
 			return index;
