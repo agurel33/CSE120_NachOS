@@ -471,6 +471,7 @@ public class UserProcess {
 		if(index != -1) {
 			OpenFile newfile = fs.open(name, true);
 			fileTable[index] = newfile;
+			return index;
 		}
 		return -1;
 	}
