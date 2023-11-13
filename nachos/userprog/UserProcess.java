@@ -460,8 +460,8 @@ public class UserProcess {
 		}
 		System.out.println(name_byte);
 		String name = new String(name_byte);
-		name = name.substring(0, name.indexOf(".out") + 3);
-		System.out.println("create name:" + name + "MMMM");
+		name = name.substring(0, name.indexOf(".out") + 4);
+		System.out.println("create name:" + name);
 		int index = -1;
 		for(int i = 2; i < 16; i++) {
 			if(fileTable[i] == null && index == -1) {
