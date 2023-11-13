@@ -535,6 +535,7 @@ public class UserProcess {
 			return -1;
 		}
 		String name = new String(name_byte);
+		name = name.substring(0, name.indexOf(".out") + 4);
 		fs.remove(name);
 		for(int i=0; i < 16; i++) {
 			if(fileTable[i] != null && fileTable[i].getName().equals(name)) {
