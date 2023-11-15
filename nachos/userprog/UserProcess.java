@@ -24,15 +24,14 @@ public class UserProcess {
 	 * Allocate a new process.
 	 */
 	public UserProcess() {
-		int numPhysPages = Machine.processor().getNumPhysPages();
-		pageTable = new TranslationEntry[numPhysPages];
+		//int numPhysPages = Machine.processor().getNumPhysPages();
 		fileTable = new OpenFile[16];
 		fileTable[0] = UserKernel.console.openForReading();
 		fileTable[1] = UserKernel.console.openForWriting();
 		fs = (StubFileSystem) ThreadedKernel.fileSystem;
 		//Needs to be in a lock
-		for (int i = 0; i < numPhysPages; i++)
-			pageTable[i] = new TranslationEntry(i, UserKernel.linky.pop(), true, false, false, false);
+		// for (int i = 0; i < numPhysPages; i++)
+		// 	pageTable[i] = new TranslationEntry(i, i, true, false, false, false);
 	}
 
 	/**
@@ -326,7 +325,7 @@ public class UserProcess {
 			Lib.debug(dbgProcess, "\tinsufficient physical memory");
 			return false;
 		}
-
+		pageTable = new TranslationEntry[coff.getNumSections() +9];
 		// load sections
 		for (int s = 0; s < coff.getNumSections(); s++) {
 			CoffSection section = coff.getSection(s);
@@ -336,9 +335,9 @@ public class UserProcess {
 
 			for (int i = 0; i < section.getLength(); i++) {
 				int vpn = section.getFirstVPN() + i;
-
+				pageTable[i] = new TranslationEntry(vpn, UserKernel.linky.pop(), true, false, false, false);
 				// for now, just assume virtual addresses=physical addresses
-				section.loadPage(i, vpn);
+				section.loadPage(i, pageTable[i].ppn);
 			}
 		}
 
