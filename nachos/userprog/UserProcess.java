@@ -459,15 +459,10 @@ public class UserProcess {
 	}
 
 	private int handleCreate(int name_pointer) {
-		//what value to choose for byte array size?
-		byte[] name_byte = new byte[256];
-		int success = readVirtualMemory(name_pointer, name_byte);
-		if(success <= 0) {
+		String name = readVirtualMemoryString(name_pointer, 256);
+		if(name == null) {
 			return -1;
 		}
-		String name = new String(name_byte);
-		name = name.substring(0, name.indexOf(".out") + 4);
-		//System.out.println("create name:" + name);
 		int index = -1;
 		for(int i = 2; i < 16; i++) {
 			if(fileTable[i] == null && index == -1) {
@@ -492,13 +487,10 @@ public class UserProcess {
 	}
 
 	private int handleOpen(int name_pointer) {
-		byte[] name_byte = new byte[256];
-		int success = readVirtualMemory(name_pointer, name_byte);
-		if(success <= 0) {
+		String name = readVirtualMemoryString(name_pointer, 256);
+		if(name == null) {
 			return -1;
 		}
-		String name = new String(name_byte);
-		name = name.substring(0, name.indexOf(".out") + 4);
 		int index = -1;
 		for(int i = 0; i < 16; i++) {
 			if(fileTable[i] != null && fileTable[i].getName().equals(name)) {
@@ -530,13 +522,10 @@ public class UserProcess {
 	}
 
 	private int handleUnlink(int name_pointer) {
-		byte[] name_byte = new byte[256];
-		int success = readVirtualMemory(name_pointer, name_byte);
-		if(success <= 0) {
+		String name = readVirtualMemoryString(name_pointer, 256);
+		if(name == null) {
 			return -1;
 		}
-		String name = new String(name_byte);
-		name = name.substring(0, name.indexOf(".out") + 4);
 		fs.remove(name);
 		for(int i=0; i < 16; i++) {
 			if(fileTable[i] != null && fileTable[i].getName().equals(name)) {
