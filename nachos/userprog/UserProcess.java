@@ -412,22 +412,22 @@ public class UserProcess {
 			return -1;
 		}
 		if(pt == 0) {
-			return -2;
+			return -1;
 		}
 		byte[] temp = new byte[size];
 		int success = readVirtualMemory(pt, temp, 0, size);
 		if(success != size) {
 			System.out.println(success);
-			return -3;
+			return -1;
 		}
 		if(fileTable[fd] == null) {
 			System.out.println(fd);
-			return -4;
+			return -1;
 		}
 		int greatSuccess = fileTable[fd].write(temp,0,size);
 		if(greatSuccess != size) {
 			System.out.println(greatSuccess);
-			return -5;
+			return -1;
 		}
 		return greatSuccess;
 	}
