@@ -30,8 +30,9 @@ public class UserProcess {
 		fileTable[0] = UserKernel.console.openForReading();
 		fileTable[1] = UserKernel.console.openForWriting();
 		fs = (StubFileSystem) ThreadedKernel.fileSystem;
+		//Needs to be in a lock
 		for (int i = 0; i < numPhysPages; i++)
-			pageTable[i] = new TranslationEntry(i, i, true, false, false, false);
+			pageTable[i] = new TranslationEntry(i, UserKernel.linky.pop(), true, false, false, false);
 	}
 
 	/**

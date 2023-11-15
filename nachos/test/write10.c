@@ -75,20 +75,20 @@ do_write (char *fname, char *buffer, int len, int stride)
     ptr = buffer, remain = len;
     printf ("writing %d bytes to file, %d bytes at a time...\n", len, stride);
     while (remain > 0) {
-	int n = ((remain < stride) ? remain : stride);
-	r = write (fd, ptr, n);
-	if (r < 0) {
-	    printf ("...failed (r = %d)\n", r);
-	    exit (-1004);
-	} else if (r != n) {
-	    printf ("...failed (expected to write %d bytes, but wrote %d)\n", n, r);
-	    exit (-1005);
-	} else {
-	    printf ("...passed (wrote %d bytes)\n", r);
-	}
+	    int n = ((remain < stride) ? remain : stride);
+	    r = write (fd, ptr, n);
+	    if (r < 0) {
+	        printf ("...failed (r = %d)\n", r);
+	        exit (-1004);
+	    } else if (r != n) {
+	        printf ("...failed (expected to write %d bytes, but wrote %d)\n", n, r);
+	        exit (-1005);
+	    } else {
+	        rintf ("...passed (wrote %d bytes)\n", r);
+	    }
 	
-	ptr += stride;
-	remain -= stride;
+	    ptr += stride;
+	    remain -= stride;
     }
 
     do_close (fd);
