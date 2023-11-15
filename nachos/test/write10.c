@@ -84,7 +84,7 @@ do_write (char *fname, char *buffer, int len, int stride)
 	        printf ("...failed (expected to write %d bytes, but wrote %d)\n", n, r);
 	        exit (-1005);
 	    } else {
-	        rintf ("...passed (wrote %d bytes)\n", r);
+	        printf ("...passed (wrote %d bytes)\n", r);
 	    }
 	
 	    ptr += stride;
