@@ -1,5 +1,7 @@
 package nachos.userprog;
 
+import java.util.LinkedList;
+
 import nachos.machine.*;
 import nachos.threads.*;
 import nachos.userprog.*;
@@ -8,6 +10,9 @@ import nachos.userprog.*;
  * A kernel that can support multiple user processes.
  */
 public class UserKernel extends ThreadedKernel {
+
+	LinkedList<Integer> linky;
+
 	/**
 	 * Allocate a new user kernel.
 	 */
@@ -29,6 +34,8 @@ public class UserKernel extends ThreadedKernel {
 				exceptionHandler();
 			}
 		});
+
+		linky = new LinkedList<>();
 	}
 
 	/**
