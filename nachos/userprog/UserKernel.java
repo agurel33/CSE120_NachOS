@@ -11,9 +11,9 @@ import nachos.userprog.*;
  */
 public class UserKernel extends ThreadedKernel {
 
-	public static LinkedList<Integer> linky;
+	public static LinkedList<Integer> linky = null;
 
-	public static Lock locky;
+	public static Lock locky = null;
 
 	/**
 	 * Allocate a new user kernel.
@@ -36,9 +36,13 @@ public class UserKernel extends ThreadedKernel {
 				exceptionHandler();
 			}
 		});
-		locky = new Lock();
+		if(locky == null) {
+			locky = new Lock();
+		}
 		locky.acquire();
-		linky = new LinkedList<>();
+		if(linky == null) {
+			linky = new LinkedList<>();
+		}
 		int numForLinky = Machine.processor().getNumPhysPages();
 		for (int i = 0; i < numForLinky; i++){
 			linky.add(i);
