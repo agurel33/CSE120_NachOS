@@ -153,6 +153,7 @@ public class UserProcess {
 	 * @return the number of bytes successfully transferred.
 	 */
 	public int readVirtualMemory(int vaddr, byte[] data, int offset, int length) {
+		Lib.debug(dbgProcess, "Reading VM!");
 		userLock.acquire();
 		Lib.assertTrue(offset >= 0 && length >= 0
 				&& offset + length <= data.length);
@@ -205,6 +206,7 @@ public class UserProcess {
 	 * @return the number of bytes successfully transferred.
 	 */
 	public int writeVirtualMemory(int vaddr, byte[] data, int offset, int length) {
+		Lib.debug(dbgProcess, "Writing VM!");
 		userLock.acquire();
 		Lib.assertTrue(offset >= 0 && length >= 0
 				&& offset + length <= data.length);
