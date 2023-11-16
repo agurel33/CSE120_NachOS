@@ -176,6 +176,7 @@ public class UserProcess {
 				remainder2 = 1;
 			}
 			int pagesNeeded = length / pageSize + remainder2;
+			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
 			
 			for(int saber = 0; saber < pagesNeeded; saber++) {
 				int virtualPageNum = Processor.pageFromAddress(vaddr + saber);
@@ -189,6 +190,7 @@ public class UserProcess {
 				amount = Math.min(length, pageSize - offset_physical);
 				System.arraycopy(memory, physicalAddress, data, offset, amount);
 				total_amount += amount;
+				Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
 			}
 		}
 		else {
