@@ -13,6 +13,8 @@ public class UserKernel extends ThreadedKernel {
 
 	public static LinkedList<Integer> linky;
 
+	public static Lock locky;
+
 	/**
 	 * Allocate a new user kernel.
 	 */
@@ -34,20 +36,27 @@ public class UserKernel extends ThreadedKernel {
 				exceptionHandler();
 			}
 		});
-
+		locky = new Lock();
+		locky.acquire();
 		linky = new LinkedList<>();
 		int numForLinky = Machine.processor().getNumPhysPages();
 		for (int i = 0; i < numForLinky; i++){
 			linky.add(i);
 		}
+		locky.release();
 	}
 
 	public static int getNextOpenPage(){
-		return linky.pop();
+		locky.acquire();
+		int output = linky.pop();
+		locky.release();
+		return output;
 	}
 
 	public static void releasePage(int pageAddy){
+		locky.acquire();
 		linky.push(pageAddy);
+		locky.release();
 	}
 
 	/**
