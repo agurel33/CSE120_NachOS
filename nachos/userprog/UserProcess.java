@@ -23,12 +23,19 @@ public class UserProcess {
 	/**
 	 * Allocate a new process.
 	 */
+
+	public static Lock userLock = null;
+
 	public UserProcess() {
 		//int numPhysPages = Machine.processor().getNumPhysPages();
 		fileTable = new OpenFile[16];
 		fileTable[0] = UserKernel.console.openForReading();
 		fileTable[1] = UserKernel.console.openForWriting();
 		fs = (StubFileSystem) ThreadedKernel.fileSystem;
+
+		if(userLock == null) {
+			userLock = new Lock();
+		}
 		//Needs to be in a lock
 		// for (int i = 0; i < numPhysPages; i++)
 		// 	pageTable[i] = new TranslationEntry(i, i, true, false, false, false);
@@ -146,6 +153,7 @@ public class UserProcess {
 	 * @return the number of bytes successfully transferred.
 	 */
 	public int readVirtualMemory(int vaddr, byte[] data, int offset, int length) {
+		userLock.acquire();
 		Lib.assertTrue(offset >= 0 && length >= 0
 				&& offset + length <= data.length);
 
@@ -160,9 +168,13 @@ public class UserProcess {
 		int physcialPageNum = pageTable[virtualPageNum].ppn;
 		int physicalAddress = pageSize * physcialPageNum + offset_physical;
 
+		if (physicalAddress < 0 || physicalAddress >= memory.length)
+			return 0;
+
 		int amount = Math.min(length, pageSize - offset_physical);
 		System.arraycopy(memory, physicalAddress, data, offset, amount);
 
+		userLock.release();
 		return amount;
 	}
 
@@ -193,6 +205,7 @@ public class UserProcess {
 	 * @return the number of bytes successfully transferred.
 	 */
 	public int writeVirtualMemory(int vaddr, byte[] data, int offset, int length) {
+		userLock.acquire();
 		Lib.assertTrue(offset >= 0 && length >= 0
 				&& offset + length <= data.length);
 
@@ -202,9 +215,18 @@ public class UserProcess {
 		if (vaddr < 0 || vaddr >= memory.length)
 			return 0;
 
-		int amount = Math.min(length, memory.length - vaddr);
-		System.arraycopy(data, offset, memory, vaddr, amount);
+		int virtualPageNum = Processor.pageFromAddress(vaddr);
+		int offset_physical = Processor.offsetFromAddress(vaddr);
+		int physcialPageNum = pageTable[virtualPageNum].ppn;
+		int physicalAddress = pageSize * physcialPageNum + offset_physical;
 
+		if (physicalAddress < 0 || physicalAddress >= memory.length)
+			return 0;
+
+		int amount = Math.min(length, pageSize - offset_physical);
+		System.arraycopy(data, offset, memory, physicalAddress, amount);
+
+		userLock.release();
 		return amount;
 	}
 
