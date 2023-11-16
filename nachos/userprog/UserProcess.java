@@ -354,6 +354,7 @@ public class UserProcess {
 		}
 		pageTable = new TranslationEntry[numPages];
 		// load sections
+		Lib.debug(dbgProcess, "Number of sections: " + coff.getNumSections());
 		for (int s = 0; s < coff.getNumSections(); s++) {
 			CoffSection section = coff.getSection(s);
 
