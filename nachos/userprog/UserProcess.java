@@ -155,6 +155,8 @@ public class UserProcess {
 	public int readVirtualMemory(int vaddr, byte[] data, int offset, int length) {
 		Lib.debug(dbgProcess, "Reading VM!");
 		userLock.acquire();
+		int total_amount = 0;
+		int amount;
 		Lib.assertTrue(offset >= 0 && length >= 0
 				&& offset + length <= data.length);
 
@@ -163,20 +165,48 @@ public class UserProcess {
 		// for now, just assume that virtual addresses equal physical addresses
 		if (vaddr < 0 || vaddr >= memory.length)
 			return 0;
+		if(length > pageSize) {
+			int bytesRead = 0;
+			int remainder = length % pageSize;
+			int remainder2;
+			if(remainder == 0) {
+				remainder2 = 0;
+			}
+			else {
+				remainder2 = 1;
+			}
+			int pagesNeeded = length / pageSize + remainder2;
+			
+			for(int saber = 0; saber < pagesNeeded; saber++) {
+				int virtualPageNum = Processor.pageFromAddress(vaddr + saber);
+				int offset_physical = Processor.offsetFromAddress(vaddr + saber);
+				int physcialPageNum = pageTable[virtualPageNum].ppn;
+				int physicalAddress = pageSize * physcialPageNum + offset_physical;
 
-		int virtualPageNum = Processor.pageFromAddress(vaddr);
-		int offset_physical = Processor.offsetFromAddress(vaddr);
-		int physcialPageNum = pageTable[virtualPageNum].ppn;
-		int physicalAddress = pageSize * physcialPageNum + offset_physical;
+				if (physicalAddress < 0 || physicalAddress >= memory.length)
+					return 0;
 
-		if (physicalAddress < 0 || physicalAddress >= memory.length)
-			return 0;
+				amount = Math.min(length, pageSize - offset_physical);
+				System.arraycopy(memory, physicalAddress, data, offset, amount);
+				total_amount += amount;
+			}
+		}
+		else {
+			int virtualPageNum = Processor.pageFromAddress(vaddr);
+			int offset_physical = Processor.offsetFromAddress(vaddr);
+			int physcialPageNum = pageTable[virtualPageNum].ppn;
+			int physicalAddress = pageSize * physcialPageNum + offset_physical;
 
-		int amount = Math.min(length, pageSize - offset_physical);
-		System.arraycopy(memory, physicalAddress, data, offset, amount);
+			if (physicalAddress < 0 || physicalAddress >= memory.length)
+				return 0;
+
+			amount = Math.min(length, pageSize - offset_physical);
+			System.arraycopy(memory, physicalAddress, data, offset, amount);
+			total_amount = amount;
+		}
 
 		userLock.release();
-		return amount;
+		return total_amount;
 	}
 
 	/**
