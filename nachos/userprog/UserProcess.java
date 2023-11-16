@@ -165,6 +165,7 @@ public class UserProcess {
 		// for now, just assume that virtual addresses equal physical addresses
 		if (vaddr < 0 || vaddr >= memory.length)
 			return 0;
+		
 		if(length > pageSize) {
 			int bytesRead = 0;
 			int remainder = length % pageSize;
@@ -249,6 +250,8 @@ public class UserProcess {
 		// for now, just assume that virtual addresses equal physical addresses
 		if (vaddr < 0 || vaddr >= memory.length)
 			return 0;
+
+		
 
 		int virtualPageNum = Processor.pageFromAddress(vaddr);
 		int offset_physical = Processor.offsetFromAddress(vaddr);
@@ -489,25 +492,27 @@ public class UserProcess {
 			return 0;
 		}
 		if(size < 0) {
-			return -2;
+			return -1;
 		}
-		if(pt == 0) {
-			return -3;
+		byte[] memory = Machine.processor().getMemory();
+
+		if(pt < 0 || pt > memory.length) {
+			return -1;
 		}
 		byte[] temp = new byte[size];
 		int success = readVirtualMemory(pt, temp, 0, size);
 		if(success != size) {
 			System.out.println(success);
-			return -4;
+			return -1;
 		}
 		if(fileTable[fd] == null) {
 			System.out.println(fd);
-			return -5;
+			return -1;
 		}
 		int greatSuccess = fileTable[fd].write(temp,0,size);
 		if(greatSuccess != size) {
 			System.out.println(greatSuccess);
-			return -6;
+			return -1;
 		}
 		return greatSuccess;
 	}
@@ -520,6 +525,11 @@ public class UserProcess {
 			return 0;
 		}
 		if(size < 1) {
+			return -1;
+		}
+		byte[] memory = Machine.processor().getMemory();
+
+		if(pt < 0 || pt > memory.length) {
 			return -1;
 		}
 		byte[] temp = new byte[size];
