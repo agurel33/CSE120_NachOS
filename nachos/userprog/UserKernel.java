@@ -11,7 +11,7 @@ import nachos.userprog.*;
  */
 public class UserKernel extends ThreadedKernel {
 
-	public LinkedList<Integer> linky;
+	public static LinkedList<Integer> linky;
 
 	/**
 	 * Allocate a new user kernel.
@@ -42,8 +42,12 @@ public class UserKernel extends ThreadedKernel {
 		}
 	}
 
-	public int getNextOpenPage(){
+	public static int getNextOpenPage(){
 		return linky.pop();
+	}
+
+	public static void releasePage(int pageAddy){
+		linky.push(pageAddy);
 	}
 
 	/**

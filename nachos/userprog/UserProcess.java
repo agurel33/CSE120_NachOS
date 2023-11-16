@@ -335,7 +335,7 @@ public class UserProcess {
 
 			for (int i = 0; i < section.getLength(); i++) {
 				int vpn = section.getFirstVPN() + i;
-				pageTable[i] = new TranslationEntry(vpn, UserKernel.linky.pop(), true, section.isReadOnly(), false, false);
+				pageTable[i] = new TranslationEntry(vpn, UserKernel.getNextOpenPage(), true, section.isReadOnly(), false, false);
 				// for now, just assume virtual addresses=physical addresses
 				section.loadPage(i, pageTable[i].ppn);
 			}
@@ -350,7 +350,7 @@ public class UserProcess {
 	protected void unloadSections() {
 		for (int i = 0; i < coff.getNumSections() +9; i++) {
 			int ppn = pageTable[i].ppn;
-			UserKernel.linky.push(ppn);
+			UserKernel.releasePage(ppn);
 		}
 	}
 
