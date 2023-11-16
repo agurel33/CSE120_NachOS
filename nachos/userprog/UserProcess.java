@@ -352,7 +352,7 @@ public class UserProcess {
 			Lib.debug(dbgProcess, "\tinsufficient physical memory");
 			return false;
 		}
-		pageTable = new TranslationEntry[coff.getNumSections() +9];
+		pageTable = new TranslationEntry[numPages];
 		// load sections
 		for (int s = 0; s < coff.getNumSections(); s++) {
 			CoffSection section = coff.getSection(s);
@@ -375,7 +375,7 @@ public class UserProcess {
 	 * Release any resources allocated by <tt>loadSections()</tt>.
 	 */
 	protected void unloadSections() {
-		for (int i = 0; i < coff.getNumSections() +9; i++) {
+		for (int i = 0; i < numPages; i++) {
 			int ppn = pageTable[i].ppn;
 			UserKernel.releasePage(ppn);
 		}
