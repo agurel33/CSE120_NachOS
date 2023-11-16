@@ -177,6 +177,9 @@ public class UserProcess {
 				remainder2 = 1;
 			}
 			int pagesNeeded = length / pageSize + remainder2;
+			if(length > ((numPages - 9) * 1024)) {
+				return -1;
+			}
 			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
 			int offset_physical = 0; //Processor.offsetFromAddress(vaddr);
 			
