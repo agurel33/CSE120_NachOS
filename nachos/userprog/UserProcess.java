@@ -374,14 +374,14 @@ public class UserProcess {
 				counter++;
 			}
 			Lib.debug(dbgProcess, "finished loading COFF, counter is: " + counter);
-			
-			for(int abbi_sucks = 0; abbi_sucks < stackPages; abbi_sucks++) {
-				pageTable[counter] = new TranslationEntry(counter, UserKernel.getNextOpenPage(), true, false, false, false);
-				counter++;
-				Lib.debug(dbgProcess, "loaded " + abbi_sucks + "th stack");
-			}
-			pageTable[counter] = new TranslationEntry(counter,UserKernel.getNextOpenPage(),true,false,false,false);
 		}
+
+		for(int abbi_sucks = 0; abbi_sucks < stackPages; abbi_sucks++) {
+			pageTable[counter] = new TranslationEntry(counter, UserKernel.getNextOpenPage(), true, false, false, false);
+			counter++;
+			Lib.debug(dbgProcess, "loaded " + abbi_sucks + "th stack");
+		}
+		pageTable[counter] = new TranslationEntry(counter,UserKernel.getNextOpenPage(),true,false,false,false);
 
 		Lib.debug(dbgProcess, "loaded all sections");
 		return true;
