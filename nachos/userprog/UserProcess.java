@@ -177,17 +177,18 @@ public class UserProcess {
 			}
 			int pagesNeeded = length / pageSize + remainder2;
 			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
+			int offset_physical = Processor.offsetFromAddress(vaddr);
 			
 			for(int saber = 0; saber < pagesNeeded; saber++) {
 				int virtualPageNum = Processor.pageFromAddress(vaddr + saber);
-				int offset_physical = Processor.offsetFromAddress(vaddr + saber);
+				
 				int physcialPageNum = pageTable[virtualPageNum].ppn;
-				int physicalAddress = pageSize * physcialPageNum; //+ offset_physical;
+				int physicalAddress = pageSize * physcialPageNum + offset_physical;
 
 				if (physicalAddress < 0 || physicalAddress >= memory.length)
 					return 0;
 
-				amount = Math.min(length, pageSize); //- offset_physical);
+				amount = Math.min(length, pageSize - offset_physical);
 				System.arraycopy(memory, physicalAddress, data, offset, amount);
 				total_amount += amount;
 				Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
