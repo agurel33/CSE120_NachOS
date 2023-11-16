@@ -368,6 +368,7 @@ public class UserProcess {
 			}
 		}
 
+		Lib.debug(dbgProcess, "loaded all sections");
 		return true;
 	}
 
