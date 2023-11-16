@@ -373,6 +373,12 @@ public class UserProcess {
 				section.loadPage(i, pageTable[counter].ppn);
 				counter++;
 			}
+			
+			for(int abbi_sucks = 0; abbi_sucks < stackPages; abbi_sucks++) {
+				pageTable[counter] = new TranslationEntry(counter, UserKernel.getNextOpenPage(), true, false, false, false);
+				counter++;
+			}
+			pageTable[counter] = new TranslationEntry(counter,UserKernel.getNextOpenPage(),true,false,false,false);
 		}
 
 		Lib.debug(dbgProcess, "loaded all sections");
