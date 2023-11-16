@@ -373,17 +373,17 @@ public class UserProcess {
 				section.loadPage(i, pageTable[counter].ppn);
 				counter++;
 			}
-			Lib.debug(dbgProcess, "finished loading COFF, counter is: " + counter);
+			//Lib.debug(dbgProcess, "finished loading COFF, counter is: " + counter);
 		}
 
 		for(int abbi_sucks = 0; abbi_sucks < stackPages; abbi_sucks++) {
 			pageTable[counter] = new TranslationEntry(counter, UserKernel.getNextOpenPage(), true, false, false, false);
 			counter++;
-			Lib.debug(dbgProcess, "loaded " + abbi_sucks + "th stack");
+			//Lib.debug(dbgProcess, "loaded " + abbi_sucks + "th stack");
 		}
 		pageTable[counter] = new TranslationEntry(counter,UserKernel.getNextOpenPage(),true,false,false,false);
 
-		Lib.debug(dbgProcess, "loaded all sections");
+		//Lib.debug(dbgProcess, "loaded all sections");
 		return true;
 	}
 
@@ -456,25 +456,25 @@ public class UserProcess {
 			return 0;
 		}
 		if(size < 0) {
-			return -1;
+			return -2;
 		}
 		if(pt == 0) {
-			return -1;
+			return -3;
 		}
 		byte[] temp = new byte[size];
 		int success = readVirtualMemory(pt, temp, 0, size);
 		if(success != size) {
 			System.out.println(success);
-			return -1;
+			return -4;
 		}
 		if(fileTable[fd] == null) {
 			System.out.println(fd);
-			return -1;
+			return -5;
 		}
 		int greatSuccess = fileTable[fd].write(temp,0,size);
 		if(greatSuccess != size) {
 			System.out.println(greatSuccess);
-			return -1;
+			return -6;
 		}
 		return greatSuccess;
 	}
