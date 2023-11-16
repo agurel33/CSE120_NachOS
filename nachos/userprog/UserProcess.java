@@ -356,7 +356,7 @@ public class UserProcess {
 		}
 		pageTable = new TranslationEntry[numPages];
 		// load sections
-		Lib.debug(dbgProcess, "Number of sections: " + coff.getNumSections());
+		//Lib.debug(dbgProcess, "Number of sections: " + coff.getNumSections());
 		int counter = 0;
 		for (int s = 0; s < coff.getNumSections(); s++) {
 			CoffSection section = coff.getSection(s);
@@ -366,12 +366,12 @@ public class UserProcess {
 
 			for (int i = 0; i < section.getLength(); i++) {
 				int vpn = section.getFirstVPN() + i;
-				Lib.debug(dbgProcess, "Entering page #: " + counter);
+				//Lib.debug(dbgProcess, "Entering page #: " + counter);
 				pageTable[counter] = new TranslationEntry(vpn, UserKernel.getNextOpenPage(), true, section.isReadOnly(), false, false);
-				Lib.debug(dbgProcess, "Curr VPN: " + vpn + ", Curr PNP: " + pageTable[vpn].ppn);
+				//Lib.debug(dbgProcess, "Curr VPN: " + vpn + ", Curr PNP: " + pageTable[vpn].ppn);
 				counter++;
 				// for now, just assume virtual addresses=physical addresses
-				section.loadPage(i, pageTable[i].ppn);
+				section.loadPage(i, pageTable[counter].ppn);
 			}
 		}
 
