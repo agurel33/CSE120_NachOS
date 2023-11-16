@@ -369,9 +369,9 @@ public class UserProcess {
 				//Lib.debug(dbgProcess, "Entering page #: " + counter);
 				pageTable[counter] = new TranslationEntry(vpn, UserKernel.getNextOpenPage(), true, section.isReadOnly(), false, false);
 				//Lib.debug(dbgProcess, "Curr VPN: " + vpn + ", Curr PNP: " + pageTable[vpn].ppn);
-				counter++;
 				// for now, just assume virtual addresses=physical addresses
 				section.loadPage(i, pageTable[counter].ppn);
+				counter++;
 			}
 		}
 
