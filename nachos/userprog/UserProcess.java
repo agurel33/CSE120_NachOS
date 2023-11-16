@@ -178,6 +178,7 @@ public class UserProcess {
 			}
 			int pagesNeeded = length / pageSize + remainder2;
 			if(length > ((numPages - 9) * 1024)) {
+				userLock.release();
 				return -1;
 			}
 			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
@@ -189,8 +190,10 @@ public class UserProcess {
 				int physcialPageNum = pageTable[virtualPageNum].ppn;
 				int physicalAddress = pageSize * physcialPageNum + offset_physical;
 
-				if (physicalAddress < 0 || physicalAddress >= memory.length)
+				if (physicalAddress < 0 || physicalAddress >= memory.length) {
+					userLock.release();
 					return 0;
+				}
 
 				amount = Math.min(length, pageSize - offset_physical);
 				System.arraycopy(memory, physicalAddress, data, offset, amount);
@@ -204,8 +207,10 @@ public class UserProcess {
 			int physcialPageNum = pageTable[virtualPageNum].ppn;
 			int physicalAddress = pageSize * physcialPageNum + offset_physical;
 
-			if (physicalAddress < 0 || physicalAddress >= memory.length)
+			if (physicalAddress < 0 || physicalAddress >= memory.length) {
+				userLock.release();
 				return 0;
+			}
 
 			amount = Math.min(length, pageSize - offset_physical);
 			System.arraycopy(memory, physicalAddress, data, offset, amount);
