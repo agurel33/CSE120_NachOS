@@ -33,6 +33,9 @@ public class UserProcess {
 		fileTable[1] = UserKernel.console.openForWriting();
 		fs = (StubFileSystem) ThreadedKernel.fileSystem;
 
+		processID = nextProcess;
+		nextProcess++;
+
 		if(userLock == null) {
 			userLock = new Lock();
 		}
@@ -676,6 +679,44 @@ public class UserProcess {
 		return 0;
 	}
 
+	private int handleExec(int file_pointer, int num_args, int array_pointer) {
+		int child_id = -1;
+
+		byte[] memory = Machine.processor().getMemory();
+		if(file_pointer <= 0 || file_pointer > memory.length) {
+			return -1;
+		}
+		if(array_pointer <= 0 || array_pointer > memory.length) {
+			return -1;
+		}
+		if(num_args < 0) {
+			return -1;
+		}
+		String file_name = readVirtualMemoryString(file_pointer, 256);
+
+		UserProcess processy = new UserProcess();
+		String[] args_array = new String[num_args];
+
+		int prev_size = 0;
+		for(int capwn = 0; capwn < num_args; capwn++) {
+			String curr_arg = readVirtualMemoryString(array_pointer + prev_size, 256);
+			if(curr_arg == null) {
+				return -1;
+			}
+			args_array[capwn] = curr_arg;
+			prev_size = curr_arg.length() + 1;
+		}
+
+		boolean success = processy.execute(file_name, args_array);
+		if(!success) {
+			return -1;
+		}
+
+		
+
+		return child_id;
+	}
+
 	private static final int syscallHalt = 0, syscallExit = 1, syscallExec = 2,
 			syscallJoin = 3, syscallCreate = 4, syscallOpen = 5,
 			syscallRead = 6, syscallWrite = 7, syscallClose = 8,
@@ -760,6 +801,8 @@ public class UserProcess {
 			return handleClose(a0);
 		case syscallUnlink:
 			return handleUnlink(a0);
+		case syscallExec:
+			return handleExec(a0, a1, a2);
 
 		
 
@@ -825,4 +868,7 @@ public class UserProcess {
 	private static final int pageSize = Processor.pageSize;
 
 	private static final char dbgProcess = 'a';
+
+	private static int nextProcess = 0;
+	private int processID;
 }
