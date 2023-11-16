@@ -155,8 +155,13 @@ public class UserProcess {
 		if (vaddr < 0 || vaddr >= memory.length)
 			return 0;
 
-		int amount = Math.min(length, memory.length - vaddr);
-		System.arraycopy(memory, vaddr, data, offset, amount);
+		int virtualPageNum = Processor.pageFromAddress(vaddr);
+		int offset_physical = Processor.offsetFromAddress(vaddr);
+		int physcialPageNum = pageTable[virtualPageNum].ppn;
+		int physicalAddress = pageSize * physcialPageNum + offset_physical;
+
+		int amount = Math.min(length, pageSize - offset_physical);
+		System.arraycopy(memory, physicalAddress, data, offset, amount);
 
 		return amount;
 	}
