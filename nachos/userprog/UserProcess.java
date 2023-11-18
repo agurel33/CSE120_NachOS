@@ -788,12 +788,13 @@ public class UserProcess {
 				return -1;
 			}
 			args_array[capwn] = curr_arg;
-			prev_size = curr_arg.length() + 2;
+			prev_size = curr_arg.length() + 1;
 		}
 		int nextChild;
 		IDLock.acquire();
 		nextChild = nextProcess;
 		myChildren.add(nextChild);
+		System.out.println(file_name);
 		boolean success = processy.execute(file_name, args_array);
 		IDLock.release();
 		if(!success) {
