@@ -1,5 +1,6 @@
 package nachos.userprog;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import nachos.machine.*;
@@ -14,6 +15,10 @@ public class UserKernel extends ThreadedKernel {
 	public static LinkedList<Integer> linky = null;
 
 	public static Lock locky = null;
+
+	public static HashMap<Integer, UserProcess> mappy = null;
+
+
 
 	/**
 	 * Allocate a new user kernel.
@@ -36,6 +41,9 @@ public class UserKernel extends ThreadedKernel {
 				exceptionHandler();
 			}
 		});
+		if(mappy == null) {
+			mappy = new HashMap<>();
+		}
 		if(locky == null) {
 			locky = new Lock();
 		}
@@ -61,6 +69,20 @@ public class UserKernel extends ThreadedKernel {
 		locky.acquire();
 		linky.push(pageAddy);
 		locky.release();
+	}
+
+	public static UserProcess getHashMap(int key) {
+		UserProcess output = mappy.get(key);
+		mappy.remove(key);
+		return output;
+	}
+
+	public static void inputHashMap(int key, UserProcess up) {
+		mappy.put(key, up);
+	}
+
+	public static int numProcesses() {
+		return mappy.size();
 	}
 
 	/**

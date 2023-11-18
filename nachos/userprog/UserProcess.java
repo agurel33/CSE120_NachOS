@@ -6,6 +6,7 @@ import nachos.userprog.*;
 import nachos.vm.*;
 
 import java.io.EOFException;
+import java.util.ArrayList;
 
 /**
  * Encapsulates the state of a user process that is not contained in its user
@@ -24,24 +25,71 @@ public class UserProcess {
 	 * Allocate a new process.
 	 */
 
-	public static Lock userLock = null;
+	private static Lock userLock = null;
+	private static Lock IDLock = null;
+	public int parentID;
 
 	public UserProcess() {
 		//int numPhysPages = Machine.processor().getNumPhysPages();
+		if(IDLock == null) {
+			IDLock = new Lock();
+		}
+
 		fileTable = new OpenFile[16];
 		fileTable[0] = UserKernel.console.openForReading();
 		fileTable[1] = UserKernel.console.openForWriting();
 		fs = (StubFileSystem) ThreadedKernel.fileSystem;
 
+		IDLock.acquire();
 		processID = nextProcess;
 		nextProcess++;
+		IDLock.release();
+		parentID = processID;
+
+		UserKernel.inputHashMap(processID, this);
+
+		if(myChildren == null) {
+			myChildren = new ArrayList<>();
+		}
 
 		if(userLock == null) {
 			userLock = new Lock();
 		}
+		if(IDLock == null) {
+			IDLock = new Lock();
+		}
 		//Needs to be in a lock
 		// for (int i = 0; i < numPhysPages; i++)
 		// 	pageTable[i] = new TranslationEntry(i, i, true, false, false, false);
+	}
+
+	public UserProcess(int parentID) {
+		if(IDLock == null) {
+			IDLock = new Lock();
+		}
+
+		fileTable = new OpenFile[16];
+		fileTable[0] = UserKernel.console.openForReading();
+		fileTable[1] = UserKernel.console.openForWriting();
+		fs = (StubFileSystem) ThreadedKernel.fileSystem;
+
+		this.parentID = parentID;
+
+		IDLock.acquire();
+		processID = nextProcess;
+		nextProcess++;
+		IDLock.release();
+
+		if(myChildren == null) {
+			myChildren = new ArrayList<>();
+		}
+
+		if(userLock == null) {
+			userLock = new Lock();
+		}
+		if(IDLock == null) {
+			IDLock = new Lock();
+		}
 	}
 
 	/**
@@ -187,7 +235,7 @@ public class UserProcess {
 				return -1;
 			}
 			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
-			int offset_physical = 0; //Processor.offsetFromAddress(vaddr);
+			int offset_physical = Processor.offsetFromAddress(vaddr);
 			
 			for(int saber = 0; saber < pagesNeeded; saber++) {
 				int virtualPageNum = Processor.pageFromAddress(vaddr + saber);
@@ -201,6 +249,7 @@ public class UserProcess {
 				}
 
 				amount = Math.min(length, pageSize - offset_physical);
+				offset_physical = 0;
 				System.arraycopy(memory, physicalAddress, data, offset, amount);
 				total_amount += amount;
 				Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
@@ -518,6 +567,10 @@ public class UserProcess {
 	private int handleHalt() {
 		Lib.debug(dbgProcess, "UserProcess.handleHalt");
 
+		if(processID != 0) {
+			return -1;
+		}
+
 		Machine.halt();
 
 		Lib.assertNotReached("Machine.halt() did not halt machine!");
@@ -528,15 +581,33 @@ public class UserProcess {
 	 * Handle the exit() system call.
 	 */
 	private int handleExit(int status) {
-	        // Do not remove this call to the autoGrader...
+	    // Do not remove this call to the autoGrader...
 		Machine.autoGrader().finishingCurrentProcess(status);
 		// ...and leave it as the top of handleExit so that we
 		// can grade your implementation.
 
 		Lib.debug(dbgProcess, "UserProcess.handleExit (" + status + ")");
 		// for now, unconditionally terminate with just one process
-		Kernel.kernel.terminate();
+		for(int x = 0; x < fileTable.length; x++) {
+			OpenFile curr = fileTable[x];
+			curr.close();
+		}
 
+		for(int y = 0; y < pageTable.length; y++) {
+			TranslationEntry curry = pageTable[y];
+			int ppn = curry.ppn;
+			UserKernel.linky.add(ppn);
+		}
+
+		for(int z = 0; z < myChildren.size(); z++) {
+			int childy = myChildren.get(z);
+			UserProcess childProcessy = UserKernel.getHashMap(childy);
+			childProcessy.parentID = -1;
+		}
+		
+		if(UserKernel.numProcesses() == 1) {
+			Kernel.kernel.terminate();
+		}
 		return 0;
 	}
 
@@ -681,8 +752,6 @@ public class UserProcess {
 	}
 
 	private int handleExec(int file_pointer, int num_args, int array_pointer) {
-		int child_id = -1;
-
 		byte[] memory = Machine.processor().getMemory();
 		if(file_pointer <= 0 || file_pointer > memory.length) {
 			return -1;
@@ -693,9 +762,10 @@ public class UserProcess {
 		if(num_args < 0) {
 			return -1;
 		}
+
 		String file_name = readVirtualMemoryString(file_pointer, 256);
 
-		UserProcess processy = new UserProcess();
+		UserProcess processy = new UserProcess(processID);
 		String[] args_array = new String[num_args];
 
 		int prev_size = 0;
@@ -707,15 +777,42 @@ public class UserProcess {
 			args_array[capwn] = curr_arg;
 			prev_size = curr_arg.length() + 1;
 		}
-
+		int nextChild;
+		IDLock.acquire();
+		nextChild = nextProcess;
+		myChildren.add(nextChild);
 		boolean success = processy.execute(file_name, args_array);
+		IDLock.release();
 		if(!success) {
 			return -1;
 		}
+		if(nextChild <= 0) {
+			return -1;
+		}
 
-		
+		return nextChild;
+	}
 
-		return child_id;
+	private int handleJoin(int childId, int status_pointer) {
+		if(!myChildren.contains(childId)) {
+			return -1;
+		}
+
+		KThread child =  UserKernel.getHashMap(childId);
+		if(child == null) {
+			return -1;
+		}
+		//Voelker fixes this later ...
+		child.join();
+
+		myChildren.remove(childId);
+
+		byte[] memory = Machine.processor().getMemory();
+		if(status_pointer < 0 || status_pointer > memory.length) {
+			return - 1;
+		}
+		String status = readVirtualMemoryString(status_pointer, 256);
+		return Integer.valueOf(status);
 	}
 
 	private static final int syscallHalt = 0, syscallExit = 1, syscallExec = 2,
@@ -804,6 +901,8 @@ public class UserProcess {
 			return handleUnlink(a0);
 		case syscallExec:
 			return handleExec(a0, a1, a2);
+		case syscallJoin:
+			return handleJoin(a0,a1);
 
 		
 
@@ -872,4 +971,5 @@ public class UserProcess {
 
 	private static int nextProcess = 0;
 	private int processID;
+	private static ArrayList<Integer> myChildren = null; 
 }

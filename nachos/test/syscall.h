@@ -105,7 +105,7 @@ int exec(char *file, int argc, char *argv[]);
  * be stored. This is the value the child passed to exit(). If the child exited
  * because of an unhandled exception, the value stored is not defined. status
  * is an optional argument: if status is a null pointer (0x0), then join
- * operates normally but does not return the exit value of the child.
+ * operates normally but does not return the exit value of the child. 
  *
  * If the child exited normally, returns 1. If the child exited as a result of
  * an unhandled exception, returns 0. If processID does not refer to a child
