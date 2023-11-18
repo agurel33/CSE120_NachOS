@@ -853,6 +853,8 @@ public class UserProcess {
 		//System.out.println(file_name);
 		boolean success = processy.execute(file_name, args_array);
 		IDLock.release();
+
+		KThread.yield();
 		if(!success) {
 			return -1;
 		}
