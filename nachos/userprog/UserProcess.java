@@ -887,7 +887,7 @@ public class UserProcess {
 				return -1;
 			}
 			else {
-				status = 123;
+				status = status_of_children.get(childId);
 			}
 		}
 		else {
