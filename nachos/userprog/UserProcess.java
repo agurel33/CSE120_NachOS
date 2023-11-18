@@ -28,15 +28,12 @@ public class UserProcess {
 	private static Lock userLock = null;
 	private static Lock IDLock = null;
 	public int parentID;
-	public KThread myThread;
 
 	public UserProcess() {
 		//int numPhysPages = Machine.processor().getNumPhysPages();
 		if(IDLock == null) {
 			IDLock = new Lock();
 		}
-
-		myThread = KThread.currentThread();
 
 		fileTable = new OpenFile[16];
 		fileTable[0] = UserKernel.console.openForReading();
@@ -820,14 +817,11 @@ public class UserProcess {
 		
 
 		UserProcess childprocess = UserKernel.getHashMap(childId);
-
-		KThread child = childprocess.myThread;
-		
-		if(child == null) {
+		if(childprocess == null) {
 			return -1;
 		}
 		//Voelker fixes this later ...
-		child.join();
+		childprocess.thread.join();
 
 		myChildren.remove(childId);
 
