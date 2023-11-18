@@ -265,6 +265,9 @@ public class UserProcess {
 					return 0;
 				}
 
+				if(saber == pagesNeeded - 1) {
+					offset_physical = length - bytesRead;
+				}
 				amount = Math.min(length, pageSize - offset_physical);
 				offset_physical = 0;
 				System.arraycopy(memory, physicalAddress, data, offset, amount);
