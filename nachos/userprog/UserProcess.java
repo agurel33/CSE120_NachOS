@@ -28,12 +28,15 @@ public class UserProcess {
 	private static Lock userLock = null;
 	private static Lock IDLock = null;
 	public int parentID;
+	public KThread myThread;
 
 	public UserProcess() {
 		//int numPhysPages = Machine.processor().getNumPhysPages();
 		if(IDLock == null) {
 			IDLock = new Lock();
 		}
+
+		myThread = KThread.currentThread();
 
 		fileTable = new OpenFile[16];
 		fileTable[0] = UserKernel.console.openForReading();
@@ -73,12 +76,17 @@ public class UserProcess {
 		fileTable[1] = UserKernel.console.openForWriting();
 		fs = (StubFileSystem) ThreadedKernel.fileSystem;
 
-		this.parentID = parentID;
-
 		IDLock.acquire();
 		processID = nextProcess;
 		nextProcess++;
 		IDLock.release();
+
+		if(parentID == -1) {
+			this.parentID = processID;
+		}
+		else {
+			this.parentID = parentID;
+		}
 
 		if(myChildren == null) {
 			myChildren = new ArrayList<>();
@@ -587,7 +595,7 @@ public class UserProcess {
 		// can grade your implementation.
 
 		Lib.debug(dbgProcess, "UserProcess.handleExit (" + status + ")");
-		// for now, unconditionally terminate with just one process
+
 		for(int x = 0; x < fileTable.length; x++) {
 			OpenFile curr = fileTable[x];
 			curr.close();
@@ -599,7 +607,7 @@ public class UserProcess {
 			UserKernel.linky.add(ppn);
 		}
 		unloadSections();
-		
+
 		byte[] status_byte = Lib.bytesFromInt(status);
 
 		for(int z = 0; z < myChildren.size(); z++) {
@@ -801,7 +809,14 @@ public class UserProcess {
 			return -1;
 		}
 
-		KThread child =  UserKernel.getHashMap(childId);
+		UserKernel.getHashMap(childId);
+
+		
+
+		UserProcess childprocess = UserKernel.getHashMap(childId);
+
+		KThread child = childprocess.myThread;
+		
 		if(child == null) {
 			return -1;
 		}
