@@ -849,7 +849,7 @@ public class UserProcess {
 
 		int nextChild;
 		IDLock.acquire();
-		nextChild = nextProcess;
+		nextChild = nextProcess - 1;
 		System.out.println("next process id: " + nextProcess);
 		myChildren.add(nextChild);
 		//System.out.println(file_name);
