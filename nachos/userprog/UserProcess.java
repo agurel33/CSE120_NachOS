@@ -621,8 +621,10 @@ public class UserProcess {
 			}
 		}
 
-		UserProcess parent = UserKernel.getHashMap(parentID);
-		parent.thread.ready();
+		if(parentID != -1) {
+			UserProcess parent = UserKernel.getHashMap(parentID);
+			parent.thread.ready();
+		}
 		
 		if(UserKernel.numProcesses() == 1) {
 			Kernel.kernel.terminate();
