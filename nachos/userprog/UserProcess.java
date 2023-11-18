@@ -236,7 +236,9 @@ public class UserProcess {
 		}
 		
 		if(length > pageSize) {
+			
 			int offset_physical = Processor.offsetFromAddress(vaddr);
+			System.out.println("offset!: " + offset_physical);
 			int remainder = length + offset_physical % pageSize;
 			int remainder2;
 			if(remainder == 0) {
