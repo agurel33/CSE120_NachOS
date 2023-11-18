@@ -598,7 +598,9 @@ public class UserProcess {
 
 		for(int x = 0; x < fileTable.length; x++) {
 			OpenFile curr = fileTable[x];
-			curr.close();
+			if(curr != null) {
+				curr.close();
+			}
 		}
 
 		for(int y = 0; y < pageTable.length; y++) {
