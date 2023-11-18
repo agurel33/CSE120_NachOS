@@ -83,7 +83,7 @@ public class UserProcess {
 
 
 		status_of_children = new HashMap<>();
-		
+
 		IDLock.acquire();
 		processID = nextProcess;
 		nextProcess++;
@@ -604,6 +604,8 @@ public class UserProcess {
 
 		Lib.debug(dbgProcess, "UserProcess.handleExit (" + status + ")");
 
+		System.out.println("We entereed handleExit");
+
 		for(int x = 0; x < fileTable.length; x++) {
 			OpenFile curr = fileTable[x];
 			if(curr != null) {
@@ -837,6 +839,7 @@ public class UserProcess {
 	}
 
 	private int handleJoin(int childId, int status_pointer) {
+		System.out.println("We entereed handleJoin");
 		if(!myChildren.contains(childId)) {
 			return -1;
 		}
