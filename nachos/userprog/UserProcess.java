@@ -92,6 +92,7 @@ public class UserProcess {
 		processID = nextProcess;
 		nextProcess++;
 		UserKernel.inputHashMap(processID, this);
+		System.out.println("Printing ID: " + processID);
 		IDLock.release();
 		
 
