@@ -81,6 +81,9 @@ public class UserProcess {
 		fileTable[1] = UserKernel.console.openForWriting();
 		fs = (StubFileSystem) ThreadedKernel.fileSystem;
 
+
+		status_of_children = new HashMap<>();
+		
 		IDLock.acquire();
 		processID = nextProcess;
 		nextProcess++;
