@@ -621,10 +621,14 @@ public class UserProcess {
 			}
 		}
 
+		boolean interrupty = Machine.interrupt().disable();
+
 		if(parentID != -1) {
 			UserProcess parent = UserKernel.getHashMap(parentID);
 			parent.thread.ready();
 		}
+
+		Machine.interrupt().restore(interrupty);
 		
 		if(UserKernel.numProcesses() == 1) {
 			Kernel.kernel.terminate();
