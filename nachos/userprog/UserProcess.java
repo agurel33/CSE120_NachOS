@@ -84,6 +84,8 @@ public class UserProcess {
 
 		status_of_children = new HashMap<>();
 
+		UserKernel.inputHashMap(processID, this);
+
 		IDLock.acquire();
 		processID = nextProcess;
 		nextProcess++;
