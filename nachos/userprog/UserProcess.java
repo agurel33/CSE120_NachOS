@@ -849,10 +849,9 @@ public class UserProcess {
 			args_array[capwn] = argy;
 		}
 
-		int nextChild;
-		IDLock.acquire();
+		int nextChild = nextProcess;
 		UserProcess processy = new UserProcess(processID);
-		nextChild = nextProcess;
+		IDLock.acquire();
 		//System.out.println("next process id: " + nextProcess);
 		myChildren.add(nextChild);
 		//System.out.println(file_name);
