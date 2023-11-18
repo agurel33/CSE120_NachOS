@@ -642,6 +642,8 @@ public class UserProcess {
 		Machine.interrupt().restore(interrupty);
 
 		UserKernel.numProc -= 1;
+
+		System.out.println("We are leaving handleExit");
 		
 		if(UserKernel.numProc == 0) {
 			Kernel.kernel.terminate();
@@ -835,6 +837,7 @@ public class UserProcess {
 			return -1;
 		}
 
+		System.out.println("We are leaving handleExec");
 		return nextChild;
 	}
 
@@ -872,6 +875,8 @@ public class UserProcess {
 			byte[] statty = Lib.bytesFromInt(status);
 			writeVirtualMemory(status_pointer, statty);
 		}
+		System.out.println("We are leaving handleJoin");
+
 
 		return status;
 	}
