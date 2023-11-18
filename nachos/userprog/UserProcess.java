@@ -236,8 +236,9 @@ public class UserProcess {
 		}
 		
 		if(length > pageSize) {
+			int offset_physical = Processor.offsetFromAddress(vaddr);
 			int bytesRead = 0;
-			int remainder = length % pageSize;
+			int remainder = length + offset_physical % pageSize;
 			int remainder2;
 			if(remainder == 0) {
 				remainder2 = 0;
@@ -252,7 +253,6 @@ public class UserProcess {
 				return -1;
 			}
 			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
-			int offset_physical = Processor.offsetFromAddress(vaddr);
 			
 			for(int saber = 0; saber < pagesNeeded; saber++) {
 				int virtualPageNum = Processor.pageFromAddress(vaddr + saber);
