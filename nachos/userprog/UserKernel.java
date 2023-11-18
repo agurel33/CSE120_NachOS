@@ -94,7 +94,7 @@ public class UserKernel extends ThreadedKernel {
 
 	public static void printHashMap() {
 		for(int key: keys) {
-			System.out.println(mappy.get(key));
+			System.out.println(mappy.get(key).processID);
 		}
 		
 	}

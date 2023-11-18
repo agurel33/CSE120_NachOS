@@ -1053,6 +1053,6 @@ public class UserProcess {
 	private static final char dbgProcess = 'a';
 
 	private static int nextProcess = 0;
-	private int processID;
+	public int processID;
 	private static ArrayList<Integer> myChildren = null; 
 }
