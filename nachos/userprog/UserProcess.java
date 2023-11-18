@@ -871,8 +871,8 @@ public class UserProcess {
 			return -2;
 		}
 
-		System.out.println(childId);
-		System.out.println(UserKernel.getHashMap(childId).thread);
+		UserKernel.printHashMap();
+		//System.out.println(UserKernel.getHashMap(childId).processID);
 		UserProcess childprocess = UserKernel.getHashMap(childId);
 		if(childprocess == null) {
 			return -3;
