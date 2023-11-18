@@ -630,7 +630,6 @@ public class UserProcess {
 			}
 		}
 
-		boolean interrupty = Machine.interrupt().disable();
 
 		if(parentID != -1) {
 			UserProcess parent = UserKernel.getHashMap(parentID);
@@ -640,7 +639,6 @@ public class UserProcess {
 		}
 		System.out.println("do we get here ");
 
-		Machine.interrupt().restore(interrupty);
 
 		UserKernel.numProc -= 1;
 		System.out.println("curr num processes: " + UserKernel.numProc);
