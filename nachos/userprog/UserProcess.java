@@ -636,6 +636,8 @@ public class UserProcess {
 			Kernel.kernel.terminate();
 		}
 
+		thread.finish();
+
 		return 0;
 	}
 
@@ -810,7 +812,7 @@ public class UserProcess {
 			String argy = readVirtualMemoryString(curr_pointer, 256);
 			args_array[capwn] = argy;
 		}
-		
+
 		int nextChild;
 		IDLock.acquire();
 		nextChild = nextProcess;
