@@ -615,7 +615,9 @@ public class UserProcess {
 		for(int z = 0; z < myChildren.size(); z++) {
 			int childy = myChildren.get(z);
 			UserProcess childProcessy = UserKernel.getHashMap(childy);
-			childProcessy.parentID = -1;
+			if(childProcessy != null) {
+				childProcessy.parentID = -1;
+			}
 		}
 		
 		if(UserKernel.numProcesses() == 1) {
