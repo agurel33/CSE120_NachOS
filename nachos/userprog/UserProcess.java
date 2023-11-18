@@ -631,12 +631,14 @@ public class UserProcess {
 		}
 
 		Machine.interrupt().restore(interrupty);
+
+		UserKernel.numProc -= 1;
 		
-		if(UserKernel.numProcesses() == 1) {
+		if(UserKernel.numProc == 1) {
 			Kernel.kernel.terminate();
 		}
 
-		thread.finish();
+		KThread.finish();
 
 		return 0;
 	}
