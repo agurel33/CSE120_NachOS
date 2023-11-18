@@ -659,6 +659,7 @@ public class UserProcess {
 
 
 		UserKernel.numProc -= 1;
+		UserKernel.removeProcess(processID);
 		//System.out.println("curr num processes: " + UserKernel.numProc);
 
 		//System.out.println("We are leaving handleExit");
@@ -865,14 +866,10 @@ public class UserProcess {
 			return -1;
 		}
 
-		UserKernel.getHashMap(childId);
-
 		byte[] memory = Machine.processor().getMemory();
 		if(status_pointer < 0 || status_pointer > memory.length) {
 			return -2;
 		}
-
-		
 
 		UserProcess childprocess = UserKernel.getHashMap(childId);
 		if(childprocess == null) {

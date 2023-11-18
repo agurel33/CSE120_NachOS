@@ -81,8 +81,13 @@ public class UserKernel extends ThreadedKernel {
 
 	public static UserProcess getHashMap(int key) {
 		UserProcess output = mappy.get(key);
-		mappy.remove(key);
+		//mappy.remove(key);
+		//mappy.replace(key, null);
 		return output;
+	}
+
+	public static void removeProcess(int key) {
+		mappy.remove(key);
 	}
 
 	public static void inputHashMap(int key, UserProcess up) {
