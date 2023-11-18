@@ -47,10 +47,11 @@ public class UserProcess {
 		IDLock.acquire();
 		processID = nextProcess;
 		nextProcess++;
+		UserKernel.inputHashMap(processID, this);
 		IDLock.release();
 		parentID = processID;
 
-		UserKernel.inputHashMap(processID, this);
+		
 
 		if(myChildren == null) {
 			myChildren = new ArrayList<>();
@@ -89,9 +90,9 @@ public class UserProcess {
 		IDLock.acquire();
 		processID = nextProcess;
 		nextProcess++;
-		IDLock.release();
-
 		UserKernel.inputHashMap(processID, this);
+		IDLock.release();
+		
 
 		if(parentID == -1) {
 			this.parentID = processID;
