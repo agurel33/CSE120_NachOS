@@ -788,7 +788,7 @@ public class UserProcess {
 				return -1;
 			}
 			args_array[capwn] = curr_arg;
-			prev_size = curr_arg.length() + 1;
+			prev_size = curr_arg.length() + 2;
 		}
 		int nextChild;
 		IDLock.acquire();
@@ -797,9 +797,6 @@ public class UserProcess {
 		boolean success = processy.execute(file_name, args_array);
 		IDLock.release();
 		if(!success) {
-			return -1;
-		}
-		if(nextChild <= 0) {
 			return -1;
 		}
 
