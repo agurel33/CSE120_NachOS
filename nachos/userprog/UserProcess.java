@@ -245,6 +245,7 @@ public class UserProcess {
 			else {
 				remainder2 = 1;
 			}
+			System.out.println("Length: " + length + ", remainder2: " + remainder2);
 			int pagesNeeded = length / pageSize + remainder2;
 			if(length > ((numPages - 9) * 1024)) {
 				userLock.release();
