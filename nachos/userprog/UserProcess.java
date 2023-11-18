@@ -888,7 +888,7 @@ public class UserProcess {
 			childprocess.thread.join();
 		}
 
-		myChildren.remove(childId);
+		myChildren.remove(myChildren.indexOf(childId));
 
 		// byte[] memory = Machine.processor().getMemory();
 		// if(status_pointer < 0 || status_pointer > memory.length) {
