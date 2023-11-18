@@ -800,15 +800,17 @@ public class UserProcess {
 		UserProcess processy = new UserProcess(processID);
 		String[] args_array = new String[num_args];
 
-		int prev_size = 0;
 		for(int capwn = 0; capwn < num_args; capwn++) {
-			String curr_arg = readVirtualMemoryString(array_pointer + prev_size, 256);
-			if(curr_arg == null) {
+			byte[] curr_arg = new byte[4];
+			int success = readVirtualMemory(array_pointer + 4 * capwn, curr_arg, 0, 4);
+			if(curr_arg == null || success != 4) {
 				return -1;
 			}
-			args_array[capwn] = curr_arg;
-			prev_size = curr_arg.length() + 1;
+			int curr_pointer = Lib.bytesToInt(curr_arg, 0);
+			String argy = readVirtualMemoryString(curr_pointer, 256);
+			args_array[capwn] = argy;
 		}
+		
 		int nextChild;
 		IDLock.acquire();
 		nextChild = nextProcess;
