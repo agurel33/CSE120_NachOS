@@ -238,6 +238,7 @@ public class UserProcess {
 		if(length > pageSize) {
 			
 			int offset_physical = Processor.offsetFromAddress(vaddr);
+			int offy = offset_physical;
 			System.out.println("offset!: " + offset_physical);
 			int remainder = length + offset_physical % pageSize;
 			int remainder2;
@@ -266,11 +267,10 @@ public class UserProcess {
 					return 0;
 				}
 
-				if(saber == pagesNeeded - 1) {
-					System.out.println("curr length: " + length + ", bytes read: " + total_amount);
-					offset_physical = length - total_amount;
-				}
 				amount = Math.min(length, pageSize - offset_physical);
+				if(saber == pagesNeeded - 1) {
+					amount = length - total_amount;
+				}
 				offset_physical = 0;
 				System.arraycopy(memory, physicalAddress, data, offset, amount);
 				total_amount += amount;
