@@ -625,7 +625,9 @@ public class UserProcess {
 
 		if(parentID != -1) {
 			UserProcess parent = UserKernel.getHashMap(parentID);
-			parent.thread.ready();
+			if(parent != null) {
+				parent.thread.ready();
+			}
 		}
 
 		Machine.interrupt().restore(interrupty);
