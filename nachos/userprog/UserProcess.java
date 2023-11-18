@@ -866,6 +866,7 @@ public class UserProcess {
 	}
 
 	private int handleJoin(int childId, int status_pointer) {
+		Integer status;
 		//System.out.println("We entereed handleJoin");
 		if(!myChildren.contains(childId)) {
 			return -1;
@@ -883,9 +884,13 @@ public class UserProcess {
 			if(!UserKernel.finished_keys.contains(childId)) {
 				return -1;
 			}
+			else {
+				status = -1;
+			}
 		}
 		else {
 			childprocess.thread.join();
+			status = status_of_children.get(childId);
 		}
 
 		myChildren.remove(myChildren.indexOf(childId));
@@ -895,7 +900,11 @@ public class UserProcess {
 		// 	return - 1;
 		// }
 		// String status = readVirtualMemoryString(status_pointer, 256);
-		Integer status = status_of_children.get(childId);
+		
+
+		if(status == null) {
+			return -1;
+		}
 
 		if(status != null) {
 			byte[] statty = Lib.bytesFromInt(status);
