@@ -773,7 +773,7 @@ public class UserProcess {
 		if(num_args < 0) {
 			return -1;
 		}
-		else if(num_args == 0) {
+		else if(num_args != 0) {
 			if(array_pointer <= 0 || array_pointer > memory.length) {
 				return -1;
 			}
