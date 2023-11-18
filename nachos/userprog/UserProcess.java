@@ -770,15 +770,15 @@ public class UserProcess {
 		if(file_pointer <= 0 || file_pointer > memory.length) {
 			return -1;
 		}
-		System.out.println("Valid file pointer");
-		if(array_pointer <= 0 || array_pointer > memory.length) {
-			return -1;
-		}
-		System.out.println("Valid array pointer");
 		if(num_args < 0) {
 			return -1;
 		}
-		System.out.println("Valid args");
+		else if(num_args == 0) {
+			if(array_pointer <= 0 || array_pointer > memory.length) {
+				return -1;
+			}
+		}
+		
 
 		String file_name = readVirtualMemoryString(file_pointer, 256);
 
