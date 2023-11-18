@@ -62,6 +62,8 @@ public class UserProcess {
 		if(IDLock == null) {
 			IDLock = new Lock();
 		}
+
+		UserKernel.numProc += 1;
 		//Needs to be in a lock
 		// for (int i = 0; i < numPhysPages; i++)
 		// 	pageTable[i] = new TranslationEntry(i, i, true, false, false, false);
@@ -71,6 +73,8 @@ public class UserProcess {
 		if(IDLock == null) {
 			IDLock = new Lock();
 		}
+
+		UserKernel.numProc += 1;
 
 		fileTable = new OpenFile[16];
 		fileTable[0] = UserKernel.console.openForReading();
@@ -634,7 +638,7 @@ public class UserProcess {
 
 		UserKernel.numProc -= 1;
 		
-		if(UserKernel.numProc == 1) {
+		if(UserKernel.numProc == 0) {
 			Kernel.kernel.terminate();
 		}
 

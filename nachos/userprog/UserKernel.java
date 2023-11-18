@@ -87,7 +87,6 @@ public class UserKernel extends ThreadedKernel {
 
 	public static void inputHashMap(int key, UserProcess up) {
 		mappy.put(key, up);
-		numProc += 1;
 	}
 
 	public static int numProcesses() {
