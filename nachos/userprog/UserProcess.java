@@ -638,6 +638,7 @@ public class UserProcess {
 				parent.thread.ready();
 			}
 		}
+		System.out.println("do we get here ");
 
 		Machine.interrupt().restore(interrupty);
 
