@@ -610,7 +610,7 @@ public class UserProcess {
 
 		Lib.debug(dbgProcess, "UserProcess.handleExit (" + status + ")");
 
-		System.out.println("We entereed handleExit");
+		//System.out.println("We entereed handleExit");
 
 		for(int x = 0; x < fileTable.length; x++) {
 			OpenFile curr = fileTable[x];
@@ -620,7 +620,7 @@ public class UserProcess {
 		}
 		
 		status_of_children.put(processID, status);
-		System.out.println("do we get here -1");
+		//System.out.println("do we get here -1");
 
 		for(int y = 0; y < pageTable.length; y++) {
 			TranslationEntry curry = pageTable[y];
@@ -636,7 +636,7 @@ public class UserProcess {
 				childProcessy.parentID = -1;
 			}
 		}
-		System.out.println("do we get here 1");
+		//System.out.println("do we get here 1");
 
 
 		if(parentID != -1) {
@@ -650,13 +650,13 @@ public class UserProcess {
 				Machine.interrupt().restore(banana);
 			}
 		}
-		System.out.println("do we get here 2");
+		//System.out.println("do we get here 2");
 
 
 		UserKernel.numProc -= 1;
-		System.out.println("curr num processes: " + UserKernel.numProc);
+		//System.out.println("curr num processes: " + UserKernel.numProc);
 
-		System.out.println("We are leaving handleExit");
+		//System.out.println("We are leaving handleExit");
 		
 		if(UserKernel.numProc == 0) {
 			Kernel.kernel.terminate();
@@ -685,16 +685,16 @@ public class UserProcess {
 		byte[] temp = new byte[size];
 		int success = readVirtualMemory(pt, temp, 0, size);
 		if(success != size) {
-			System.out.println(success);
+			//System.out.println(success);
 			return -1;
 		}
 		if(fileTable[fd] == null) {
-			System.out.println(fd);
+			//System.out.println(fd);
 			return -1;
 		}
 		int greatSuccess = fileTable[fd].write(temp,0,size);
 		if(greatSuccess != size) {
-			System.out.println(greatSuccess);
+			//System.out.println(greatSuccess);
 			return -1;
 		}
 		return greatSuccess;
@@ -808,7 +808,7 @@ public class UserProcess {
 	}
 
 	private int handleExec(int file_pointer, int num_args, int array_pointer) {
-		System.out.println("We entereed handleExec");
+		//System.out.println("We entereed handleExec");
 		byte[] memory = Machine.processor().getMemory();
 		if(file_pointer <= 0 || file_pointer > memory.length) {
 			return -1;
@@ -850,12 +850,12 @@ public class UserProcess {
 			return -1;
 		}
 
-		System.out.println("We are leaving handleExec");
+		//System.out.println("We are leaving handleExec");
 		return nextChild;
 	}
 
 	private int handleJoin(int childId, int status_pointer) {
-		System.out.println("We entereed handleJoin");
+		//System.out.println("We entereed handleJoin");
 		if(!myChildren.contains(childId)) {
 			return -1;
 		}
@@ -888,7 +888,7 @@ public class UserProcess {
 			byte[] statty = Lib.bytesFromInt(status);
 			writeVirtualMemory(status_pointer, statty);
 		}
-		System.out.println("We are leaving handleJoin");
+		//System.out.println("We are leaving handleJoin");
 
 
 		return status;
