@@ -642,6 +642,7 @@ public class UserProcess {
 		Machine.interrupt().restore(interrupty);
 
 		UserKernel.numProc -= 1;
+		System.out.println("curr num processes: " + UserKernel.numProc);
 
 		System.out.println("We are leaving handleExit");
 		
