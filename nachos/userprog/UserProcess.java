@@ -598,6 +598,9 @@ public class UserProcess {
 			int ppn = curry.ppn;
 			UserKernel.linky.add(ppn);
 		}
+		unloadSections();
+		
+		byte[] status_byte = Lib.bytesFromInt(status);
 
 		for(int z = 0; z < myChildren.size(); z++) {
 			int childy = myChildren.get(z);
