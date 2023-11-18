@@ -850,6 +850,7 @@ public class UserProcess {
 		int nextChild;
 		IDLock.acquire();
 		nextChild = nextProcess;
+		System.out.println("next process id: " + nextProcess);
 		myChildren.add(nextChild);
 		//System.out.println(file_name);
 		boolean success = processy.execute(file_name, args_array);
