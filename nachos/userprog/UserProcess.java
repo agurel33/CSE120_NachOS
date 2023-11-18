@@ -669,27 +669,27 @@ public class UserProcess {
 			return 0;
 		}
 		if(size < 0) {
-			return -1;
+			return -2;
 		}
 		byte[] memory = Machine.processor().getMemory();
 
 		if(pt < 0 || pt > memory.length) {
-			return -1;
+			return -3;
 		}
 		byte[] temp = new byte[size];
 		int success = readVirtualMemory(pt, temp, 0, size);
 		if(success != size) {
 			System.out.println(success);
-			return -1;
+			return -4;
 		}
 		if(fileTable[fd] == null) {
 			System.out.println(fd);
-			return -1;
+			return -5;
 		}
 		int greatSuccess = fileTable[fd].write(temp,0,size);
 		if(greatSuccess != size) {
 			System.out.println(greatSuccess);
-			return -1;
+			return -6;
 		}
 		return greatSuccess;
 	}
