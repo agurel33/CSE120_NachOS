@@ -626,9 +626,9 @@ public class UserProcess {
 			}
 		}
 		
-		UserProcess parent = UserKernel.getHashMap(parentID);
+		UserProcess parent111 = UserKernel.getHashMap(parentID);
 
-		parent.status_of_children.put(processID, status);
+		parent111.status_of_children.put(processID, status);
 		//System.out.println("do we get here -1");
 
 		for(int y = 0; y < pageTable.length; y++) {
