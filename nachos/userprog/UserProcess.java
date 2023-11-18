@@ -7,6 +7,7 @@ import nachos.vm.*;
 
 import java.io.EOFException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Encapsulates the state of a user process that is not contained in its user
@@ -28,6 +29,7 @@ public class UserProcess {
 	private static Lock userLock = null;
 	private static Lock IDLock = null;
 	public int parentID;
+	public HashMap<Integer,Integer> status_of_children;
 
 	public UserProcess() {
 		//int numPhysPages = Machine.processor().getNumPhysPages();
@@ -39,6 +41,8 @@ public class UserProcess {
 		fileTable[0] = UserKernel.console.openForReading();
 		fileTable[1] = UserKernel.console.openForWriting();
 		fs = (StubFileSystem) ThreadedKernel.fileSystem;
+
+		status_of_children = new HashMap<>();
 
 		IDLock.acquire();
 		processID = nextProcess;
@@ -599,6 +603,8 @@ public class UserProcess {
 				curr.close();
 			}
 		}
+		
+		status_of_children.put(processID, status);
 
 		for(int y = 0; y < pageTable.length; y++) {
 			TranslationEntry curry = pageTable[y];
@@ -607,8 +613,6 @@ public class UserProcess {
 		}
 		unloadSections();
 
-		byte[] status_byte = Lib.bytesFromInt(status);
-
 		for(int z = 0; z < myChildren.size(); z++) {
 			int childy = myChildren.get(z);
 			UserProcess childProcessy = UserKernel.getHashMap(childy);
@@ -616,10 +620,15 @@ public class UserProcess {
 				childProcessy.parentID = -1;
 			}
 		}
+
+		UserProcess parent = UserKernel.getHashMap(parentID);
+		parent.thread.ready();
 		
 		if(UserKernel.numProcesses() == 1) {
 			Kernel.kernel.terminate();
 		}
+		KThread.finish();
+
 		return 0;
 	}
 
@@ -820,17 +829,17 @@ public class UserProcess {
 		if(childprocess == null) {
 			return -1;
 		}
-		//Voelker fixes this later ...
 		childprocess.thread.join();
 
 		myChildren.remove(childId);
 
-		byte[] memory = Machine.processor().getMemory();
-		if(status_pointer < 0 || status_pointer > memory.length) {
-			return - 1;
-		}
-		String status = readVirtualMemoryString(status_pointer, 256);
-		return Integer.valueOf(status);
+		// byte[] memory = Machine.processor().getMemory();
+		// if(status_pointer < 0 || status_pointer > memory.length) {
+		// 	return - 1;
+		// }
+		// String status = readVirtualMemoryString(status_pointer, 256);
+		Integer status = status_of_children.get(childId);
+		return status;
 	}
 
 	private static final int syscallHalt = 0, syscallExit = 1, syscallExec = 2,
