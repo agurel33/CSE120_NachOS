@@ -614,6 +614,7 @@ public class UserProcess {
 		}
 		
 		status_of_children.put(processID, status);
+		System.out.println("do we get here -1");
 
 		for(int y = 0; y < pageTable.length; y++) {
 			TranslationEntry curry = pageTable[y];
@@ -629,6 +630,7 @@ public class UserProcess {
 				childProcessy.parentID = -1;
 			}
 		}
+		System.out.println("do we get here 1");
 
 
 		if(parentID != -1) {
@@ -639,7 +641,7 @@ public class UserProcess {
 				Machine.interrupt().restore(banana);
 			}
 		}
-		System.out.println("do we get here ");
+		System.out.println("do we get here 2");
 
 
 		UserKernel.numProc -= 1;
