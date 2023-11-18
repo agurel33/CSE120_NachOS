@@ -634,7 +634,9 @@ public class UserProcess {
 		if(parentID != -1) {
 			UserProcess parent = UserKernel.getHashMap(parentID);
 			if(parent != null) {
+				boolean banana = Machine.interrupt().disable();
 				parent.thread.ready();
+				Machine.interrupt().restore(banana);
 			}
 		}
 		System.out.println("do we get here ");
