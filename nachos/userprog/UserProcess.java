@@ -835,7 +835,7 @@ public class UserProcess {
 
 		String file_name = readVirtualMemoryString(file_pointer, 256);
 
-		UserProcess processy = new UserProcess(processID);
+		
 		String[] args_array = new String[num_args];
 
 		for(int capwn = 0; capwn < num_args; capwn++) {
@@ -851,7 +851,8 @@ public class UserProcess {
 
 		int nextChild;
 		IDLock.acquire();
-		nextChild = nextProcess - 1;
+		UserProcess processy = new UserProcess(processID);
+		nextChild = nextProcess;
 		//System.out.println("next process id: " + nextProcess);
 		myChildren.add(nextChild);
 		//System.out.println(file_name);
