@@ -47,7 +47,7 @@ public class UserKernel extends ThreadedKernel {
 		if(locky == null) {
 			locky = new Lock();
 		}
-		boolean status = Machine.interrupt().disable();
+		//boolean status = Machine.interrupt().disable();
 		locky.acquire();
 		if(linky == null) {
 			linky = new LinkedList<>();
@@ -57,24 +57,24 @@ public class UserKernel extends ThreadedKernel {
 			linky.add(i);
 		}
 		locky.release();
-		Machine.interrupt().restore(status);
+		//Machine.interrupt().restore(status);
 	}
 
 	public static int getNextOpenPage(){
-		boolean status = Machine.interrupt().disable();
+		//boolean status = Machine.interrupt().disable();
 		locky.acquire();
 		int output = linky.pop();
 		locky.release();
-		Machine.interrupt().restore(status);
+		//Machine.interrupt().restore(status);
 		return output;
 	}
 
 	public static void releasePage(int pageAddy){
-		boolean status = Machine.interrupt().disable();
+		//boolean status = Machine.interrupt().disable();
 		locky.acquire();
 		linky.push(pageAddy);
 		locky.release();
-		Machine.interrupt().restore(status);
+		//Machine.interrupt().restore(status);
 	}
 
 	public static UserProcess getHashMap(int key) {
