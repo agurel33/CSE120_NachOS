@@ -633,7 +633,6 @@ public class UserProcess {
 		if(UserKernel.numProcesses() == 1) {
 			Kernel.kernel.terminate();
 		}
-		KThread.finish();
 
 		return 0;
 	}
@@ -829,6 +828,11 @@ public class UserProcess {
 
 		UserKernel.getHashMap(childId);
 
+		byte[] memory = Machine.processor().getMemory();
+		if(status_pointer < 0 || status_pointer > memory.length) {
+			return -1;
+		}
+
 		
 
 		UserProcess childprocess = UserKernel.getHashMap(childId);
@@ -845,6 +849,12 @@ public class UserProcess {
 		// }
 		// String status = readVirtualMemoryString(status_pointer, 256);
 		Integer status = status_of_children.get(childId);
+
+		if(status != null) {
+			byte[] statty = Lib.bytesFromInt(status);
+			writeVirtualMemory(status_pointer, statty);
+		}
+
 		return status;
 	}
 
