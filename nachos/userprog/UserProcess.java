@@ -48,7 +48,7 @@ public class UserProcess {
 		processID = nextProcess;
 		nextProcess++;
 		UserKernel.inputHashMap(processID, this);
-		System.out.println("Printing ID: " + processID);
+		//System.out.println("Printing ID: " + processID);
 		IDLock.release();
 		parentID = processID;
 
@@ -92,7 +92,7 @@ public class UserProcess {
 		processID = nextProcess;
 		nextProcess++;
 		UserKernel.inputHashMap(processID, this);
-		System.out.println("Printing ID: " + processID);
+		//System.out.println("Printing ID: " + processID);
 		IDLock.release();
 		
 
@@ -879,7 +879,7 @@ public class UserProcess {
 			return -1;
 		}
 
-		UserKernel.printHashMap();
+		//UserKernel.printHashMap();
 		//System.out.println(UserKernel.getHashMap(childId).processID);
 		UserProcess childprocess = UserKernel.getHashMap(childId);
 		if(childprocess == null) {
