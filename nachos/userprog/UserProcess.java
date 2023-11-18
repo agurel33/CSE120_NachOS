@@ -843,7 +843,7 @@ public class UserProcess {
 		IDLock.acquire();
 		nextChild = nextProcess;
 		myChildren.add(nextChild);
-		System.out.println(file_name);
+		//System.out.println(file_name);
 		boolean success = processy.execute(file_name, args_array);
 		IDLock.release();
 		if(!success) {
@@ -864,14 +864,14 @@ public class UserProcess {
 
 		byte[] memory = Machine.processor().getMemory();
 		if(status_pointer < 0 || status_pointer > memory.length) {
-			return -1;
+			return -2;
 		}
 
 		
 
 		UserProcess childprocess = UserKernel.getHashMap(childId);
 		if(childprocess == null) {
-			return -1;
+			return -3;
 		}
 		childprocess.thread.join();
 
