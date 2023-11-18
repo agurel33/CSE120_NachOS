@@ -873,16 +873,20 @@ public class UserProcess {
 
 		byte[] memory = Machine.processor().getMemory();
 		if(status_pointer < 0 || status_pointer > memory.length) {
-			return -2;
+			return -1;
 		}
 
 		UserKernel.printHashMap();
 		//System.out.println(UserKernel.getHashMap(childId).processID);
 		UserProcess childprocess = UserKernel.getHashMap(childId);
 		if(childprocess == null) {
-			return -3;
+			if(!UserKernel.finished_keys.contains(childId)) {
+				return -1;
+			}
 		}
-		childprocess.thread.join();
+		else {
+			childprocess.thread.join();
+		}
 
 		myChildren.remove(childId);
 

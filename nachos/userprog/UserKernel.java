@@ -23,6 +23,8 @@ public class UserKernel extends ThreadedKernel {
 
 	public static ArrayList<Integer> keys = null;
 
+	public static ArrayList<Integer> finished_keys = null;
+
 
 
 	/**
@@ -54,6 +56,9 @@ public class UserKernel extends ThreadedKernel {
 		}
 		if(keys == null) {
 			keys = new ArrayList<>();
+		}
+		if(finished_keys == null) {
+			finished_keys = new ArrayList<>();
 		}
 		//boolean status = Machine.interrupt().disable();
 		locky.acquire();
@@ -102,6 +107,7 @@ public class UserKernel extends ThreadedKernel {
 	public static void removeProcess(int key) {
 		keys.remove(key);
 		mappy.remove(key);
+		finished_keys.add(key);
 	}
 
 	public static void inputHashMap(int key, UserProcess up) {
