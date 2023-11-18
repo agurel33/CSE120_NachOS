@@ -765,6 +765,7 @@ public class UserProcess {
 	}
 
 	private int handleExec(int file_pointer, int num_args, int array_pointer) {
+		System.out.println("We entereed handleExec");
 		byte[] memory = Machine.processor().getMemory();
 		if(file_pointer <= 0 || file_pointer > memory.length) {
 			return -1;
