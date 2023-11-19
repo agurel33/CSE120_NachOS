@@ -48,6 +48,7 @@ public class UserProcess {
 		processID = nextProcess;
 		nextProcess++;
 		UserKernel.inputHashMap(processID, this);
+		//System.out.println("Printing ID: " + processID);
 		IDLock.release();
 		parentID = processID;
 
@@ -91,6 +92,7 @@ public class UserProcess {
 		processID = nextProcess;
 		nextProcess++;
 		UserKernel.inputHashMap(processID, this);
+		//System.out.println("Printing ID: " + processID);
 		IDLock.release();
 		
 
@@ -624,7 +626,9 @@ public class UserProcess {
 			}
 		}
 		
-		status_of_children.put(processID, status);
+		UserProcess parent111 = UserKernel.getHashMap(parentID);
+
+		parent111.status_of_children.put(processID, status);
 		//System.out.println("do we get here -1");
 
 		for(int y = 0; y < pageTable.length; y++) {
@@ -831,7 +835,7 @@ public class UserProcess {
 
 		String file_name = readVirtualMemoryString(file_pointer, 256);
 
-		UserProcess processy = new UserProcess(processID);
+		
 		String[] args_array = new String[num_args];
 
 		for(int capwn = 0; capwn < num_args; capwn++) {
@@ -845,13 +849,16 @@ public class UserProcess {
 			args_array[capwn] = argy;
 		}
 
-		int nextChild;
+		int nextChild = nextProcess;
+		UserProcess processy = new UserProcess(processID);
 		IDLock.acquire();
-		nextChild = nextProcess;
+		//System.out.println("next process id: " + nextProcess);
 		myChildren.add(nextChild);
 		//System.out.println(file_name);
 		boolean success = processy.execute(file_name, args_array);
 		IDLock.release();
+
+		KThread.yield();
 		if(!success) {
 			return -1;
 		}
@@ -861,6 +868,7 @@ public class UserProcess {
 	}
 
 	private int handleJoin(int childId, int status_pointer) {
+		Integer status;
 		//System.out.println("We entereed handleJoin");
 		if(!myChildren.contains(childId)) {
 			return -1;
@@ -868,23 +876,37 @@ public class UserProcess {
 
 		byte[] memory = Machine.processor().getMemory();
 		if(status_pointer < 0 || status_pointer > memory.length) {
-			return -2;
+			return -1;
 		}
 
+		//UserKernel.printHashMap();
+		//System.out.println(UserKernel.getHashMap(childId).processID);
 		UserProcess childprocess = UserKernel.getHashMap(childId);
 		if(childprocess == null) {
-			return -3;
+			if(!UserKernel.finished_keys.contains(childId)) {
+				return -1;
+			}
+			else {
+				status = status_of_children.get(childId);
+			}
 		}
-		childprocess.thread.join();
+		else {
+			childprocess.thread.join();
+			status = status_of_children.get(childId);
+		}
 
-		myChildren.remove(childId);
+		myChildren.remove(myChildren.indexOf(childId));
 
 		// byte[] memory = Machine.processor().getMemory();
 		// if(status_pointer < 0 || status_pointer > memory.length) {
 		// 	return - 1;
 		// }
 		// String status = readVirtualMemoryString(status_pointer, 256);
-		Integer status = status_of_children.get(childId);
+		
+
+		if(status == null) {
+			return -1;
+		}
 
 		if(status != null) {
 			byte[] statty = Lib.bytesFromInt(status);
@@ -1051,6 +1073,6 @@ public class UserProcess {
 	private static final char dbgProcess = 'a';
 
 	private static int nextProcess = 0;
-	private int processID;
+	public int processID;
 	private static ArrayList<Integer> myChildren = null; 
 }

@@ -1,5 +1,6 @@
 package nachos.userprog;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -19,6 +20,10 @@ public class UserKernel extends ThreadedKernel {
 	public static HashMap<Integer, UserProcess> mappy = null;
 
 	public static int numProc = 0;
+
+	public static ArrayList<Integer> keys = null;
+
+	public static ArrayList<Integer> finished_keys = null;
 
 
 
@@ -48,6 +53,12 @@ public class UserKernel extends ThreadedKernel {
 		}
 		if(locky == null) {
 			locky = new Lock();
+		}
+		if(keys == null) {
+			keys = new ArrayList<>();
+		}
+		if(finished_keys == null) {
+			finished_keys = new ArrayList<>();
 		}
 		//boolean status = Machine.interrupt().disable();
 		locky.acquire();
@@ -86,16 +97,26 @@ public class UserKernel extends ThreadedKernel {
 		return output;
 	}
 
+	public static void printHashMap() {
+		for(int key: keys) {
+			System.out.println(mappy.get(key).processID);
+		}
+		
+	}
+
 	public static void removeProcess(int key) {
+		keys.remove(key);
 		mappy.remove(key);
+		finished_keys.add(key);
 	}
 
 	public static void inputHashMap(int key, UserProcess up) {
+		keys.add(key);
 		mappy.put(key, up);
 	}
 
 	public static int numProcesses() {
-		return mappy.size();
+		return keys.size();
 	}
 
 	/**
