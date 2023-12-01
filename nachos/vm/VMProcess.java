@@ -39,7 +39,32 @@ public class VMProcess extends UserProcess {
 	 * @return <tt>true</tt> if successful.
 	 */
 	protected boolean loadSections() {
-		return super.loadSections();
+		if (numPages > Machine.processor().getNumPhysPages() || numPages > UserKernel.linky.size()) {
+			coff.close();
+			Lib.debug(dbgProcess, "\tinsufficient physical memory");
+			return false;
+		}
+		pageTable = new TranslationEntry[numPages];
+		int counter = 0;
+		for (int s = 0; s < coff.getNumSections(); s++) {
+			CoffSection section = coff.getSection(s);
+
+			Lib.debug(dbgProcess, "\tinitializing " + section.getName()
+					+ " section (" + section.getLength() + " pages)");
+
+			for (int i = 0; i < section.getLength(); i++) {
+				int vpn = section.getFirstVPN() + i;
+				pageTable[counter] = new TranslationEntry(vpn, UserKernel.getNextOpenPage(), false, section.isReadOnly(), false, false);
+				counter++;
+			}
+		}
+
+		for(int abbi_sucks = 0; abbi_sucks < stackPages; abbi_sucks++) {
+			pageTable[counter] = new TranslationEntry(counter, UserKernel.getNextOpenPage(), false, false, false, false);
+			counter++;
+		}
+		pageTable[counter] = new TranslationEntry(counter,UserKernel.getNextOpenPage(),false,false,false,false);
+		return true;
 	}
 
 	/**
@@ -60,9 +85,47 @@ public class VMProcess extends UserProcess {
 		Processor processor = Machine.processor();
 
 		switch (cause) {
+		case Processor.exceptionPageFault:
+			//start
+			requestPage();
 		default:
 			super.handleException(cause);
 			break;
+		}
+	}
+
+	private void requestPage() {
+		Processor proc = Machine.processor();
+		int bad_address = proc.getBadAddress();
+		int page_to_load;
+		if(bad_address % pageSize != 0){ 
+			page_to_load = bad_address / pageSize + 1;
+		}
+		else {
+			page_to_load = bad_address / pageSize;
+		}
+
+		int coff_pages = 0;
+		for(int i=0; i < coff.getNumSections(); i++) {
+			CoffSection section = coff.getSection(i);
+			coff_pages += section.getLength();
+		}
+		if(page_to_load >= 0 && page_to_load <= coff_pages) {
+			//load coff page
+			for(int i = 0; i < coff.getNumSections(); i++) {
+				CoffSection section = coff.getSection(i);
+				for(int a=0; a < section.getLength(); a++) {
+					int vpn = section.getFirstVPN() + a;
+					if(vpn == page_to_load) {
+						section.loadPage(a, pageTable[page_to_load].ppn);
+					}
+				}
+			}
+		}
+		else {
+			//load new page fill w/ zeros
+			int page_desired = pageTable[page_to_load].ppn;
+			
 		}
 	}
 

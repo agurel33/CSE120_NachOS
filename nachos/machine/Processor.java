@@ -537,6 +537,10 @@ public final class Processor {
 	/** MIPS registers accessible to the kernel. */
 	private int registers[] = new int[numUserRegisters];
 
+	public int getBadAddress() {
+		return readRegister(regBadVAddr);
+	}
+
 	/** The registered target of the delayed load currently in progress. */
 	private int loadTarget = 0;
 
