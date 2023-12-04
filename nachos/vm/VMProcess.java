@@ -273,7 +273,8 @@ public class VMProcess extends UserProcess {
 
 		}
 		if (ppn == -1) {
-			while(VMKernel.IPT.get(clocky).TE.used == true) {
+			
+			while(VMKernel.VMkernel.IPT.get(clocky).TE.used == true) {
 				pageTable[clocky].used = false;
 				clocky += 1;
 				clocky = clocky%Machine.processor().getNumPhysPages();
@@ -281,7 +282,7 @@ public class VMProcess extends UserProcess {
 			int bye_bye = clocky;
 			clocky += 1;
 			clocky = clocky%Machine.processor().getNumPhysPages();
-			VMKernel.IPT.get(bye_bye).TE.valid = false;
+			VMKernel.VMkernel.IPT.get(bye_bye).TE.valid = false;
 		}
 
 		int coff_pages = 0;

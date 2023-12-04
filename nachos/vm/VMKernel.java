@@ -14,8 +14,12 @@ public class VMKernel extends UserKernel {
 	/**
 	 * Allocate a new VM kernel.
 	 */
+	public static VMKernel VMkernel = null;
 	public VMKernel() {
-		super();
+		//super();
+		if(VMkernel == null) {
+			VMkernel = this;
+		}
 	}
 
 	/**
