@@ -67,8 +67,4 @@ public class VMKernel extends UserKernel {
 	public VMProcess getProcess(int spn) {
 		return IPT.get(spn).process;
 	}
-
-	public void addSwapPage(VMProcess process, TranslationEntry TE) {
-
-	}
 }
