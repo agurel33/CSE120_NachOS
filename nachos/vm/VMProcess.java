@@ -270,10 +270,17 @@ public class VMProcess extends UserProcess {
 		if (UserKernel.linky.size() > 0) {
 			ppn = UserKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = ppn;
-
 		}
 		if (ppn == -1) {
-			
+			while(pageTable[clocky].used == true) {
+				pageTable[clocky].used = false;
+				clocky += 1;
+				clocky = clocky%pageTable.length;
+			}
+			int bye_bye = clocky;
+			clocky += 1;
+			clocky = clocky%pageTable.length;
+			pageTable[bye_bye].valid = false;
 		}
 
 		int coff_pages = 0;
@@ -307,6 +314,7 @@ public class VMProcess extends UserProcess {
 			this.writeVirtualMemory(addy, data, 0, pageSize);
 		}
 	}
+	private int clocky = 0;
 
 	private static final int pageSize = Processor.pageSize;
 
