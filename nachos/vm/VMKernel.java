@@ -1,5 +1,7 @@
 package nachos.vm;
 
+import java.util.ArrayList;
+
 import nachos.machine.*;
 import nachos.threads.*;
 import nachos.userprog.*;
@@ -21,6 +23,7 @@ public class VMKernel extends UserKernel {
 	 */
 	public void initialize(String[] args) {
 		super.initialize(args);
+		IPT = new ArrayList<>();
 	}
 
 	/**
@@ -48,4 +51,24 @@ public class VMKernel extends UserKernel {
 	private static VMProcess dummy1 = null;
 
 	private static final char dbgVM = 'v';
+
+	protected class invertedPageTableEntry {
+		VMProcess process;
+		TranslationEntry TE;
+
+		public invertedPageTableEntry(VMProcess process, TranslationEntry TE) {
+			this.process = process;
+			this.TE = TE;
+		}
+	}
+
+	public ArrayList<invertedPageTableEntry> IPT;
+
+	public VMProcess getProcess(int spn) {
+		return IPT.get(spn).process;
+	}
+
+	public void addSwapPage(VMProcess process, TranslationEntry TE) {
+
+	}
 }
