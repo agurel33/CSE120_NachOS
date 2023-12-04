@@ -1,5 +1,6 @@
 package nachos.vm;
 
+
 import nachos.machine.*;
 import nachos.threads.*;
 import nachos.userprog.*;
@@ -9,11 +10,16 @@ import nachos.vm.*;
  * A <tt>UserProcess</tt> that supports demand-paging.
  */
 public class VMProcess extends UserProcess {
+
+	private static Lock userLocky = null;
 	/**
 	 * Allocate a new process.
 	 */
 	public VMProcess() {
 		super();
+		if(userLocky == null) {
+			userLocky = new Lock();
+		}
 	}
 
 	/**
@@ -30,6 +36,167 @@ public class VMProcess extends UserProcess {
 	 */
 	public void restoreState() {
 		super.restoreState();
+	}
+
+	public int writeVirtualMemory(int vaddr, byte[] data, int offset, int length) {
+		Lib.debug(dbgProcess, "Writing VM!");
+		userLocky.acquire();
+		int total_amount = 0;
+		int amount;
+		Lib.assertTrue(offset >= 0 && length >= 0
+				&& offset + length <= data.length);
+
+		
+
+		byte[] memory = Machine.processor().getMemory();
+
+		// for now, just assume that virtual addresses equal physical addresses
+		if (vaddr < 0 || vaddr >= memory.length) {
+			userLocky.release();
+			return 0;
+		}
+
+		if(length > pageSize) {
+			int bytesRead = 0;
+			int remainder = length % pageSize;
+			int remainder2;
+			if(remainder == 0) {
+				remainder2 = 0;
+			}
+			else {
+				remainder2 = 1;
+			}
+			int pagesNeeded = length / pageSize + remainder2;
+			if(length > ((numPages - 9) * 1024)) {
+				userLocky.release();
+				return -1;
+			}
+			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
+			int offset_physical = Processor.offsetFromAddress(vaddr);
+
+			for(int saber = 0; saber < pagesNeeded; saber++) {
+				int virtualPageNum = Processor.pageFromAddress(vaddr + saber);
+				if(pageTable[virtualPageNum].valid != true) {
+					requestPage(vaddr + saber);
+				}
+				int physcialPageNum = pageTable[virtualPageNum].ppn;
+				int physicalAddress = pageSize * physcialPageNum + offset_physical;
+
+				if (physicalAddress < 0 || physicalAddress >= memory.length) {
+					userLocky.release();
+					return 0;
+				}
+				amount = Math.min(length, pageSize - offset_physical);
+				offset_physical = 0;
+				System.arraycopy(data, offset, memory, physicalAddress, amount);
+				total_amount += amount;
+				Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
+			}
+		}
+		else {
+			int virtualPageNum = Processor.pageFromAddress(vaddr);
+			if(pageTable[virtualPageNum].valid != true) {
+				requestPage(vaddr);
+			}
+			int offset_physical = Processor.offsetFromAddress(vaddr);
+			int physcialPageNum = pageTable[virtualPageNum].ppn;
+			int physicalAddress = pageSize * physcialPageNum + offset_physical;
+
+			if (physicalAddress < 0 || physicalAddress >= memory.length) {
+				userLocky.release();
+				return 0;
+			}
+
+			amount = Math.min(length, pageSize - offset_physical);
+			System.arraycopy(data, offset, memory, physicalAddress, amount);
+			total_amount = amount;
+		}
+
+		userLocky.release();
+		return total_amount;
+	}
+
+	public int readVirtualMemory(int vaddr, byte[] data, int offset, int length) {
+		Lib.debug(dbgProcess, "Reading VM!");
+		userLocky.acquire();
+		int total_amount = 0;
+		int amount;
+		Lib.assertTrue(offset >= 0 && length >= 0
+				&& offset + length <= data.length);
+
+		byte[] memory = Machine.processor().getMemory();
+
+		// for now, just assume that virtual addresses equal physical addresses
+		if (vaddr < 0 || vaddr >= memory.length) {
+			userLocky.release();
+			return 0;
+		}
+		
+		if(length > pageSize) {
+			
+			int offset_physical = Processor.offsetFromAddress(vaddr);
+			int offy = offset_physical;
+			System.out.println("offset!: " + offset_physical);
+			int remainder = length + offset_physical % pageSize;
+			int remainder2;
+			if(remainder == 0) {
+				remainder2 = 0;
+			}
+			else {
+				remainder2 = 1;
+			}
+			System.out.println("Length: " + length + ", remainder2: " + remainder2);
+			int pagesNeeded = length / pageSize + remainder2;
+			if(length > ((numPages - 9) * 1024)) {
+				userLocky.release();
+				return -1;
+			}
+			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
+			
+			for(int saber = 0; saber < pagesNeeded; saber++) {
+				int virtualPageNum = Processor.pageFromAddress(vaddr + saber);
+				if(pageTable[virtualPageNum].valid != true) {
+					requestPage(vaddr + saber);
+				}
+				int physcialPageNum = pageTable[virtualPageNum].ppn;
+				int physicalAddress = pageSize * physcialPageNum + offset_physical;
+
+				if (physicalAddress < 0 || physicalAddress >= memory.length) {
+					userLocky.release();
+					return 0;
+				}
+
+				amount = Math.min(length, pageSize - offset_physical);
+				if(saber == pagesNeeded - 1) {
+					amount = length - total_amount;
+				}
+				offset_physical = 0;
+				System.arraycopy(memory, physicalAddress, data, offset, amount);
+				total_amount += amount;
+				Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
+			}
+		}
+		else {
+			int virtualPageNum = Processor.pageFromAddress(vaddr);
+			if(pageTable[virtualPageNum].valid != true) {
+				requestPage(vaddr);
+			}
+			int offset_physical = Processor.offsetFromAddress(vaddr);
+			int physcialPageNum = pageTable[virtualPageNum].ppn;
+			int physicalAddress = pageSize * physcialPageNum + offset_physical;
+
+			if (physicalAddress < 0 || physicalAddress >= memory.length) {
+				userLocky.release();
+				return 0;
+			}
+
+			amount = Math.min(length, pageSize - offset_physical);
+			System.arraycopy(memory, physicalAddress, data, offset, amount);
+			total_amount = amount;
+		}
+
+		userLocky.release();
+		return total_amount;
 	}
 
 	/**
@@ -87,23 +254,18 @@ public class VMProcess extends UserProcess {
 		switch (cause) {
 		case Processor.exceptionPageFault:
 			//start
-			requestPage();
+			Processor proc = Machine.processor();
+			int bad_address = proc.getBadAddress();
+			requestPage(bad_address);
+			return;
 		default:
 			super.handleException(cause);
 			break;
 		}
 	}
 
-	private void requestPage() {
-		Processor proc = Machine.processor();
-		int bad_address = proc.getBadAddress();
-		int page_to_load;
-		if(bad_address % pageSize != 0){ 
-			page_to_load = bad_address / pageSize + 1;
-		}
-		else {
-			page_to_load = bad_address / pageSize;
-		}
+	private void requestPage(int addy) {
+		int page_to_load = Processor.pageFromAddress(addy);
 
 		int coff_pages = 0;
 		for(int i=0; i < coff.getNumSections(); i++) {
@@ -112,12 +274,15 @@ public class VMProcess extends UserProcess {
 		}
 		if(page_to_load >= 0 && page_to_load <= coff_pages) {
 			//load coff page
+			outerloop:
 			for(int i = 0; i < coff.getNumSections(); i++) {
 				CoffSection section = coff.getSection(i);
 				for(int a=0; a < section.getLength(); a++) {
 					int vpn = section.getFirstVPN() + a;
 					if(vpn == page_to_load) {
 						section.loadPage(a, pageTable[page_to_load].ppn);
+						pageTable[page_to_load].valid = true;
+						break outerloop;
 					}
 				}
 			}
@@ -125,7 +290,12 @@ public class VMProcess extends UserProcess {
 		else {
 			//load new page fill w/ zeros
 			int page_desired = pageTable[page_to_load].ppn;
-			
+			pageTable[page_to_load].valid = true;
+			byte[] data = new byte[pageSize];
+			for(int ry=0; ry < data.length; ry++) {
+				data[ry] = 0;
+			}
+			this.writeVirtualMemory(addy, data, 0, pageSize);
 		}
 	}
 
