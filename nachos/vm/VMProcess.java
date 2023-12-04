@@ -221,16 +221,16 @@ public class VMProcess extends UserProcess {
 
 			for (int i = 0; i < section.getLength(); i++) {
 				int vpn = section.getFirstVPN() + i;
-				pageTable[counter] = new TranslationEntry(vpn, UserKernel.getNextOpenPage(), false, section.isReadOnly(), false, false);
+				pageTable[counter] = new TranslationEntry(vpn, -1, false, section.isReadOnly(), false, false);
 				counter++;
 			}
 		}
 
 		for(int abbi_sucks = 0; abbi_sucks < stackPages; abbi_sucks++) {
-			pageTable[counter] = new TranslationEntry(counter, UserKernel.getNextOpenPage(), false, false, false, false);
+			pageTable[counter] = new TranslationEntry(counter, -1, false, false, false, false);
 			counter++;
 		}
-		pageTable[counter] = new TranslationEntry(counter,UserKernel.getNextOpenPage(),false,false,false,false);
+		pageTable[counter] = new TranslationEntry(counter, -1,false,false,false,false);
 		return true;
 	}
 
@@ -266,6 +266,15 @@ public class VMProcess extends UserProcess {
 
 	private void requestPage(int addy) {
 		int page_to_load = Processor.pageFromAddress(addy);
+		int ppn = -1;
+		if (UserKernel.linky.size() > 0) {
+			ppn = UserKernel.getNextOpenPage();
+			pageTable[page_to_load].ppn = ppn;
+
+		}
+		if (ppn == -1) {
+			
+		}
 
 		int coff_pages = 0;
 		for(int i=0; i < coff.getNumSections(); i++) {
