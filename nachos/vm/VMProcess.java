@@ -381,7 +381,7 @@ public class VMProcess extends UserProcess {
 	private void requestPage(int addy) {
 		byte[] memory = Machine.processor().getMemory();
 		int page_to_load = Processor.pageFromAddress(addy);
-		System.out.println(page_to_load + " page");
+		System.out.println("Requesting page: " + page_to_load);
 		int ppn = -1;
 		boolean faulted = false;
 
