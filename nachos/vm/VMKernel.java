@@ -47,6 +47,7 @@ public class VMKernel extends UserKernel {
 		}
 		if(fs == null) {
 			fs = (StubFileSystem) ThreadedKernel.fileSystem;
+			System.out.println(fs.toString());
 		}
 		if(swap == null) {
 			swap = fs.open("swap", true);
