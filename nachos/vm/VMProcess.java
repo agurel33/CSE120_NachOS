@@ -398,7 +398,7 @@ public class VMProcess extends UserProcess {
 			}
 		}
 		if (ppn == -1) {
-			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
+			
 			while(VMKernel.VMkernel.IPT.get(clocky).TE.used == true) {
 				VMKernel.VMkernel.IPT.get(clocky).TE.used  = false;
 				clocky += 1;
@@ -422,6 +422,7 @@ public class VMProcess extends UserProcess {
 			//ppn = VMKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = phys_page;
 			ppn = phys_page;
+			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
 		}
 		//VMKernel.VMkernel.IPT.get(ppn).TE.valid = true;
 		if(faulted) {
