@@ -39,7 +39,7 @@ public class VMProcess extends UserProcess {
 	}
 
 	private boolean load5(String name, String[] args) {
-		Lib.debug(dbgProcess, "UserProcess.load(\"" + name + "\")");
+		Lib.debug(dbgProcess, "VMProcess.load(\"" + name + "\")");
 
 		OpenFile executable = ThreadedKernel.fileSystem.open(name, false);
 		if (executable == null) {
@@ -92,7 +92,7 @@ public class VMProcess extends UserProcess {
 		// and finally reserve 1 page for arguments
 		numPages++;
 
-		Lib.debug(dbgProcess, "UserProcess.load: " + numPages + " pages in address space (" + Machine.processor().getNumPhysPages() + " physical pages)");
+		Lib.debug(dbgProcess, "VMProcess.load: " + numPages + " pages in address space (" + Machine.processor().getNumPhysPages() + " physical pages)");
 
 		/*
 		 * Layout of the Nachos user process address space.
@@ -322,11 +322,11 @@ public class VMProcess extends UserProcess {
 	 * @return <tt>true</tt> if successful.
 	 */
 	public boolean loadSections() {
-		if (numPages > Machine.processor().getNumPhysPages() || numPages > UserKernel.linky.size()) {
-			coff.close();
-			Lib.debug(dbgProcess, "\tinsufficient physical memory");
-			return false;
-		}
+		// if (numPages > Machine.processor().getNumPhysPages() || numPages > UserKernel.linky.size()) {
+		// 	coff.close();
+		// 	Lib.debug(dbgProcess, "\tinsufficient physical memory");
+		// 	return false;
+		// }
 		pageTable = new TranslationEntry[numPages];
 		int counter = 0;
 		for (int s = 0; s < coff.getNumSections(); s++) {
