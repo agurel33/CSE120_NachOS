@@ -410,6 +410,7 @@ public class VMProcess extends UserProcess {
 			VMKernel.VMkernel.IPT.get(bye_bye).TE.valid = false;
 			int spn = VMKernel.getSPN();
 			VMKernel.swapTable.put(bye_bye, spn);
+			System.out.println(bye_bye + "bye");
 			VMKernel.seenTable.add(bye_bye);
 			int old_addr = pageTable[bye_bye].ppn * pageSize;
 			//System.out.println("Bye_bye: " + bye_bye + ", and its ppn?: " + pageTable[bye_bye].ppn);
