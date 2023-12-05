@@ -421,6 +421,7 @@ public class VMProcess extends UserProcess {
 			pageTable[bye_bye].ppn = -1;
 			//ppn = VMKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = phys_page;
+			ppn = phys_page;
 		}
 		//VMKernel.VMkernel.IPT.get(ppn).TE.valid = true;
 		if(faulted) {
