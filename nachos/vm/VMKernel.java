@@ -28,7 +28,7 @@ public class VMKernel extends UserKernel {
 	public static HashMap<Integer, Boolean> faultTable = null;
 
 	public VMKernel() {
-		//super();
+		super();
 		if(VMkernel == null) {
 			VMkernel = this;
 		}
