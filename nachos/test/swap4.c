@@ -38,6 +38,7 @@ validate_buf ()
 	    // encode both the index and the bad data value in the status...
 	    int s = i * 1000 * 1000;
 	    s += bigbuf[i];
+        printf(s);
 	    exit (s);
 	}
     }
@@ -51,5 +52,6 @@ main (int argc, char *argv[])
     validate_buf ();
     validate_buf ();
     validate_buf ();
+    printf(-1000);
     exit (-1000);
 }
