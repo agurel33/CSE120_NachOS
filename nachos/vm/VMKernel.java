@@ -25,7 +25,7 @@ public class VMKernel extends UserKernel {
 	public static StubFileSystem fs = null; 
 	public static OpenFile swap = null; 
 	public static HashMap<Integer, Integer> swapTable = null;
-	public static HashMap<Integer, Boolean> faultTable = null;
+	public static ArrayList<Integer> seenTable = null;
 	public static FileSystem fileSystem = null;
 
 
@@ -62,8 +62,8 @@ public class VMKernel extends UserKernel {
 		if(swapTable == null) {
 			swapTable = new HashMap<>();
 		}
-		if(faultTable == null) {
-			faultTable = new HashMap<>();
+		if(seenTable == null) {
+			seenTable = new ArrayList<>();
 		}
 		if(fs == null) {
 			fs = (StubFileSystem) fileSystem;

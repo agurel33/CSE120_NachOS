@@ -385,7 +385,7 @@ public class VMProcess extends UserProcess {
 		int ppn = -1;
 		boolean faulted = false;
 
-		if(VMKernel.faultTable.get(page_to_load) != null) {
+		if(VMKernel.seenTable.contains(page_to_load)) {
 			faulted = true;
 		}
 		
@@ -393,9 +393,6 @@ public class VMProcess extends UserProcess {
 			ppn = UserKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = ppn;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
-			if(VMKernel.faultTable.get(page_to_load) == null) {
-				VMKernel.faultTable.put(page_to_load,true);
-			}
 		}
 		if (ppn == -1) {
 			
@@ -413,6 +410,7 @@ public class VMProcess extends UserProcess {
 			VMKernel.VMkernel.IPT.get(bye_bye).TE.valid = false;
 			int spn = VMKernel.getSPN();
 			VMKernel.swapTable.put(bye_bye, spn);
+			VMKernel.seenTable.add(bye_bye);
 			int old_addr = pageTable[bye_bye].ppn * pageSize;
 			//System.out.println("Bye_bye: " + bye_bye + ", and its ppn?: " + pageTable[bye_bye].ppn);
 			System.out.println("Write spn!:" + spn  + " PPN: " + phys_page);
@@ -462,7 +460,7 @@ public class VMProcess extends UserProcess {
 				Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0);
 			}
 		}
-		System.out.println("End of LoadProcess");
+		//System.out.println("End of LoadProcess");
 	}
 	private static int clocky = 0;
 
