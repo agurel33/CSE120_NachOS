@@ -26,9 +26,29 @@ public class VMKernel extends UserKernel {
 	public static OpenFile swap = null; 
 	public static HashMap<Integer, Integer> swapTable = null;
 	public static HashMap<Integer, Boolean> faultTable = null;
+	public static FileSystem fileSystem = null;
+
 
 	public VMKernel() {
-		super();
+		String schedulerName = Config.getString("ThreadedKernel.scheduler");
+		scheduler = (Scheduler) Lib.constructObject(schedulerName);
+
+		// set fileSystem
+		String fileSystemName = Config.getString("ThreadedKernel.fileSystem");
+		if (fileSystemName != null)
+			fileSystem = (FileSystem) Lib.constructObject(fileSystemName);
+		else if (Machine.stubFileSystem() != null)
+			fileSystem = Machine.stubFileSystem();
+		else
+			fileSystem = null;
+
+		// start threading
+		new KThread(null);
+
+		alarm = new Alarm();
+
+		Machine.interrupt().enable();
+		//super();
 		if(VMkernel == null) {
 			VMkernel = this;
 		}
