@@ -115,7 +115,7 @@ public class VMProcess extends UserProcess {
 		 */
 
 
-		if (!loadSections())
+		if (!this.loadSections())
 			return false;
 
 		// store arguments in last page

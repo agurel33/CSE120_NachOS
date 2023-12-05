@@ -120,23 +120,23 @@ public class VMKernel extends UserKernel {
 	 * Start running user programs.
 	 */
 	public void run() {
-		super.run();
-		// VMProcess process = (VMProcess) VMProcess.newUserProcess();
+		//super.run();
+		VMProcess process = (VMProcess) VMProcess.newUserProcess();
 
-		// String shellProgram = Machine.getShellProgramName();
-		// if (!process.execute(shellProgram, new String[] {})) {
-		//     System.out.println ("Could not find executable '" +
-		// 			shellProgram + "', trying '" +
-		// 			shellProgram + ".coff' instead.");
-		//     shellProgram += ".coff";
-		//     if (!process.execute(shellProgram, new String[] {})) {
-		// 	System.out.println ("Also could not find '" +
-		// 			    shellProgram + "', aborting.");
-		// 	Lib.assertTrue(false);
-		//     }
+		String shellProgram = Machine.getShellProgramName();
+		if (!process.execute(shellProgram, new String[] {})) {
+		    System.out.println ("Could not find executable '" +
+					shellProgram + "', trying '" +
+					shellProgram + ".coff' instead.");
+		    shellProgram += ".coff";
+		    if (!process.execute(shellProgram, new String[] {})) {
+			System.out.println ("Also could not find '" +
+					    shellProgram + "', aborting.");
+			Lib.assertTrue(false);
+		    }
 
-		// }
-		// KThread.currentThread().finish();
+		}
+		KThread.currentThread().finish();
 	}
 
 	/**
