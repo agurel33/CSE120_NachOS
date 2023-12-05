@@ -415,7 +415,7 @@ public class VMProcess extends UserProcess {
 			VMKernel.swapTable.put(bye_bye, spn);
 			int old_addr = pageTable[bye_bye].ppn * pageSize;
 			//System.out.println("Bye_bye: " + bye_bye + ", and its ppn?: " + pageTable[bye_bye].ppn);
-			System.out.println("Write spn!:" + spn  + " PPN: " + old_addr);
+			System.out.println("Write spn!:" + spn  + " PPN: " + phys_page);
 			VMKernel.swap.write(spn * pageSize, memory, old_addr, pageSize);
 			//VMKernel.releasePage(pageTable[bye_bye].ppn);
 			pageTable[bye_bye].ppn = -1;
