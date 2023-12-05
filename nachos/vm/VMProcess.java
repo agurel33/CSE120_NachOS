@@ -424,6 +424,7 @@ public class VMProcess extends UserProcess {
 			int old_spn = VMKernel.swapTable.get(page_to_load);
 			//System.out.println("Read spn!:" + old_spn + " PPN: " + ppn);
 			VMKernel.swap.read(old_spn * pageSize, memory,ppn * pageSize, pageSize);
+			pageTable[page_to_load].valid = true;
 			//VMKernel.releaseSPN(old_spn);
 		}
 		else {
