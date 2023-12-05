@@ -398,6 +398,7 @@ public class VMProcess extends UserProcess {
 			}
 		}
 		if (ppn == -1) {
+			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
 			while(VMKernel.VMkernel.IPT.get(clocky).TE.used == true) {
 				VMKernel.VMkernel.IPT.get(clocky).TE.used  = false;
 				clocky += 1;
@@ -408,7 +409,6 @@ public class VMProcess extends UserProcess {
 			clocky = clocky%Machine.processor().getNumPhysPages();
 
 			int bye_bye = VMKernel.VMkernel.vpnFromPpn(phys_page);
-
 
 			VMKernel.VMkernel.IPT.get(bye_bye).TE.valid = false;
 			int spn = VMKernel.getSPN();
