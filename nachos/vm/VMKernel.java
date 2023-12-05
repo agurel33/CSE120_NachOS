@@ -174,4 +174,13 @@ public class VMKernel extends UserKernel {
 		int index = TE.ppn;
 		IPT.add(index,curr);
 	}
+
+	public int vpnFromPpn(int ppn) {
+		for(invertedPageTableEntry ent: IPT) {
+			if(ent.TE.ppn == ppn) {
+				return ent.TE.vpn;
+			}
+		}
+		return -1;
+	}
 }

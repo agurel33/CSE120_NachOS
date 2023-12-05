@@ -403,9 +403,13 @@ public class VMProcess extends UserProcess {
 				clocky += 1;
 				clocky = clocky%Machine.processor().getNumPhysPages();
 			}
-			int bye_bye = clocky;
+			int phys_page = clocky;
 			clocky += 1;
 			clocky = clocky%Machine.processor().getNumPhysPages();
+
+			int bye_bye = VMKernel.VMkernel.vpnFromPpn(phys_page);
+
+
 			VMKernel.VMkernel.IPT.get(bye_bye).TE.valid = false;
 			int spn = VMKernel.getSPN();
 			VMKernel.swapTable.put(bye_bye, spn);
@@ -413,10 +417,10 @@ public class VMProcess extends UserProcess {
 			System.out.println("Bye_bye: " + bye_bye + ", and its ppn?: " + pageTable[bye_bye].ppn);
 			System.out.println("Write spn!:" + spn  + " PPN: " + old_addr);
 			VMKernel.swap.write(spn * pageSize, memory, old_addr, pageSize);
-			VMKernel.releasePage(pageTable[bye_bye].ppn);
+			//VMKernel.releasePage(pageTable[bye_bye].ppn);
 			pageTable[bye_bye].ppn = -1;
-			ppn = VMKernel.getNextOpenPage();
-			pageTable[page_to_load].ppn = ppn;
+			//ppn = VMKernel.getNextOpenPage();
+			pageTable[page_to_load].ppn = phys_page;
 		}
 		//VMKernel.VMkernel.IPT.get(ppn).TE.valid = true;
 		if(faulted) {
