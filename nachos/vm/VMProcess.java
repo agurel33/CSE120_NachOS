@@ -410,17 +410,19 @@ public class VMProcess extends UserProcess {
 			int spn = VMKernel.getSPN();
 			VMKernel.swapTable.put(bye_bye, spn);
 			int old_addr = pageTable[bye_bye].ppn * pageSize;
-			System.out.println("Write spn!:" + spn  + "PPN: " + old_addr);
+			System.out.println("Bye_bye: " + bye_bye + ", and its ppn?: " + pageTable[bye_bye].ppn);
+			System.out.println("Write spn!:" + spn  + " PPN: " + old_addr);
 			VMKernel.swap.write(spn * pageSize, memory, old_addr, pageSize);
 			VMKernel.releasePage(pageTable[bye_bye].ppn);
 			pageTable[bye_bye].ppn = -1;
 			ppn = VMKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = ppn;
 		}
+		VMKernel.VMkernel.IPT.get(page_to_load).TE.valid = true;
 		if(faulted) {
 			//free ppn already, write from swap to physical 
 			int old_spn = VMKernel.swapTable.get(page_to_load);
-			System.out.println("Read spn!:" + old_spn + "PPN: " + ppn);
+			//System.out.println("Read spn!:" + old_spn + " PPN: " + ppn);
 			VMKernel.swap.read(old_spn * pageSize, memory,ppn * pageSize, pageSize);
 			//VMKernel.releaseSPN(old_spn);
 		}
