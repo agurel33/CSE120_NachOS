@@ -255,6 +255,7 @@ public class VMProcess extends UserProcess {
 			//start
 			Processor proc = Machine.processor();
 			int bad_address = proc.getBadAddress();
+			System.out.println(bad_address + " bad");
 			requestPage(bad_address);
 			return;
 		default:
@@ -266,6 +267,7 @@ public class VMProcess extends UserProcess {
 	private void requestPage(int addy) {
 		byte[] memory = Machine.processor().getMemory();
 		int page_to_load = Processor.pageFromAddress(addy);
+		System.out.println(page_to_load + " page");
 		int ppn = -1;
 		boolean faulted = false;
 
