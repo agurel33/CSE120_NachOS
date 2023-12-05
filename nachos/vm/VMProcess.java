@@ -424,7 +424,7 @@ public class VMProcess extends UserProcess {
 			ppn = phys_page;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
 		}
-		//VMKernel.VMkernel.IPT.get(ppn).TE.valid = true;
+		VMKernel.VMkernel.IPT.get(ppn).TE.valid = true;
 		if(faulted) {
 			//free ppn already, write from swap to physical 
 			int old_spn = VMKernel.swapTable.get(page_to_load);
