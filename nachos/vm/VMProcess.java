@@ -269,7 +269,7 @@ public class VMProcess extends UserProcess {
 		int ppn = -1;
 		boolean faulted = false;
 
-		if(VMKernel.faultTable.get(page_to_load) == true) {
+		if(VMKernel.faultTable.get(page_to_load) != null) {
 			faulted = true;
 		}
 		
