@@ -66,7 +66,7 @@ public class VMKernel extends UserKernel {
 			faultTable = new HashMap<>();
 		}
 		if(fs == null) {
-			fs = (StubFileSystem) ThreadedKernel.fileSystem;
+			fs = (StubFileSystem) fileSystem;
 			System.out.println(fs.toString());
 		}
 		if(swap == null) {
