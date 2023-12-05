@@ -418,6 +418,7 @@ public class VMProcess extends UserProcess {
 		if(faulted) {
 			//free ppn already, write from swap to physical 
 			int old_spn = VMKernel.swapTable.get(page_to_load);
+			System.out.println("spn!:" + old_spn);
 			VMKernel.swap.read(old_spn * pageSize, memory,ppn * pageSize, pageSize);
 			VMKernel.releaseSPN(old_spn);
 		}
