@@ -1,6 +1,7 @@
 package nachos.vm;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import nachos.machine.*;
@@ -23,6 +24,7 @@ public class VMKernel extends UserKernel {
 	public static VMKernel VMkernel = null;
 	public static StubFileSystem fs = null; 
 	public static OpenFile swap = null; 
+	public static HashMap<Integer, Integer> swapTable = null;
 
 	public VMKernel() {
 		//super();
@@ -35,6 +37,9 @@ public class VMKernel extends UserKernel {
 				slinky.add(i);
 				slinky_size++;
 			}
+		}
+		if(swapTable == null) {
+			swapTable = new HashMap<>();
 		}
 		if(fs == null) {
 			fs = (StubFileSystem) ThreadedKernel.fileSystem;
@@ -109,10 +114,12 @@ public class VMKernel extends UserKernel {
 	protected class invertedPageTableEntry {
 		VMProcess process;
 		TranslationEntry TE;
+		boolean faulted;
 
 		public invertedPageTableEntry(VMProcess process, TranslationEntry TE) {
 			this.process = process;
 			this.TE = TE;
+			faulted = true;
 		}
 	}
 

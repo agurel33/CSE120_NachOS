@@ -270,15 +270,20 @@ public class VMProcess extends UserProcess {
 		byte[] memory = Machine.processor().getMemory();
 		int page_to_load = Processor.pageFromAddress(addy);
 		int ppn = -1;
+		boolean faulted = false;
+
+		if(VMKernel.VMkernel.IPT.get(ppn) == null) {
+			
+		} else {
+			faulted = true;
+		}
+		
 		if (UserKernel.linky.size() > 0) {
 			ppn = UserKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = ppn;
-
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
-			
 		}
 		if (ppn == -1) {
-			
 			while(VMKernel.VMkernel.IPT.get(clocky).TE.used == true) {
 				VMKernel.VMkernel.IPT.get(clocky).TE.used  = false;
 				clocky += 1;
@@ -289,9 +294,9 @@ public class VMProcess extends UserProcess {
 			clocky = clocky%Machine.processor().getNumPhysPages();
 			VMKernel.VMkernel.IPT.get(bye_bye).TE.valid = false;
 			int spn = VMKernel.getSPN();
+			VMKernel.swapTable.put(spn,bye_bye);
 			int old_addr = pageTable[bye_bye].ppn * pageSize;
 			System.arraycopy(memory , old_addr, VMKernel.swap, spn * pageSize, pageSize);
-
 			VMKernel.releasePage(pageTable[bye_bye].ppn);
 			pageTable[bye_bye].ppn = -1;
 			pageTable[page_to_load].ppn = VMKernel.getNextOpenPage();
