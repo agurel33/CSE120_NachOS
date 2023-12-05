@@ -1,6 +1,7 @@
 package nachos.vm;
 
 
+import java.io.EOFException;
 import java.util.Arrays;
 
 import nachos.machine.*;
@@ -13,6 +14,9 @@ import nachos.vm.*;
  */
 public class VMProcess extends UserProcess {
 
+	private int initialPC, initialSP;
+	private int argc, argv;
+
 	private static Lock userLocky = null;
 	/**
 	 * Allocate a new process.
@@ -22,6 +26,116 @@ public class VMProcess extends UserProcess {
 		if(userLocky == null) {
 			userLocky = new Lock();
 		}
+	}
+
+	public boolean execute(String name, String[] args) {
+		if (!load5(name, args))
+			return false;
+
+		thread = new UThread(this);
+		thread.setName(name).fork();
+
+		return true;
+	}
+
+	private boolean load5(String name, String[] args) {
+		Lib.debug(dbgProcess, "UserProcess.load(\"" + name + "\")");
+
+		OpenFile executable = ThreadedKernel.fileSystem.open(name, false);
+		if (executable == null) {
+			Lib.debug(dbgProcess, "\topen failed");
+			return false;
+		}
+
+		try {
+			coff = new Coff(executable);
+		}
+		catch (EOFException e) {
+			executable.close();
+			Lib.debug(dbgProcess, "\tcoff load failed");
+			return false;
+		}
+
+		// make sure the sections are contiguous and start at page 0
+		numPages = 0;
+		for (int s = 0; s < coff.getNumSections(); s++) {
+			CoffSection section = coff.getSection(s);
+			if (section.getFirstVPN() != numPages) {
+				coff.close();
+				Lib.debug(dbgProcess, "\tfragmented executable");
+				return false;
+			}
+			numPages += section.getLength();
+		}
+
+		// make sure the argv array will fit in one page
+		byte[][] argv = new byte[args.length][];
+		int argsSize = 0;
+		for (int i = 0; i < args.length; i++) {
+			argv[i] = args[i].getBytes();
+			// 4 bytes for argv[] pointer; then string plus one for null byte
+			argsSize += 4 + argv[i].length + 1;
+		}
+		if (argsSize > pageSize) {
+			coff.close();
+			Lib.debug(dbgProcess, "\targuments too long");
+			return false;
+		}
+
+		// program counter initially points at the program entry point
+		initialPC = coff.getEntryPoint();
+
+		// next comes the stack; stack pointer initially points to top of it
+		numPages += stackPages;
+		initialSP = numPages * pageSize;
+
+		// and finally reserve 1 page for arguments
+		numPages++;
+
+		Lib.debug(dbgProcess, "UserProcess.load: " + numPages + " pages in address space (" + Machine.processor().getNumPhysPages() + " physical pages)");
+
+		/*
+		 * Layout of the Nachos user process address space.
+		 * The code above calculates the total number of pages
+		 * in the address space for this executable.
+		 *
+		 * +------------------+
+		 * | Code and data    |
+		 * | pages from       |   size = num pages in COFF file
+		 * | executable file  |
+		 * | (COFF file)      |
+		 * +------------------+
+		 * | Stack pages      |   size = stackPages
+		 * +------------------+
+		 * | Arg page         |   size = 1
+		 * +------------------+
+		 *
+		 * Page 0 is at the top, and the last page at the
+		 * bottom is the arg page at numPages-1.
+		 */
+
+
+		if (!loadSections())
+			return false;
+
+		// store arguments in last page
+		int entryOffset = (numPages - 1) * pageSize;
+		int stringOffset = entryOffset + args.length * 4;
+
+		this.argc = args.length;
+		this.argv = entryOffset;
+
+		for (int i = 0; i < argv.length; i++) {
+			byte[] stringOffsetBytes = Lib.bytesFromInt(stringOffset);
+			Lib.assertTrue(writeVirtualMemory(entryOffset, stringOffsetBytes) == 4);
+			entryOffset += 4;
+			Lib.assertTrue(writeVirtualMemory(stringOffset, argv[i]) == argv[i].length);
+			stringOffset += argv[i].length;
+			Lib.assertTrue(writeVirtualMemory(stringOffset, new byte[] { 0 }) == 1);
+			stringOffset += 1;
+		}
+
+		return true;
 	}
 
 	/**
@@ -207,7 +321,7 @@ public class VMProcess extends UserProcess {
 	 * 
 	 * @return <tt>true</tt> if successful.
 	 */
-	protected boolean loadSections() {
+	public boolean loadSections() {
 		if (numPages > Machine.processor().getNumPhysPages() || numPages > UserKernel.linky.size()) {
 			coff.close();
 			Lib.debug(dbgProcess, "\tinsufficient physical memory");
