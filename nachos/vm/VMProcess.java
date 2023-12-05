@@ -1,6 +1,8 @@
 package nachos.vm;
 
 
+import java.util.Arrays;
+
 import nachos.machine.*;
 import nachos.threads.*;
 import nachos.userprog.*;
@@ -265,17 +267,20 @@ public class VMProcess extends UserProcess {
 	}
 
 	private void requestPage(int addy) {
+		byte[] memory = Machine.processor().getMemory();
 		int page_to_load = Processor.pageFromAddress(addy);
 		int ppn = -1;
 		if (UserKernel.linky.size() > 0) {
 			ppn = UserKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = ppn;
 
+			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
+			
 		}
 		if (ppn == -1) {
 			
 			while(VMKernel.VMkernel.IPT.get(clocky).TE.used == true) {
-				pageTable[clocky].used = false;
+				VMKernel.VMkernel.IPT.get(clocky).TE.used  = false;
 				clocky += 1;
 				clocky = clocky%Machine.processor().getNumPhysPages();
 			}
@@ -283,6 +288,13 @@ public class VMProcess extends UserProcess {
 			clocky += 1;
 			clocky = clocky%Machine.processor().getNumPhysPages();
 			VMKernel.VMkernel.IPT.get(bye_bye).TE.valid = false;
+			int spn = VMKernel.getSPN();
+			int old_addr = pageTable[bye_bye].ppn * pageSize;
+			System.arraycopy(memory , old_addr, VMKernel.swap, spn * pageSize, pageSize);
+
+			VMKernel.releasePage(pageTable[bye_bye].ppn);
+			pageTable[bye_bye].ppn = -1;
+			pageTable[page_to_load].ppn = VMKernel.getNextOpenPage();
 		}
 
 		int coff_pages = 0;
@@ -309,11 +321,8 @@ public class VMProcess extends UserProcess {
 			//load new page fill w/ zeros
 			int page_desired = pageTable[page_to_load].ppn;
 			pageTable[page_to_load].valid = true;
-			byte[] data = new byte[pageSize];
-			for(int ry=0; ry < data.length; ry++) {
-				data[ry] = 0;
-			}
-			this.writeVirtualMemory(addy, data, 0, pageSize);
+			int phy_addr = page_desired * pageSize;
+			Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0);
 		}
 	}
 	private static int clocky = 0;

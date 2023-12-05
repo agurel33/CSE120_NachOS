@@ -1,6 +1,7 @@
 package nachos.vm;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import nachos.machine.*;
 import nachos.threads.*;
@@ -14,12 +15,61 @@ public class VMKernel extends UserKernel {
 	/**
 	 * Allocate a new VM kernel.
 	 */
+
+	public static LinkedList<Integer> slinky = null;
+
+	public static int slinky_size = 0;
+
 	public static VMKernel VMkernel = null;
+	public static StubFileSystem fs = null; 
+	public static OpenFile swap = null; 
+
 	public VMKernel() {
 		//super();
 		if(VMkernel == null) {
 			VMkernel = this;
 		}
+		if(slinky == null) {
+			slinky = new LinkedList<>();
+			for(int i = 0; i < 16; i++) {
+				slinky.add(i);
+				slinky_size++;
+			}
+		}
+		if(fs == null) {
+			fs = (StubFileSystem) ThreadedKernel.fileSystem;
+		}
+		if(swap == null) {
+			swap = fs.open("swap", true);
+		}
+	}
+
+	public static int getSPN(){
+		boolean status = Machine.interrupt().disable();
+		locky.acquire();
+		if(slinky.size() == 0) {
+			int curr_size = slinky_size;
+			for(int i = curr_size; i < curr_size + 16; i++) {
+				slinky.add(i);
+				slinky_size++;
+			}
+		}
+		int output = linky.pop();
+		locky.release();
+		Machine.interrupt().restore(status);
+		return output;
+	}
+
+	public static void releaseSPN(int spn){
+		boolean status = Machine.interrupt().disable();
+		locky.acquire();
+		linky.push(spn);
+		locky.release();
+		Machine.interrupt().restore(status);
+	}
+
+	public void cleanSwap() {
+		//
 	}
 
 	/**
@@ -70,5 +120,11 @@ public class VMKernel extends UserKernel {
 
 	public VMProcess getProcess(int spn) {
 		return IPT.get(spn).process;
+	}
+
+	public void newEntry(VMProcess process, TranslationEntry TE) {
+		invertedPageTableEntry curr = new invertedPageTableEntry(process, TE);
+		int index = TE.ppn;
+		IPT.add(index,curr);
 	}
 }
