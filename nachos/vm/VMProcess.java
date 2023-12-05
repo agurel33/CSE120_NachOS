@@ -227,7 +227,6 @@ public class VMProcess extends UserProcess {
 				counter++;
 			}
 		}
-
 		for(int abbi_sucks = 0; abbi_sucks < stackPages; abbi_sucks++) {
 			pageTable[counter] = new TranslationEntry(counter, -1, false, false, false, false);
 			counter++;
@@ -251,8 +250,6 @@ public class VMProcess extends UserProcess {
 	 * @param cause the user exception that occurred.
 	 */
 	public void handleException(int cause) {
-		Processor processor = Machine.processor();
-
 		switch (cause) {
 		case Processor.exceptionPageFault:
 			//start
@@ -272,9 +269,7 @@ public class VMProcess extends UserProcess {
 		int ppn = -1;
 		boolean faulted = false;
 
-		if(VMKernel.VMkernel.IPT.get(ppn) == null) {
-			
-		} else {
+		if(VMKernel.faultTable.get(page_to_load) == true) {
 			faulted = true;
 		}
 		
@@ -282,6 +277,9 @@ public class VMProcess extends UserProcess {
 			ppn = UserKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = ppn;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
+			if(VMKernel.faultTable.get(page_to_load) == null) {
+				VMKernel.faultTable.put(page_to_load,true);
+			}
 		}
 		if (ppn == -1) {
 			while(VMKernel.VMkernel.IPT.get(clocky).TE.used == true) {
@@ -294,40 +292,47 @@ public class VMProcess extends UserProcess {
 			clocky = clocky%Machine.processor().getNumPhysPages();
 			VMKernel.VMkernel.IPT.get(bye_bye).TE.valid = false;
 			int spn = VMKernel.getSPN();
-			VMKernel.swapTable.put(spn,bye_bye);
+			VMKernel.swapTable.put(bye_bye, spn);
 			int old_addr = pageTable[bye_bye].ppn * pageSize;
 			System.arraycopy(memory , old_addr, VMKernel.swap, spn * pageSize, pageSize);
 			VMKernel.releasePage(pageTable[bye_bye].ppn);
 			pageTable[bye_bye].ppn = -1;
 			pageTable[page_to_load].ppn = VMKernel.getNextOpenPage();
 		}
-
-		int coff_pages = 0;
-		for(int i=0; i < coff.getNumSections(); i++) {
-			CoffSection section = coff.getSection(i);
-			coff_pages += section.getLength();
+		if(faulted) {
+			//free ppn already, write from swap to physical 
+			int old_spn = VMKernel.swapTable.get(page_to_load);
+			System.arraycopy(VMKernel.swap, old_spn, memory, ppn, pageSize);
+			VMKernel.releaseSPN(old_spn);
 		}
-		if(page_to_load >= 0 && page_to_load <= coff_pages) {
-			//load coff page
-			outerloop:
-			for(int i = 0; i < coff.getNumSections(); i++) {
+		else {
+			int coff_pages = 0;
+			for(int i=0; i < coff.getNumSections(); i++) {
 				CoffSection section = coff.getSection(i);
-				for(int a=0; a < section.getLength(); a++) {
-					int vpn = section.getFirstVPN() + a;
-					if(vpn == page_to_load) {
-						section.loadPage(a, pageTable[page_to_load].ppn);
-						pageTable[page_to_load].valid = true;
-						break outerloop;
+				coff_pages += section.getLength();
+			}
+			if(page_to_load >= 0 && page_to_load <= coff_pages) {
+				//load coff page
+				outerloop:
+				for(int i = 0; i < coff.getNumSections(); i++) {
+					CoffSection section = coff.getSection(i);
+					for(int a=0; a < section.getLength(); a++) {
+						int vpn = section.getFirstVPN() + a;
+						if(vpn == page_to_load) {
+							section.loadPage(a, pageTable[page_to_load].ppn);
+							pageTable[page_to_load].valid = true;
+							break outerloop;
+						}
 					}
 				}
 			}
-		}
-		else {
-			//load new page fill w/ zeros
-			int page_desired = pageTable[page_to_load].ppn;
-			pageTable[page_to_load].valid = true;
-			int phy_addr = page_desired * pageSize;
-			Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0);
+			else {
+				//load new page fill w/ zeros
+				int page_desired = pageTable[page_to_load].ppn;
+				pageTable[page_to_load].valid = true;
+				int phy_addr = page_desired * pageSize;
+				Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0);
+			}
 		}
 	}
 	private static int clocky = 0;

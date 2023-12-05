@@ -25,6 +25,7 @@ public class VMKernel extends UserKernel {
 	public static StubFileSystem fs = null; 
 	public static OpenFile swap = null; 
 	public static HashMap<Integer, Integer> swapTable = null;
+	public static HashMap<Integer, Boolean> faultTable = null;
 
 	public VMKernel() {
 		//super();
@@ -40,6 +41,9 @@ public class VMKernel extends UserKernel {
 		}
 		if(swapTable == null) {
 			swapTable = new HashMap<>();
+		}
+		if(faultTable == null) {
+			faultTable = new HashMap<>();
 		}
 		if(fs == null) {
 			fs = (StubFileSystem) ThreadedKernel.fileSystem;
@@ -59,7 +63,7 @@ public class VMKernel extends UserKernel {
 				slinky_size++;
 			}
 		}
-		int output = linky.pop();
+		int output = slinky.pop();
 		locky.release();
 		Machine.interrupt().restore(status);
 		return output;
@@ -68,7 +72,7 @@ public class VMKernel extends UserKernel {
 	public static void releaseSPN(int spn){
 		boolean status = Machine.interrupt().disable();
 		locky.acquire();
-		linky.push(spn);
+		slinky.push(spn);
 		locky.release();
 		Machine.interrupt().restore(status);
 	}
