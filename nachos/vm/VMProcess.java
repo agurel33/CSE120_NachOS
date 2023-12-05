@@ -410,11 +410,12 @@ public class VMProcess extends UserProcess {
 			int spn = VMKernel.getSPN();
 			VMKernel.swapTable.put(bye_bye, spn);
 			int old_addr = pageTable[bye_bye].ppn * pageSize;
-			System.out.println("Write spn!:" + spn  + "PPN: " + ppn);
+			System.out.println("Write spn!:" + spn  + "PPN: " + old_addr);
 			VMKernel.swap.write(spn * pageSize, memory, old_addr, pageSize);
 			VMKernel.releasePage(pageTable[bye_bye].ppn);
 			pageTable[bye_bye].ppn = -1;
-			pageTable[page_to_load].ppn = VMKernel.getNextOpenPage();
+			ppn = VMKernel.getNextOpenPage();
+			pageTable[page_to_load].ppn = ppn;
 		}
 		if(faulted) {
 			//free ppn already, write from swap to physical 
