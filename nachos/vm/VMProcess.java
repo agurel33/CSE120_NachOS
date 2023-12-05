@@ -462,6 +462,7 @@ public class VMProcess extends UserProcess {
 				Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0);
 			}
 		}
+		System.out.println("End of LoadProcess");
 	}
 	private static int clocky = 0;
 
