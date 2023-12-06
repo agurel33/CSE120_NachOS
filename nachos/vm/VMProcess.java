@@ -431,7 +431,7 @@ public class VMProcess extends UserProcess {
 			//System.out.println("Read spn!:" + old_spn + " PPN: " + ppn);
 			VMKernel.swap.read(old_spn * pageSize, memory,ppn * pageSize, pageSize);
 			pageTable[page_to_load].valid = true;
-			VMKernel.releaseSPN(old_spn);
+			//VMKernel.releaseSPN(old_spn);
 		}
 		else {
 			
@@ -463,7 +463,7 @@ public class VMProcess extends UserProcess {
 				Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0);
 			}
 		}
-		//System.out.println("End of LoadProcess");
+		System.out.println("End of LoadProcess");
 	}
 	private static int clocky = 0;
 
