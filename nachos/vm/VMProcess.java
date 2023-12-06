@@ -431,6 +431,7 @@ public class VMProcess extends UserProcess {
 			Lib.debug(dbgProcess, "storing in: " +( ppn * pageSize));
 
 			VMKernel.swap.write(spn * pageSize, memory, old_phys_addr, pageSize); // --------------------------------------------------------------
+			Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
 			//VMKernel.releasePage(pageTable[bye_bye].ppn);
 			pageTable[page_to_load].ppn = ppn;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
