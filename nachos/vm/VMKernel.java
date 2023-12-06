@@ -171,8 +171,13 @@ public class VMKernel extends UserKernel {
 
 	public void newEntry(VMProcess process, TranslationEntry TE) {
 		invertedPageTableEntry curr = new invertedPageTableEntry(process, TE);
-		//int index = TE.ppn;
-		IPT.add(curr);
+		int index = TE.ppn;
+		if(vpnFromPpn(TE.ppn) == -1) {
+			IPT.add(curr);
+		}
+		else {
+			IPT.set(index,curr);
+		}
 	}
 
 	public int vpnFromPpn(int ppn) {
