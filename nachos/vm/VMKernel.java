@@ -18,6 +18,7 @@ public class VMKernel extends UserKernel {
 	 */
 
 	public static LinkedList<Integer> slinky = null;
+	public static LinkedList<Integer> linky = null;
 
 	public static int slinky_size = 0;
 
@@ -51,6 +52,13 @@ public class VMKernel extends UserKernel {
 		//super();
 		if(VMkernel == null) {
 			VMkernel = this;
+		}
+		if(linky == null) {
+			linky = new LinkedList<>();
+			int numForLinky = Machine.processor().getNumPhysPages();
+			for (int i = 0; i < numForLinky; i++){
+				linky.add(i);
+			}
 		}
 		if(slinky == null) {
 			slinky = new LinkedList<>();
@@ -87,6 +95,23 @@ public class VMKernel extends UserKernel {
 		locky.release();
 		Machine.interrupt().restore(status);
 		return output;
+	}
+
+	public static int getNextOpenPage(){
+		//boolean status = Machine.interrupt().disable();
+		locky.acquire();
+		int output = linky.pop();
+		locky.release();
+		//Machine.interrupt().restore(status);
+		return output;
+	}
+
+	public static void releasePage(int pageAddy){
+		boolean status = Machine.interrupt().disable();
+		locky.acquire();
+		linky.push(pageAddy);
+		locky.release();
+		Machine.interrupt().restore(status);
 	}
 
 	public static void releaseSPN(int spn){

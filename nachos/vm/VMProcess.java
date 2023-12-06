@@ -154,6 +154,8 @@ public class VMProcess extends UserProcess {
 		super.restoreState();
 	}
 
+	
+
 	public int writeVirtualMemory(int vaddr, byte[] data, int offset, int length) {
 		Lib.debug(dbgProcess, "Writing VM!");
 		userLocky.acquire();
@@ -390,7 +392,7 @@ public class VMProcess extends UserProcess {
 			faulted = true;
 		}
 		
-		if (UserKernel.linky.size() > 0) {
+		if (VMKernel.linky.size() > 0) {
 			ppn = UserKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = ppn;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
