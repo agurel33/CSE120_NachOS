@@ -208,11 +208,11 @@ public class VMKernel extends UserKernel {
 	public int vpnFromPpn(int ppn) {
 		for(invertedPageTableEntry item: IPT) {
 			if(item.TE.ppn == ppn) {
-				System.out.println("ppn found! vpn=" + item.TE.vpn);
+				//System.out.println("ppn found! vpn=" + item.TE.vpn);
 				return item.TE.vpn;
 			}
 		}
-		System.out.println("ppn not found");
+		//System.out.println("ppn not found");
 		return -1;
 	}
 
