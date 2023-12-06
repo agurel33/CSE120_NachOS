@@ -408,6 +408,7 @@ public class VMProcess extends UserProcess {
 			clocky = clocky%Machine.processor().getNumPhysPages();
 
 			int bye_bye = VMKernel.VMkernel.vpnFromPpn(phys_page);
+			System.out.println("Bye bye!: " + bye_bye);
 
 			VMKernel.VMkernel.IPT.get(bye_bye).TE.valid = false;
 			int spn = VMKernel.getSPN();
@@ -429,6 +430,7 @@ public class VMProcess extends UserProcess {
 		if(faulted) {
 			//free ppn already, write from swap to physical 
 			int old_spn = VMKernel.swapTable.get(page_to_load);
+			System.out.println("Old spn before write to memory: " + old_spn);
 			//System.out.println("Read spn!:" + old_spn + " PPN: " + ppn);
 			VMKernel.swap.read(old_spn * pageSize, memory,ppn * pageSize, pageSize);
 			pageTable[page_to_load].valid = true;
