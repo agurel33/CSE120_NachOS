@@ -394,8 +394,7 @@ public class VMProcess extends UserProcess {
 			ppn = UserKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = ppn;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
-		}
-		if (ppn == -1) {
+		} else {
 			System.out.println("Swapping now");
 			while(VMKernel.VMkernel.IPT.get(clocky).TE.used == true) {
 				VMKernel.VMkernel.IPT.get(clocky).TE.used  = false;
