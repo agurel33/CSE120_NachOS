@@ -62,7 +62,7 @@ public class VMKernel extends UserKernel {
 		}
 		if(slinky == null) {
 			slinky = new LinkedList<>();
-			for(int i = 0; i < 16; i++) {
+			for(int i = 0; i < Machine.processor().getNumPhysPages(); i++) {
 				slinky.add(i);
 				slinky_size++;
 			}
@@ -76,25 +76,6 @@ public class VMKernel extends UserKernel {
 		if(fs == null) {
 			fs = (StubFileSystem) fileSystem;
 		}
-		if(swap == null) {
-			swap = fs.open("swap", true);
-		}
-	}
-
-	public static int getSPN(){
-		boolean status = Machine.interrupt().disable();
-		locky.acquire();
-		if(slinky.size() == 0) {
-			int curr_size = slinky_size;
-			for(int i = curr_size; i < curr_size + 16; i++) {
-				slinky.add(i);
-				slinky_size++;
-			}
-		}
-		int output = slinky.pop();
-		locky.release();
-		Machine.interrupt().restore(status);
-		return output;
 	}
 
 	public static int getNextOpenPage(){
@@ -114,16 +95,28 @@ public class VMKernel extends UserKernel {
 		Machine.interrupt().restore(status);
 	}
 
+	public static int getSPN(){
+		//boolean status = Machine.interrupt().disable();
+		locky.acquire();
+		if(slinky.size() == 0) {
+			int curr_size = slinky_size;
+			for(int i = curr_size; i < curr_size + Machine.processor().getNumPhysPages(); i++) {
+				slinky.add(i);
+				slinky_size++;
+			}
+		}
+		int output = slinky.pop();
+		locky.release();
+		//Machine.interrupt().restore(status);
+		return output;
+	}
+
 	public static void releaseSPN(int spn){
-		boolean status = Machine.interrupt().disable();
+		//boolean status = Machine.interrupt().disable();
 		locky.acquire();
 		slinky.push(spn);
 		locky.release();
-		Machine.interrupt().restore(status);
-	}
-
-	public void cleanSwap() {
-		//
+		//Machine.interrupt().restore(status);
 	}
 
 	/**
@@ -132,6 +125,9 @@ public class VMKernel extends UserKernel {
 	public void initialize(String[] args) {
 		super.initialize(args);
 		IPT = new ArrayList<>();
+		if(swap == null) {
+			swap = fs.open("swap", true);
+		}
 	}
 
 	/**
@@ -159,7 +155,6 @@ public class VMKernel extends UserKernel {
 					    shellProgram + "', aborting.");
 			Lib.assertTrue(false);
 		    }
-
 		}
 		KThread.currentThread().finish();
 	}
@@ -179,44 +174,45 @@ public class VMKernel extends UserKernel {
 	protected class invertedPageTableEntry {
 		VMProcess process;
 		TranslationEntry TE;
-		boolean faulted;
 
 		public invertedPageTableEntry(VMProcess process, TranslationEntry TE) {
 			this.process = process;
 			this.TE = TE;
-			faulted = true;
 		}
 	}
 
 	public ArrayList<invertedPageTableEntry> IPT;
 
-	public VMProcess getProcess(int spn) {
-		return IPT.get(spn).process;
+	public VMProcess getProcess(int ppn) {
+		for(invertedPageTableEntry item: IPT) {
+			if(item.TE.ppn == ppn) {
+				return item.process;
+			}
+		}
+		return null;
 	}
 
 	public void newEntry(VMProcess process, TranslationEntry TE) {
-		System.out.println("Adding (vpn,ppn): " + TE.vpn + ", " + TE.ppn);
+		//System.out.println("Adding (vpn,ppn): " + TE.vpn + ", " + TE.ppn);
+		for(invertedPageTableEntry item: IPT) {
+			if(item.TE.ppn == TE.ppn) {
+				item.TE = TE;
+				item.process = process;
+				return;
+			}
+		}
 		invertedPageTableEntry curr = new invertedPageTableEntry(process, TE);
-		int index = TE.ppn;
-		//if(vpnFromPpn(TE.ppn) == -1) {
-			IPT.add(curr);
-		//}
-		//else {
-		//	IPT.set(index,curr);
-		//}
+		IPT.add(curr);
 	}
 
 	public int vpnFromPpn(int ppn) {
-		for(int i = 0; i < IPT.size(); i++) {
-			invertedPageTableEntry ent = IPT.get(i);
-			System.out.println("ppn we want: " + ppn + ", ppn we are looking at: " + ent.TE.ppn);
-			if(ent.TE.ppn == -1) {
-				IPT.remove(ent);
-			}
-			else if(ent.TE.ppn == ppn) {
-				return ent.TE.vpn;
+		for(invertedPageTableEntry item: IPT) {
+			if(item.TE.ppn == ppn) {
+				System.out.println("ppn found! vpn=" + item.TE.vpn);
+				return item.TE.vpn;
 			}
 		}
+		System.out.println("ppn not found");
 		return -1;
 	}
 }

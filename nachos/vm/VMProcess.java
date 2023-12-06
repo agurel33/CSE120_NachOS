@@ -29,7 +29,7 @@ public class VMProcess extends UserProcess {
 	}
 
 	public boolean execute(String name, String[] args) {
-		if (!load5(name, args))
+		if (!this.load(name, args))
 			return false;
 
 		thread = new UThread(this);
@@ -38,7 +38,7 @@ public class VMProcess extends UserProcess {
 		return true;
 	}
 
-	private boolean load5(String name, String[] args) {
+	private boolean load(String name, String[] args) {
 		Lib.debug(dbgProcess, "VMProcess.load(\"" + name + "\")");
 
 		OpenFile executable = ThreadedKernel.fileSystem.open(name, false);
@@ -161,21 +161,17 @@ public class VMProcess extends UserProcess {
 		userLocky.acquire();
 		int total_amount = 0;
 		int amount;
-		Lib.assertTrue(offset >= 0 && length >= 0
-				&& offset + length <= data.length);
-
-		
-
+		Lib.assertTrue(offset >= 0 && length >= 0 && offset + length <= data.length);
 		byte[] memory = Machine.processor().getMemory();
 
 		// for now, just assume that virtual addresses equal physical addresses
+		//TODO
 		if (vaddr < 0 || vaddr >= memory.length) {
 			userLocky.release();
 			return 0;
 		}
 
 		if(length > pageSize) {
-			int bytesRead = 0;
 			int remainder = length % pageSize;
 			int remainder2;
 			if(remainder == 0) {
@@ -239,9 +235,7 @@ public class VMProcess extends UserProcess {
 		userLocky.acquire();
 		int total_amount = 0;
 		int amount;
-		Lib.assertTrue(offset >= 0 && length >= 0
-				&& offset + length <= data.length);
-
+		Lib.assertTrue(offset >= 0 && length >= 0 && offset + length <= data.length);
 		byte[] memory = Machine.processor().getMemory();
 
 		// for now, just assume that virtual addresses equal physical addresses
@@ -251,7 +245,6 @@ public class VMProcess extends UserProcess {
 		}
 		
 		if(length > pageSize) {
-			
 			int offset_physical = Processor.offsetFromAddress(vaddr);
 			int offy = offset_physical;
 			System.out.println("offset!: " + offset_physical);
