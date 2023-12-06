@@ -215,4 +215,13 @@ public class VMKernel extends UserKernel {
 		System.out.println("ppn not found");
 		return -1;
 	}
+
+	public TranslationEntry getEntry(int ppn) {
+		for(invertedPageTableEntry item: IPT) {
+			if(item.TE.ppn == ppn) {
+				return item.TE;
+			}
+		}
+		return null;
+	}
 }

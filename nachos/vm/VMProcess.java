@@ -376,61 +376,61 @@ public class VMProcess extends UserProcess {
 	private void requestPage(int addy) {
 		byte[] memory = Machine.processor().getMemory();
 		int page_to_load = Processor.pageFromAddress(addy);
-		System.out.println("Fault at: " + addy);
-		System.out.println("Requesting page: " + page_to_load);
+		//System.out.println("Fault at: " + addy);
+		//System.out.println("Requesting page: " + page_to_load);
 		int ppn = -1;
-		boolean faulted = false;
+		boolean previous_fault = false;
 
 		if(VMKernel.seenTable.contains(page_to_load)) {
-			faulted = true;
+			previous_fault = true;
 		}
 
 		if (VMKernel.linky.size() > 0) {
 			ppn = VMKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = ppn;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
-		} else {
-			System.out.println("Swapping now");
-			while(VMKernel.VMkernel.IPT.get(clocky).TE.used == true) {
-				VMKernel.VMkernel.IPT.get(clocky).TE.used  = false;
+		} 
+		else {
+			//System.out.println("Swapping now");
+			while(VMKernel.VMkernel.getEntry(clocky).used == true) {
+				VMKernel.VMkernel.getEntry(clocky).used  = false;
 				clocky += 1;
 				clocky = clocky%Machine.processor().getNumPhysPages();
 			}
-			int phys_page = clocky;
+			ppn = clocky;
 			clocky += 1;
 			clocky = clocky%Machine.processor().getNumPhysPages();
 
-			int bye_bye = VMKernel.VMkernel.vpnFromPpn(phys_page);
-			System.out.println("Bye bye!: " + bye_bye);
+			int page_to_swap = VMKernel.VMkernel.vpnFromPpn(ppn);
+			//System.out.println("Bye bye!: " + page_to_swap);
 
-			VMKernel.VMkernel.IPT.get(bye_bye).TE.valid = false;
+			VMKernel.VMkernel.getEntry(ppn).used = false;
+
 			int spn = VMKernel.getSPN();
-			VMKernel.swapTable.put(bye_bye, spn);
+			VMKernel.swapTable.put(page_to_swap, spn);
 			//System.out.println(bye_bye + " bye!");
-			VMKernel.seenTable.add(bye_bye);
-			int old_addr = pageTable[bye_bye].ppn * pageSize;
+			VMKernel.seenTable.add(page_to_swap);
+			int old_phys_addr = pageTable[page_to_swap].ppn * pageSize;
 			//System.out.println("Bye_bye: " + bye_bye + ", and its ppn?: " + pageTable[bye_bye].ppn);
 			//System.out.println("Write spn!:" + spn  + " PPN: " + phys_page);
-			VMKernel.swap.write(spn * pageSize, memory, old_addr, pageSize);
+			VMKernel.swap.write(spn * pageSize, memory, old_phys_addr, pageSize);
 			//VMKernel.releasePage(pageTable[bye_bye].ppn);
-			pageTable[bye_bye].ppn = -1;
-			//ppn = VMKernel.getNextOpenPage();
-			pageTable[page_to_load].ppn = phys_page;
-			ppn = phys_page;
+			pageTable[page_to_load].ppn = ppn;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
+			pageTable[page_to_swap].ppn = -1;
+			//ppn = VMKernel.getNextOpenPage();
 		}
-		VMKernel.VMkernel.IPT.get(ppn).TE.valid = true;
-		if(faulted) {
+		//VMKernel.VMkernel.getEntry(ppn).valid = true;
+		if(previous_fault) {
 			//free ppn already, write from swap to physical 
 			int old_spn = VMKernel.swapTable.get(page_to_load);
-			System.out.println("Old spn before write to memory: " + old_spn);
+			//System.out.println("Old spn before write to memory: " + old_spn);
 			//System.out.println("Read spn!:" + old_spn + " PPN: " + ppn);
 			VMKernel.swap.read(old_spn * pageSize, memory,ppn * pageSize, pageSize);
 			pageTable[page_to_load].valid = true;
 			//VMKernel.releaseSPN(old_spn);
 		}
 		else {
-			
 			int coff_pages = 0;
 			for(int i=0; i < coff.getNumSections(); i++) {
 				CoffSection section = coff.getSection(i);
@@ -460,7 +460,7 @@ public class VMProcess extends UserProcess {
 			}
 		}
 		System.out.println("End of LoadProcess");
-		System.out.println();
+		//System.out.println();
 	}
 	private static int clocky = 0;
 
