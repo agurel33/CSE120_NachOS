@@ -454,6 +454,7 @@ public class VMProcess extends UserProcess {
 				//load coff page
 				boolean finish = false;
 					for(int i = 0; i < coff.getNumSections() && !finish; i++) {
+						Lib.debug(dbgProcess, "In outerloop, pass #" + i);
 						CoffSection section = coff.getSection(i);
 						for(int a=0; a < section.getLength(); a++) {
 							int vpn = section.getFirstVPN() + a;
