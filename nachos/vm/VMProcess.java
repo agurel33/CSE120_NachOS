@@ -247,7 +247,7 @@ public class VMProcess extends UserProcess {
 		if(length > pageSize) {
 			int offset_physical = Processor.offsetFromAddress(vaddr);
 			int offy = offset_physical;
-			System.out.println("offset!: " + offset_physical);
+			//System.out.println("offset!: " + offset_physical);
 			int remainder = length + offset_physical % pageSize;
 			int remainder2;
 			if(remainder == 0) {
@@ -256,7 +256,7 @@ public class VMProcess extends UserProcess {
 			else {
 				remainder2 = 1;
 			}
-			System.out.println("Length: " + length + ", remainder2: " + remainder2);
+			//System.out.println("Length: " + length + ", remainder2: " + remainder2);
 			int pagesNeeded = length / pageSize + remainder2;
 			if(length > ((numPages - 9) * 1024)) {
 				userLocky.release();
@@ -370,7 +370,6 @@ public class VMProcess extends UserProcess {
 		case Processor.exceptionBusError:
 			Processor proc1 = Machine.processor();
 			int bad_address1 = proc1.getBadAddress();
-			System.out.println(bad_address1);
 			return;
 		default:
 			super.handleException(cause);
@@ -464,7 +463,7 @@ public class VMProcess extends UserProcess {
 				Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0);
 			}
 		}
-		System.out.println("End of LoadProcess");
+		//System.out.println("End of LoadProcess");
 		//System.out.println();
 	}
 	private static int clocky = 0;
