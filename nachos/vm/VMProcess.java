@@ -464,6 +464,7 @@ public class VMProcess extends UserProcess {
 			}
 		}
 		System.out.println("End of LoadProcess");
+		System.out.println();
 	}
 	private static int clocky = 0;
 
