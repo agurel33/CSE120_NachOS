@@ -391,9 +391,6 @@ public class VMProcess extends UserProcess {
 		if(VMKernel.seenTable.contains(page_to_load)) {
 			faulted = true;
 		}
-		System.out.println();
-		System.out.println("Size of linky: " + VMKernel.linky.size());
-		System.out.println();
 
 		if (VMKernel.linky.size() > 0) {
 			ppn = VMKernel.getNextOpenPage();
