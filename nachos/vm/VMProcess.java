@@ -461,6 +461,7 @@ public class VMProcess extends UserProcess {
 						for(int a=0; a < section.getLength(); a++) {
 							int vpn = section.getFirstVPN() + a;
 							if(vpn == page_to_load) {
+								Lib.debug(dbgProcess, "Found vpn");
 								section.loadPage(a, pageTable[page_to_load].ppn);
 								pageTable[page_to_load].valid = true;
 								finish = true;
@@ -470,7 +471,6 @@ public class VMProcess extends UserProcess {
 						Lib.debug(dbgProcess, "Finished inner loop #" + i);
 					}
 			}
-
 			else {
 				Lib.debug(dbgProcess, "Loading page from stack/arg");
 				//load new page fill w/ zeros
