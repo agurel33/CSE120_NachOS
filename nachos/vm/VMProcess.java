@@ -395,6 +395,7 @@ public class VMProcess extends UserProcess {
 			ppn = VMKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = ppn;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
+			Lib.debug(dbgProcess, "New page, got ppn: " + ppn);
 		} 
 		else {
 			//System.out.println("Swapping now");
@@ -406,6 +407,10 @@ public class VMProcess extends UserProcess {
 			ppn = clocky;
 			clocky += 1;
 			clocky = clocky%Machine.processor().getNumPhysPages();
+
+			Lib.debug(dbgProcess, "Swapping Page, got ppn: " + ppn);
+
+
 
 			int page_to_swap = VMKernel.VMkernel.vpnFromPpn(ppn);
 			//System.out.println("Bye bye!: " + page_to_swap);
@@ -427,7 +432,9 @@ public class VMProcess extends UserProcess {
 			//ppn = VMKernel.getNextOpenPage();
 		}
 		//VMKernel.VMkernel.getEntry(ppn).valid = true;
+		
 		if(previous_fault) {
+			Lib.debug(dbgProcess, "Loading page from swap");
 			//free ppn already, write from swap to physical 
 			int old_spn = VMKernel.swapTable.get(page_to_load);
 			//System.out.println("Old spn before write to memory: " + old_spn);
@@ -437,6 +444,7 @@ public class VMProcess extends UserProcess {
 			//VMKernel.releaseSPN(old_spn);
 		}
 		else {
+			Lib.debug(dbgProcess, "Loading page from coff");
 			int coff_pages = 0;
 			for(int i=0; i < coff.getNumSections(); i++) {
 				CoffSection section = coff.getSection(i);
@@ -458,6 +466,7 @@ public class VMProcess extends UserProcess {
 				}
 			}
 			else {
+				Lib.debug(dbgProcess, "Loading page from stack/arg");
 				//load new page fill w/ zeros
 				int page_desired = pageTable[page_to_load].ppn;
 				pageTable[page_to_load].valid = true;

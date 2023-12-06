@@ -88,11 +88,11 @@ public class VMKernel extends UserKernel {
 	}
 
 	public static void releasePage(int pageAddy){
-		boolean status = Machine.interrupt().disable();
+		//boolean status = Machine.interrupt().disable();
 		locky.acquire();
 		linky.push(pageAddy);
 		locky.release();
-		Machine.interrupt().restore(status);
+		//Machine.interrupt().restore(status);
 	}
 
 	public static int getSPN(){
@@ -100,8 +100,8 @@ public class VMKernel extends UserKernel {
 		locky.acquire();
 		if(slinky.size() == 0) {
 			int curr_size = slinky_size;
-			for(int i = curr_size; i < curr_size + Machine.processor().getNumPhysPages(); i++) {
-				slinky.add(i);
+			for(int i = 0; i < Machine.processor().getNumPhysPages(); i++) {
+				slinky.add(curr_size + i);
 				slinky_size++;
 			}
 		}
@@ -185,7 +185,7 @@ public class VMKernel extends UserKernel {
 
 	public VMProcess getProcess(int ppn) {
 		for(invertedPageTableEntry item: IPT) {
-			if(item.TE.ppn == ppn) {
+			if(item != null && item.TE.ppn == ppn) {
 				return item.process;
 			}
 		}
@@ -195,7 +195,7 @@ public class VMKernel extends UserKernel {
 	public void newEntry(VMProcess process, TranslationEntry TE) {
 		//System.out.println("Adding (vpn,ppn): " + TE.vpn + ", " + TE.ppn);
 		for(invertedPageTableEntry item: IPT) {
-			if(item.TE.ppn == TE.ppn) {
+			if(item != null && item.TE.ppn == TE.ppn) {
 				item.TE = TE;
 				item.process = process;
 				return;
@@ -207,7 +207,7 @@ public class VMKernel extends UserKernel {
 
 	public int vpnFromPpn(int ppn) {
 		for(invertedPageTableEntry item: IPT) {
-			if(item.TE.ppn == ppn) {
+			if(item != null && item.TE.ppn == ppn) {
 				//System.out.println("ppn found! vpn=" + item.TE.vpn);
 				return item.TE.vpn;
 			}
