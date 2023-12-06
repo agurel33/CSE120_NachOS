@@ -452,18 +452,19 @@ public class VMProcess extends UserProcess {
 			}
 			if(page_to_load >= 0 && page_to_load <= coff_pages) {
 				//load coff page
-				outerloop:
-				for(int i = 0; i < coff.getNumSections(); i++) {
-					CoffSection section = coff.getSection(i);
-					for(int a=0; a < section.getLength(); a++) {
-						int vpn = section.getFirstVPN() + a;
-						if(vpn == page_to_load) {
-							section.loadPage(a, pageTable[page_to_load].ppn);
-							pageTable[page_to_load].valid = true;
-							break outerloop;
+				boolean finish = false;
+					for(int i = 0; i < coff.getNumSections() && !finish; i++) {
+						CoffSection section = coff.getSection(i);
+						for(int a=0; a < section.getLength(); a++) {
+							int vpn = section.getFirstVPN() + a;
+							if(vpn == page_to_load) {
+								section.loadPage(a, pageTable[page_to_load].ppn);
+								pageTable[page_to_load].valid = true;
+								finish = true;
+								break;
+							}
 						}
 					}
-				}
 			}
 			else {
 				Lib.debug(dbgProcess, "Loading page from stack/arg");
