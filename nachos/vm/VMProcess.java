@@ -396,7 +396,7 @@ public class VMProcess extends UserProcess {
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
 		}
 		if (ppn == -1) {
-			
+			System.out.println("Swapping now");
 			while(VMKernel.VMkernel.IPT.get(clocky).TE.used == true) {
 				VMKernel.VMkernel.IPT.get(clocky).TE.used  = false;
 				clocky += 1;
@@ -434,7 +434,7 @@ public class VMProcess extends UserProcess {
 			VMKernel.releaseSPN(old_spn);
 		}
 		else {
-			System.out.println("New page");
+			
 			int coff_pages = 0;
 			for(int i=0; i < coff.getNumSections(); i++) {
 				CoffSection section = coff.getSection(i);
