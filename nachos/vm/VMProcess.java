@@ -378,6 +378,8 @@ public class VMProcess extends UserProcess {
 	}
 
 	private void requestPage(int addy) {
+		userLocky.acquire();
+
 		byte[] memory = Machine.processor().getMemory();
 		int page_to_load = Processor.pageFromAddress(addy);
 		//System.out.println("Fault at: " + addy);
@@ -463,6 +465,8 @@ public class VMProcess extends UserProcess {
 				Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0);
 			}
 		}
+
+		userLocky.release();
 		//System.out.println("End of LoadProcess");
 		//System.out.println();
 	}
