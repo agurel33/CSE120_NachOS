@@ -177,8 +177,8 @@ public class VMKernel extends UserKernel {
 
 	public int vpnFromPpn(int ppn) {
 		for(invertedPageTableEntry ent: IPT) {
+		System.out.println("ppn we want: " + ppn + ", ppn we are looking at: " + ent.TE.ppn);
 			if(ent.TE.ppn == ppn) {
-				System.out.println("ppn we want: " + ppn + ", ppn we are looking at: " + ent.TE.ppn);
 				return ent.TE.vpn;
 			}
 		}
