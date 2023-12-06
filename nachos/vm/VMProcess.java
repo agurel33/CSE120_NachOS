@@ -434,6 +434,7 @@ public class VMProcess extends UserProcess {
 			VMKernel.releaseSPN(old_spn);
 		}
 		else {
+			System.out.println("New page");
 			int coff_pages = 0;
 			for(int i=0; i < coff.getNumSections(); i++) {
 				CoffSection section = coff.getSection(i);
