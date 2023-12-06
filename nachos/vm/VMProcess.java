@@ -393,7 +393,7 @@ public class VMProcess extends UserProcess {
 		}
 		
 		if (VMKernel.linky.size() > 0) {
-			ppn = UserKernel.getNextOpenPage();
+			ppn = VMKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = ppn;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
 		} else {
