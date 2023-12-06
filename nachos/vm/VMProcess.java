@@ -382,7 +382,7 @@ public class VMProcess extends UserProcess {
 	private void requestPage(int addy) {
 		Lib.debug(dbgProcess, "Entering requestPage");
 		userLocky.acquire();
-		byte[] memory = Machine.processor().getMemory();
+		byte[] memory = Machine.processor().getMemory(); // --------------------------------------------------------------
 		int page_to_load = Processor.pageFromAddress(addy);
 		//System.out.println("Fault at: " + addy);
 		//System.out.println("Requesting page: " + page_to_load);
@@ -426,7 +426,11 @@ public class VMProcess extends UserProcess {
 			int old_phys_addr = pageTable[page_to_swap].ppn * pageSize;
 			//System.out.println("Bye_bye: " + bye_bye + ", and its ppn?: " + pageTable[bye_bye].ppn);
 			//System.out.println("Write spn!:" + spn  + " PPN: " + phys_page);
-			VMKernel.swap.write(spn * pageSize, memory, old_phys_addr, pageSize);
+			Lib.debug(dbgProcess, "file offset: " +(spn * pageSize));
+			Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
+			Lib.debug(dbgProcess, "storing in: " +( ppn * pageSize));
+
+			VMKernel.swap.write(spn * pageSize, memory, old_phys_addr, pageSize); // --------------------------------------------------------------
 			//VMKernel.releasePage(pageTable[bye_bye].ppn);
 			pageTable[page_to_load].ppn = ppn;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
@@ -441,7 +445,11 @@ public class VMProcess extends UserProcess {
 			int old_spn = VMKernel.swapTable.get(page_to_load);
 			//System.out.println("Old spn before write to memory: " + old_spn);
 			//System.out.println("Read spn!:" + old_spn + " PPN: " + ppn);
-			VMKernel.swap.read(old_spn * pageSize, memory,ppn * pageSize, pageSize);
+			Lib.debug(dbgProcess, "file offset: " + (old_spn * pageSize));
+			Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
+			Lib.debug(dbgProcess, "storing in: " + (ppn * pageSize));
+
+			VMKernel.swap.read(old_spn * pageSize, memory,ppn * pageSize, pageSize); // --------------------------------------------------------------
 			pageTable[page_to_load].valid = true;
 			//VMKernel.releaseSPN(old_spn);
 		}
@@ -464,7 +472,8 @@ public class VMProcess extends UserProcess {
 							int vpn = section.getFirstVPN() + a;
 							if(vpn == page_to_load) {
 								Lib.debug(dbgProcess, "Found vpn");
-								section.loadPage(a, pageTable[page_to_load].ppn);
+								Lib.debug(dbgProcess, "section: " + a + " ppn: " + pageTable[page_to_load].ppn);
+								section.loadPage(a, pageTable[page_to_load].ppn); // --------------------------------------------------------------
 								pageTable[page_to_load].valid = true;
 								finish = true;
 								break;
@@ -479,7 +488,10 @@ public class VMProcess extends UserProcess {
 				int page_desired = pageTable[page_to_load].ppn;
 				pageTable[page_to_load].valid = true;
 				int phy_addr = page_desired * pageSize;
-				Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0);
+				Lib.debug(dbgProcess, "filling from " + phy_addr);
+				Lib.debug(dbgProcess, "filling to" +( phy_addr + pageSize));
+
+				Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0); // --------------------------------------------------------------
 			}
 		}
 		userLocky.release();
