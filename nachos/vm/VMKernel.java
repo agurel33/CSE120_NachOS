@@ -198,12 +198,12 @@ public class VMKernel extends UserKernel {
 		System.out.println("Adding (vpn,ppn): " + TE.ppn + " " + TE.vpn);
 		invertedPageTableEntry curr = new invertedPageTableEntry(process, TE);
 		int index = TE.ppn;
-		if(vpnFromPpn(TE.ppn) == -1) {
+		//if(vpnFromPpn(TE.ppn) == -1) {
 			IPT.add(curr);
-		}
-		else {
-			IPT.set(index,curr);
-		}
+		//}
+		//else {
+		//	IPT.set(index,curr);
+		//}
 	}
 
 	public int vpnFromPpn(int ppn) {
