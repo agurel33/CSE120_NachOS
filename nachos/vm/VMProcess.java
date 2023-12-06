@@ -453,9 +453,11 @@ public class VMProcess extends UserProcess {
 			if(page_to_load >= 0 && page_to_load <= coff_pages) {
 				//load coff page
 				boolean finish = false;
+				Lib.debug(dbgProcess, "# of sections:" + coff.getNumSections());
 					for(int i = 0; i < coff.getNumSections() && !finish; i++) {
 						Lib.debug(dbgProcess, "In outerloop, pass #" + i);
 						CoffSection section = coff.getSection(i);
+						Lib.debug(dbgProcess, "Curr Section length: " + section.getLength());
 						for(int a=0; a < section.getLength(); a++) {
 							int vpn = section.getFirstVPN() + a;
 							if(vpn == page_to_load) {
@@ -465,8 +467,10 @@ public class VMProcess extends UserProcess {
 								break;
 							}
 						}
+						Lib.debug(dbgProcess, "Finished inner loop #" + i);
 					}
 			}
+
 			else {
 				Lib.debug(dbgProcess, "Loading page from stack/arg");
 				//load new page fill w/ zeros
