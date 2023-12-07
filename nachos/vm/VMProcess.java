@@ -1,6 +1,7 @@
 package nachos.vm;
 
 
+import java.beans.PropertyEditor;
 import java.io.EOFException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -357,10 +358,7 @@ public class VMProcess extends UserProcess {
 		switch (cause) {
 		case Processor.exceptionPageFault:
 			//start
-			Processor proc = Machine.processor();
-			int bad_address = proc.getBadAddress();
-			Lib.debug(dbgProcess, bad_address + " bad");
-			requestPage(bad_address);
+			requestPage(Machine.processor().readRegister(Processor.regBadVAddr));
 			break;
 		case Processor.exceptionBusError:
 			Processor proc1 = Machine.processor();
