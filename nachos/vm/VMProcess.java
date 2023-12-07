@@ -434,7 +434,7 @@ public class VMProcess extends UserProcess {
 		pageTable[page_to_load].valid = true;
 		VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
 		userLocky.release();
-		Lib.debug(dbgProcess, "Exiting requestPage --------------");
+		Lib.debug('d', "Exiting requestPage --------------");
 		//System.out.println("End of LoadProcess");
 		//System.out.println();
 	}
