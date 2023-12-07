@@ -405,45 +405,29 @@ public class VMProcess extends UserProcess {
 			pageTable[page_to_load].valid = true;
 		}
 		else {	
-			int coff_pages = 0;
-			for(int i=0; i < coff.getNumSections(); i++) {
+			boolean done = false;
+			for(int i=0; i<coff.getNumSections(); i++) {
 				CoffSection section = coff.getSection(i);
-				coff_pages += section.getLength();
-			}
-			if(page_to_load >= 0 && page_to_load <= coff_pages) {
-				//Lib.debug(dbgProcess, "Loading page from coff: " + curr_ppn);
-				//Lib.debug(dbgProcess, "Demand paging for COFF");
-				//load coff page
-				boolean finish = false;
-				//Lib.debug(dbgProcess, "# of sections:" + coff.getNumSections());
-					for(int i = 0; i < coff.getNumSections() && !finish; i++) {
-						//Lib.debug(dbgProcess, "In outerloop, pass #" + i);
-						CoffSection section = coff.getSection(i);
-						//Lib.debug(dbgProcess, "Curr Section length: " + section.getLength());
-						for(int a=0; a < section.getLength(); a++) {
-							int vpn = section.getFirstVPN() + a;
-							if(vpn == page_to_load) {
-								//Lib.debug(dbgProcess, "Found vpn");
-								Lib.debug(dbgProcess, "section: " + a + " ppn: " + pageTable[page_to_load].ppn);
-								section.loadPage(a, pageTable[page_to_load].ppn); // --------------------------------------------------------------
-								finish = true;
-								break;
-							}
-						}
-						//Lib.debug(dbgProcess, "Finished inner loop #" + i);
+				
+				for(int j=0; j < section.getLength(); j++) {
+					int section_vpn = section.getFirstVPN() + j;
+					if(page_to_load == section_vpn) {
+						section.loadPage(j, pageTable[page_to_load].ppn);
+						done = true;
 					}
+				}
+				if(done) {
+					break;
+				}
 			}
-			else {
+
+			if(!done) {
 				//Lib.debug(dbgProcess, "Demand paging for stack");
 				Lib.debug(dbgProcess, "Loading page from stack/arg");
 				//load new page fill w/ zeros
-				int page_desired = pageTable[page_to_load].ppn;
-				pageTable[page_to_load].valid = true;
-				int phy_addr = page_desired * pageSize;
 				//Lib.debug(dbgProcess, "filling from " + phy_addr);
 				//Lib.debug(dbgProcess, "filling to" +( phy_addr + pageSize));
-
-				Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0); // --------------------------------------------------------------
+				Arrays.fill(memory, curr_ppn * pageSize, curr_ppn *pageSize + pageSize, (byte) 0); // --------------------------------------------------------------
 			}
 			pageTable[page_to_load].valid = true;
 		}
