@@ -386,6 +386,7 @@ public class VMProcess extends UserProcess {
 
 		if (!VMKernel.linky.isEmpty()) {
 			pageTable[page_to_load].ppn = VMKernel.getNextOpenPage();
+			Lib.debug('d', "" + VMKernel.linky.size());
 			//Lib.debug(dbgProcess, "New page, got ppn: " + ppn);
 		}
 		else {
