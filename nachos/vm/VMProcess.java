@@ -349,6 +349,7 @@ public class VMProcess extends UserProcess {
 			if(swapTable.get(pageTable[i].vpn) != null) {
 				int spn = swapTable.get(pageTable[i].vpn);
 				VMKernel.releaseSPN(spn);
+				swapTable.remove(pageTable[i].vpn);
 			}
 		}
 	}
