@@ -25,8 +25,7 @@ public class VMKernel extends UserKernel {
 	public static VMKernel VMkernel = null;
 	public static StubFileSystem fs = null; 
 	public static OpenFile swap = null; 
-	public static HashMap<Integer, Integer> swapTable = null;
-	public static ArrayList<Integer> seenTable = null;
+	//public static ArrayList<Integer> seenTable = null;
 	public static FileSystem fileSystem = null;
 
 
@@ -66,12 +65,6 @@ public class VMKernel extends UserKernel {
 				slinky.add(i);
 				slinky_size++;
 			}
-		}
-		if(swapTable == null) {
-			swapTable = new HashMap<>();
-		}
-		if(seenTable == null) {
-			seenTable = new ArrayList<>();
 		}
 		if(fs == null) {
 			fs = (StubFileSystem) fileSystem;
@@ -182,7 +175,7 @@ public class VMKernel extends UserKernel {
 		}
 	}
 
-	public ArrayList<invertedPageTableEntry> IPT;
+	public static ArrayList<invertedPageTableEntry> IPT;
 
 	public VMProcess getProcess(int ppn) {
 		for(invertedPageTableEntry item: IPT) {
@@ -217,12 +210,52 @@ public class VMKernel extends UserKernel {
 		return -1;
 	}
 
-	public TranslationEntry getEntry(int ppn) {
+	public invertedPageTableEntry getEntry(int ppn) {
 		for(invertedPageTableEntry item: IPT) {
 			if(item.TE.ppn == ppn) {
-				return item.TE;
+				return item;
 			}
 		}
 		return null;
 	}
+
+	public static int getPPNfromClock() {
+		while(VMkernel.getEntry(clocky).TE.used == true) {
+			VMkernel.getEntry(clocky).TE.used  = false;
+			clocky += 1;
+			clocky = clocky%Machine.processor().getNumPhysPages();
+		}
+		int ppn = clocky;
+		clocky += 1;
+		clocky = clocky%Machine.processor().getNumPhysPages();
+		eviction(VMkernel.getEntry(ppn));
+		return ppn;
+	}
+
+	private static int clocky = 0;
+
+	public static void eviction(invertedPageTableEntry IPTE) {
+		VMProcess currProcess = IPTE.process;
+		int spn;
+		int ppn = IPTE.TE.ppn;
+		boolean spnExisted;
+		byte[] memory = Machine.processor().getMemory();
+		if(currProcess.swapTable.containsKey(IPTE.TE.vpn)) {
+			spn = getSPN();
+			currProcess.swapTable.put(IPTE.TE.vpn, spn);
+			spnExisted = false;
+		}
+		else {
+			spn = currProcess.swapTable.get(IPTE.TE.vpn);
+			spnExisted = true;
+		}
+		if(IPTE.TE.dirty || !spnExisted) {
+			swap.write(spn * pageSize, memory, ppn * pageSize, pageSize); // --------------------------------------------------------------
+		}
+		IPTE.TE.valid = false;
+		IPT.remove(IPTE);
+	}
+
+	static int pageSize = 1024;
+
 }

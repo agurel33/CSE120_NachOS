@@ -3,6 +3,7 @@ package nachos.vm;
 
 import java.io.EOFException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import nachos.machine.*;
 import nachos.threads.*;
@@ -18,6 +19,7 @@ public class VMProcess extends UserProcess {
 	private int argc, argv;
 
 	private static Lock userLocky = null;
+	public HashMap<Integer, Integer> swapTable = null;
 	/**
 	 * Allocate a new process.
 	 */
@@ -25,6 +27,9 @@ public class VMProcess extends UserProcess {
 		super();
 		if(userLocky == null) {
 			userLocky = new Lock();
+		}
+		if(swapTable == null) {
+			swapTable = new HashMap<>();
 		}
 	}
 
@@ -374,91 +379,43 @@ public class VMProcess extends UserProcess {
 		userLocky.acquire();
 		byte[] memory = Machine.processor().getMemory(); // --------------------------------------------------------------
 		int page_to_load = Processor.pageFromAddress(addy);
-		//System.out.println("Fault at: " + addy);
-		//System.out.println("Requesting page: " + page_to_load);
-		int ppn = -1;
+
 		boolean previous_fault = false;
 
-		if(VMKernel.seenTable.contains(page_to_load)) {
+		if(swapTable.containsKey(page_to_load)) {
 			previous_fault = true;
 		}
 
-		if (VMKernel.linky.size() > 0) {
-			ppn = VMKernel.getNextOpenPage();
-			pageTable[page_to_load].ppn = ppn;
-			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
+		if (!VMKernel.linky.isEmpty()) {
+			pageTable[page_to_load].ppn = VMKernel.getNextOpenPage();
 			//Lib.debug(dbgProcess, "New page, got ppn: " + ppn);
-		} 
-		else {
-			//System.out.println("Swapping now");
-			while(VMKernel.VMkernel.getEntry(clocky).used == true) {
-				VMKernel.VMkernel.getEntry(clocky).used  = false;
-				clocky += 1;
-				clocky = clocky%Machine.processor().getNumPhysPages();
-			}
-			ppn = clocky;
-			clocky += 1;
-			clocky = clocky%Machine.processor().getNumPhysPages();
-
-			//Lib.debug(dbgProcess, "Swapping Page, got ppn: " + ppn);
-
-
-
-			int page_to_swap = VMKernel.VMkernel.vpnFromPpn(ppn);
-			//System.out.println("Bye bye!: " + page_to_swap);
-
-			VMKernel.VMkernel.getEntry(ppn).used = false;
-			int spn;
-			if(!VMKernel.seenTable.contains(page_to_swap)) {
-				spn = VMKernel.getSPN();
-			}
-			else {
-				spn = VMKernel.swapTable.get(page_to_swap);
-			}
-			VMKernel.swapTable.put(page_to_swap, spn);
-			//System.out.println(bye_bye + " bye!");
-			VMKernel.seenTable.add(page_to_swap);
-			int old_phys_addr = pageTable[page_to_swap].ppn * pageSize;
-			//System.out.println("Bye_bye: " + bye_bye + ", and its ppn?: " + pageTable[bye_bye].ppn);
-			//System.out.println("Write spn!:" + spn  + " PPN: " + phys_page);
-			//Lib.debug(dbgProcess, "file offset: " +(spn * pageSize));
-			//Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
-			//Lib.debug(dbgProcess, "storing in: " +( ppn * pageSize));
-			if(pageTable[page_to_swap].dirty || !VMKernel.seenTable.contains(page_to_swap)) {
-				VMKernel.swap.write(spn * pageSize, memory, old_phys_addr, pageSize); // --------------------------------------------------------------
-			}
-			//Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
-			//VMKernel.releasePage(pageTable[bye_bye].ppn);
-			pageTable[page_to_load].ppn = ppn;
-			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
-			pageTable[page_to_swap].ppn = -1;
-			//ppn = VMKernel.getNextOpenPage();
 		}
-		//VMKernel.VMkernel.getEntry(ppn).valid = true;
+		else {
+			pageTable[page_to_load].ppn = VMKernel.getPPNfromClock();
+		} 
+		int curr_ppn = pageTable[page_to_load].ppn;
+
+		//clean UNTIL HERE!!!
 		
 		if(previous_fault) {
 			//Lib.debug(dbgProcess, "Loading page from swap");
-			//free ppn already, write from swap to physical 
-			int old_spn = VMKernel.swapTable.get(page_to_load);
-			//System.out.println("Old spn before write to memory: " + old_spn);
-			//System.out.println("Read spn!:" + old_spn + " PPN: " + ppn);
 			//Lib.debug(dbgProcess, "file offset: " + (old_spn * pageSize));
 			//Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
 			//Lib.debug(dbgProcess, "storing in: " + (ppn * pageSize));
 
-			VMKernel.swap.read(old_spn * pageSize, memory,ppn * pageSize, pageSize); // --------------------------------------------------------------
+			int curr_spn = swapTable.get(page_to_load);
+			VMKernel.swap.read(curr_spn * pageSize, memory,curr_ppn * pageSize, pageSize); // --------------------------------------------------------------
 			pageTable[page_to_load].valid = true;
-			//VMKernel.releaseSPN(old_spn);
 		}
 		else {
-			Lib.debug(dbgProcess, "Loading page from coff");
+			//Lib.debug(dbgProcess, "Loading page from coff");
 			int coff_pages = 0;
 			for(int i=0; i < coff.getNumSections(); i++) {
 				CoffSection section = coff.getSection(i);
 				coff_pages += section.getLength();
 			}
-			Lib.debug(dbgProcess, "Number of COFF pages: " + coff_pages);
-			Lib.debug(dbgProcess, "Number of page to load: " + page_to_load);
+			//Lib.debug(dbgProcess, "Number of COFF pages: " + coff_pages);
+			//Lib.debug(dbgProcess, "Number of page to load: " + page_to_load);
 
 			if(page_to_load >= 0 && page_to_load <= coff_pages) {
 				Lib.debug(dbgProcess, "Demand paging for COFF");
@@ -475,7 +432,6 @@ public class VMProcess extends UserProcess {
 								//Lib.debug(dbgProcess, "Found vpn");
 								//Lib.debug(dbgProcess, "section: " + a + " ppn: " + pageTable[page_to_load].ppn);
 								section.loadPage(a, pageTable[page_to_load].ppn); // --------------------------------------------------------------
-								pageTable[page_to_load].valid = true;
 								finish = true;
 								break;
 							}
@@ -496,12 +452,13 @@ public class VMProcess extends UserProcess {
 				Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0); // --------------------------------------------------------------
 			}
 		}
+
+		VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
 		userLocky.release();
 		Lib.debug(dbgProcess, "Exiting requestPage --------------");
 		//System.out.println("End of LoadProcess");
 		//System.out.println();
 	}
-	private static int clocky = 0;
 
 	private static final int pageSize = Processor.pageSize;
 
