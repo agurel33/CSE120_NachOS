@@ -618,7 +618,7 @@ public class UserProcess {
 
 		Lib.debug(dbgProcess, "UserProcess.handleExit (" + status + ")");
 
-		//System.out.println("We entereed handleExit");
+		System.out.println("We entereed handleExit");
 
 		for(int x = 0; x < fileTable.length; x++) {
 			OpenFile curr = fileTable[x];
