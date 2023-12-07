@@ -251,6 +251,7 @@ public class VMKernel extends UserKernel {
 			spn = currProcess.swapTable.get(IPTE.TE.vpn);
 			spnExisted = true;
 		}
+		Lib.debug('d',"dirty bit: " + IPTE.TE.dirty);
 		if(IPTE.TE.dirty || !spnExisted) {
 			Lib.debug('d',"writing to swap file");
 			Lib.debug('d',"for vpn: " + IPTE.TE.vpn);
