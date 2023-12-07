@@ -359,7 +359,7 @@ public class VMProcess extends UserProcess {
 			//start
 			Processor proc = Machine.processor();
 			int bad_address = proc.getBadAddress();
-			//System.out.println(bad_address + " bad");
+			Lib.debug(dbgProcess, bad_address + " bad");
 			requestPage(bad_address);
 			break;
 		case Processor.exceptionBusError:
@@ -402,7 +402,6 @@ public class VMProcess extends UserProcess {
 			//Lib.debug(dbgProcess, "file offset: " + (old_spn * pageSize));
 			//Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
 			//Lib.debug(dbgProcess, "storing in: " + (ppn * pageSize));
-
 			int curr_spn = swapTable.get(page_to_load);
 			VMKernel.swap.read(curr_spn * pageSize, memory,curr_ppn * pageSize, pageSize); // --------------------------------------------------------------
 			pageTable[page_to_load].valid = true;
