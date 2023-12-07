@@ -416,6 +416,7 @@ public class VMProcess extends UserProcess {
 						Lib.debug('d', "Loading page from coff");
 						section.loadPage(j, pageTable[page_to_load].ppn);
 						done = true;
+						break;
 					}
 				}
 				if(done) {

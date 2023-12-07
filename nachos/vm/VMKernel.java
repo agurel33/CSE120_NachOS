@@ -236,7 +236,8 @@ public class VMKernel extends UserKernel {
 
 	private static int clocky = 0;
 
-	public static void eviction(invertedPageTableEntry IPTE) {
+	public static void 
+	eviction(invertedPageTableEntry IPTE) {
 		VMProcess currProcess = IPTE.process;
 		int spn;
 		int ppn = IPTE.TE.ppn;
