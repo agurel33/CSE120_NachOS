@@ -366,12 +366,6 @@ public class VMProcess extends UserProcess {
 		case Processor.exceptionPageFault:
 			//start
 			requestPage(Machine.processor().readRegister(Processor.regBadVAddr));
-			break;
-		case Processor.exceptionBusError:
-			Processor proc1 = Machine.processor();
-			int bad_address1 = proc1.getBadAddress();
-			Lib.debug(dbgProcess,"Bus error " + bad_address1);
-			super.handleException(cause);
 			return;
 		default:
 			super.handleException(cause);
