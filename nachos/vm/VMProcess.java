@@ -457,12 +457,15 @@ public class VMProcess extends UserProcess {
 			//VMKernel.releaseSPN(old_spn);
 		}
 		else {
-			//Lib.debug(dbgProcess, "Loading page from coff");
+			Lib.debug(dbgProcess, "Loading page from coff");
 			int coff_pages = 0;
 			for(int i=0; i < coff.getNumSections(); i++) {
 				CoffSection section = coff.getSection(i);
 				coff_pages += section.getLength();
 			}
+			Lib.debug(dbgProcess, "Number of COFF pages: " + coff_pages);
+			Lib.debug(dbgProcess, "Number of page to load: " + page_to_load);
+
 			if(page_to_load >= 0 && page_to_load <= coff_pages) {
 				Lib.debug(dbgProcess, "Demand paging for COFF");
 				//load coff page
