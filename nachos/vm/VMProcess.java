@@ -368,7 +368,7 @@ public class VMProcess extends UserProcess {
 			int bad_address = proc.getBadAddress();
 			//System.out.println(bad_address + " bad");
 			requestPage(bad_address);
-			return;
+			break;
 		case Processor.exceptionBusError:
 			Processor proc1 = Machine.processor();
 			int bad_address1 = proc1.getBadAddress();
