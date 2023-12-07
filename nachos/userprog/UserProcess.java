@@ -626,10 +626,16 @@ public class UserProcess {
 				curr.close();
 			}
 		}
+
+		unloadSections();
+
+		coff.close(); //added
 		
 		UserProcess parent111 = UserKernel.getHashMap(parentID);
 
-		parent111.status_of_children.put(processID, status);
+		if(parent111 != null) {
+			parent111.status_of_children.put(processID, status);
+		}
 		//System.out.println("do we get here -1");
 
 		for(int y = 0; y < pageTable.length; y++) {
@@ -637,7 +643,7 @@ public class UserProcess {
 			int ppn = curry.ppn;
 			UserKernel.linky.add(ppn);
 		}
-		unloadSections();
+		
 
 		for(int z = 0; z < myChildren.size(); z++) {
 			int childy = myChildren.get(z);
@@ -656,7 +662,6 @@ public class UserProcess {
 				if(!parent.thread.isReady()) {
 					parent.thread.ready();
 				}
-				
 				Machine.interrupt().restore(banana);
 			}
 		}

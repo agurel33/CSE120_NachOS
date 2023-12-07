@@ -326,24 +326,10 @@ public class VMProcess extends UserProcess {
 		// 	return false;
 		// }
 		pageTable = new TranslationEntry[numPages];
-		int counter = 0;
-		for (int s = 0; s < coff.getNumSections(); s++) {
-			CoffSection section = coff.getSection(s);
 
-			Lib.debug(dbgProcess, "\tinitializing " + section.getName()
-					+ " section (" + section.getLength() + " pages)");
-
-			for (int i = 0; i < section.getLength(); i++) {
-				int vpn = section.getFirstVPN() + i;
-				pageTable[counter] = new TranslationEntry(vpn, -1, false, section.isReadOnly(), false, false);
-				counter++;
-			}
+		for(int i = 0; i < numPages; i++) {
+			pageTable[i] = new TranslationEntry(i, -1, false, false, false, false);
 		}
-		for(int abbi_sucks = 0; abbi_sucks < stackPages; abbi_sucks++) {
-			pageTable[counter] = new TranslationEntry(counter, -1, false, false, false, false);
-			counter++;
-		}
-		pageTable[counter] = new TranslationEntry(counter, -1,false,false,false,false);
 		return true;
 	}
 
