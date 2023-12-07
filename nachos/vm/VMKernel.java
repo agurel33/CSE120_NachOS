@@ -220,13 +220,13 @@ public class VMKernel extends UserKernel {
 	}
 
 	public static int getPPNfromClock() {
-		Lib.debug('d',"inside clock");
 		while(VMkernel.getEntry(clocky).TE.used == true) {
 			VMkernel.getEntry(clocky).TE.used  = false;
 			clocky += 1;
 			clocky = clocky%Machine.processor().getNumPhysPages();
 		}
 		int ppn = clocky;
+		Lib.debug('d',"inside clock: " + ppn);
 		clocky += 1;
 		clocky = clocky%Machine.processor().getNumPhysPages();
 		eviction(VMkernel.getEntry(ppn));
