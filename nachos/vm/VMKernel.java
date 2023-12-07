@@ -240,7 +240,7 @@ public class VMKernel extends UserKernel {
 		int ppn = IPTE.TE.ppn;
 		boolean spnExisted;
 		byte[] memory = Machine.processor().getMemory();
-		if(currProcess.swapTable.containsKey(IPTE.TE.vpn)) {
+		if(!currProcess.swapTable.containsKey(IPTE.TE.vpn)) {
 			spn = getSPN();
 			currProcess.swapTable.put(IPTE.TE.vpn, spn);
 			spnExisted = false;
