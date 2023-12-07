@@ -381,11 +381,6 @@ public class VMProcess extends UserProcess {
 		byte[] memory = Machine.processor().getMemory(); // --------------------------------------------------------------
 		int page_to_load = addy / 1024;
 		//Lib.debug(dbgProcess, "Entering requestPage for page: " + page_to_load);
-		boolean previous_fault = false;
-
-		if(swapTable.containsKey(page_to_load)) {
-			previous_fault = true;
-		}
 
 		if (!VMKernel.linky.isEmpty()) {
 			pageTable[page_to_load].ppn = VMKernel.getNextOpenPage();
@@ -394,35 +389,36 @@ public class VMProcess extends UserProcess {
 		}
 		else {
 			pageTable[page_to_load].ppn = VMKernel.getPPNfromClock();
+			Lib.debug('d', "Got ppn from evicting: " + pageTable[page_to_load].ppn);
 		} 
 		int curr_ppn = pageTable[page_to_load].ppn;
 
 		//clean UNTIL HERE!!!
 		
-		if(previous_fault) {
+		if(swapTable.containsKey(page_to_load)) {
 			//Lib.debug(dbgProcess, "Loading page from swap");
 			//Lib.debug(dbgProcess, "file offset: " + (old_spn * pageSize));
 			//Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
 			//Lib.debug(dbgProcess, "storing in: " + (ppn * pageSize));
 			int curr_spn = swapTable.get(page_to_load);
-			VMKernel.swap.read(curr_spn * pageSize, memory,curr_ppn * pageSize, pageSize); // --------------------------------------------------------------
+			int swap_read = VMKernel.swap.read(curr_spn * pageSize, memory,curr_ppn * pageSize, pageSize);
+			Lib.debug('d', "value from swap read: " + swap_read);
 		}
 		else {	
 			boolean done = false;
 			for(int i=0; i<coff.getNumSections(); i++) {
+				if(done) {
+					break;
+				}
 				CoffSection section = coff.getSection(i);
-				
 				for(int j=0; j < section.getLength(); j++) {
 					int section_vpn = section.getFirstVPN() + j;
 					if(page_to_load == section_vpn) {
-						Lib.debug('d', "Loading page from coff");
+						Lib.debug('d', "Loading page from coff: " + j);
 						section.loadPage(j, pageTable[page_to_load].ppn);
 						done = true;
 						break;
 					}
-				}
-				if(done) {
-					break;
 				}
 			}
 
