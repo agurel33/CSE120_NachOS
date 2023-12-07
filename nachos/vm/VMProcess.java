@@ -379,6 +379,7 @@ public class VMProcess extends UserProcess {
 		userLocky.acquire();
 		byte[] memory = Machine.processor().getMemory(); // --------------------------------------------------------------
 		int page_to_load = addy / 1024;
+		Lib.debug(dbgProcess, "addy:" + addy + ", page:" + page_to_load);
 
 		boolean previous_fault = false;
 
