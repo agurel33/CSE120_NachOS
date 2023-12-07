@@ -853,7 +853,8 @@ public class UserProcess {
 		}
 
 		int nextChild = nextProcess;
-		UserProcess processy = new UserProcess(processID);
+		UserProcess processy = newUserProcess();
+		processy.processID = processID;
 		IDLock.acquire();
 		//System.out.println("next process id: " + nextProcess);
 		myChildren.add(nextChild);

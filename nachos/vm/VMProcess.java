@@ -344,6 +344,12 @@ public class VMProcess extends UserProcess {
 	 */
 	protected void unloadSections() {
 		super.unloadSections();
+		for(int i=0; i < pageTable.length; i++) {
+			if(swapTable.get(pageTable[i].vpn) != null) {
+				int spn = swapTable.get(pageTable[i].vpn);
+				VMKernel.releaseSPN(spn);
+			}
+		}
 	}
 
 	/**
