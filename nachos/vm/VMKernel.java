@@ -226,9 +226,10 @@ public class VMKernel extends UserKernel {
 			clocky = clocky%Machine.processor().getNumPhysPages();
 		}
 		int ppn = clocky;
-		Lib.debug('d',"inside clock: " + ppn);
+		Lib.debug('d',"evicting: " + ppn);
 		clocky += 1;
 		clocky = clocky%Machine.processor().getNumPhysPages();
+		Lib.debug('d',"new clock value: " + clocky);
 		eviction(VMkernel.getEntry(ppn));
 		return ppn;
 	}
@@ -251,6 +252,7 @@ public class VMKernel extends UserKernel {
 			spnExisted = true;
 		}
 		if(IPTE.TE.dirty || !spnExisted) {
+			Lib.debug('d',"writing to swap file");
 			swap.write(spn * pageSize, memory, ppn * pageSize, pageSize); // --------------------------------------------------------------
 		}
 		IPTE.TE.valid = false;
