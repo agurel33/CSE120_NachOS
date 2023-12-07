@@ -373,7 +373,8 @@ public class VMProcess extends UserProcess {
 	}
 
 	private void requestPage(int addy) {
-		
+		Lib.debug('d',"requesting files");
+
 		userLocky.acquire();
 		byte[] memory = Machine.processor().getMemory(); // --------------------------------------------------------------
 		int page_to_load = addy / 1024;
