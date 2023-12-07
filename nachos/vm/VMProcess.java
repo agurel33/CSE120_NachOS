@@ -464,6 +464,7 @@ public class VMProcess extends UserProcess {
 				coff_pages += section.getLength();
 			}
 			if(page_to_load >= 0 && page_to_load <= coff_pages) {
+				Lib.debug(dbgProcess, "Demand paging for COFF");
 				//load coff page
 				boolean finish = false;
 				//Lib.debug(dbgProcess, "# of sections:" + coff.getNumSections());
@@ -486,6 +487,7 @@ public class VMProcess extends UserProcess {
 					}
 			}
 			else {
+				Lib.debug(dbgProcess, "Demand paging for stack");
 				//Lib.debug(dbgProcess, "Loading page from stack/arg");
 				//load new page fill w/ zeros
 				int page_desired = pageTable[page_to_load].ppn;
