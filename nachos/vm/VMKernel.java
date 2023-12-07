@@ -220,6 +220,7 @@ public class VMKernel extends UserKernel {
 	}
 
 	public static int getPPNfromClock() {
+		Lib.debug('d',"inside clock");
 		while(VMkernel.getEntry(clocky).TE.used == true) {
 			VMkernel.getEntry(clocky).TE.used  = false;
 			clocky += 1;

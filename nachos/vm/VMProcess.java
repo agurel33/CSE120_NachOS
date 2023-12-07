@@ -402,7 +402,6 @@ public class VMProcess extends UserProcess {
 			//Lib.debug(dbgProcess, "storing in: " + (ppn * pageSize));
 			int curr_spn = swapTable.get(page_to_load);
 			VMKernel.swap.read(curr_spn * pageSize, memory,curr_ppn * pageSize, pageSize); // --------------------------------------------------------------
-			pageTable[page_to_load].valid = true;
 		}
 		else {	
 			boolean done = false;
@@ -424,14 +423,13 @@ public class VMProcess extends UserProcess {
 			if(!done) {
 				//Lib.debug(dbgProcess, "Demand paging for stack");
 				Lib.debug(dbgProcess, "Loading page from stack/arg");
-				//load new page fill w/ zeros
 				//Lib.debug(dbgProcess, "filling from " + phy_addr);
 				//Lib.debug(dbgProcess, "filling to" +( phy_addr + pageSize));
 				Arrays.fill(memory, curr_ppn * pageSize, curr_ppn *pageSize + pageSize, (byte) 0); // --------------------------------------------------------------
 			}
-			pageTable[page_to_load].valid = true;
+			
 		}
-
+		pageTable[page_to_load].valid = true;
 		VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
 		userLocky.release();
 		Lib.debug(dbgProcess, "Exiting requestPage --------------");
