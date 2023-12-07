@@ -404,8 +404,7 @@ public class VMProcess extends UserProcess {
 			VMKernel.swap.read(curr_spn * pageSize, memory,curr_ppn * pageSize, pageSize); // --------------------------------------------------------------
 			pageTable[page_to_load].valid = true;
 		}
-		else {
-			
+		else {	
 			int coff_pages = 0;
 			for(int i=0; i < coff.getNumSections(); i++) {
 				CoffSection section = coff.getSection(i);
@@ -425,7 +424,7 @@ public class VMProcess extends UserProcess {
 							int vpn = section.getFirstVPN() + a;
 							if(vpn == page_to_load) {
 								//Lib.debug(dbgProcess, "Found vpn");
-								//Lib.debug(dbgProcess, "section: " + a + " ppn: " + pageTable[page_to_load].ppn);
+								Lib.debug(dbgProcess, "section: " + a + " ppn: " + pageTable[page_to_load].ppn);
 								section.loadPage(a, pageTable[page_to_load].ppn); // --------------------------------------------------------------
 								finish = true;
 								break;
