@@ -360,6 +360,7 @@ public class VMProcess extends UserProcess {
 	 * @param cause the user exception that occurred.
 	 */
 	public void handleException(int cause) {
+		Lib.debug(dbgProcess, "Handling an exception...");
 		switch (cause) {
 		case Processor.exceptionPageFault:
 			//start
