@@ -163,6 +163,7 @@ public class VMKernel extends UserKernel {
 	 * Terminate this kernel. Never returns.
 	 */
 	public void terminate() {
+		Lib.debug(dbgVM, "entering terminate");
 		super.terminate();
 	}
 
