@@ -334,6 +334,7 @@ public class VMProcess extends UserProcess {
 		pageTable = new TranslationEntry[numPages];
 
 		for(int i = 0; i < numPages; i++) {
+			Lib.debug('d', "Number of total pages: " + numPages);
 			pageTable[i] = new TranslationEntry(i, -1, false, false, false, false);
 		}
 		return true;
@@ -360,7 +361,7 @@ public class VMProcess extends UserProcess {
 	 * @param cause the user exception that occurred.
 	 */
 	public void handleException(int cause) {
-		Lib.debug(dbgProcess, "Handling an exception...");
+		//Lib.debug(dbgProcess, "Handling an exception...");
 		switch (cause) {
 		case Processor.exceptionPageFault:
 			//start
@@ -384,7 +385,7 @@ public class VMProcess extends UserProcess {
 		userLocky.acquire();
 		byte[] memory = Machine.processor().getMemory(); // --------------------------------------------------------------
 		int page_to_load = addy / 1024;
-		Lib.debug(dbgProcess, "Entering requestPage for page: " + page_to_load);
+		//Lib.debug(dbgProcess, "Entering requestPage for page: " + page_to_load);
 		boolean previous_fault = false;
 
 		if(swapTable.containsKey(page_to_load)) {
@@ -393,7 +394,7 @@ public class VMProcess extends UserProcess {
 
 		if (!VMKernel.linky.isEmpty()) {
 			pageTable[page_to_load].ppn = VMKernel.getNextOpenPage();
-			Lib.debug('d', "" + VMKernel.linky.size());
+			Lib.debug('d', "Physical pages left: " + VMKernel.linky.size());
 			//Lib.debug(dbgProcess, "New page, got ppn: " + ppn);
 		}
 		else {
