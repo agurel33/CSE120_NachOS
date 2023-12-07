@@ -649,7 +649,7 @@ public class UserProcess {
 		//System.out.println("do we get here 1");
 
 
-		if(parentID != -1) {
+		if(parentID != -1 && parentID != processID) {
 			UserProcess parent = UserKernel.getHashMap(parentID);
 			if(parent != null && parent.processID != this.processID) {
 				boolean banana = Machine.interrupt().disable();
