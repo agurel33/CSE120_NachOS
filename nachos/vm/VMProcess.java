@@ -413,6 +413,7 @@ public class VMProcess extends UserProcess {
 				for(int j=0; j < section.getLength(); j++) {
 					int section_vpn = section.getFirstVPN() + j;
 					if(page_to_load == section_vpn) {
+						Lib.debug('d', "Loading page from coff");
 						section.loadPage(j, pageTable[page_to_load].ppn);
 						done = true;
 					}
@@ -424,7 +425,7 @@ public class VMProcess extends UserProcess {
 
 			if(!done) {
 				//Lib.debug(dbgProcess, "Demand paging for stack");
-				Lib.debug(dbgProcess, "Loading page from stack/arg");
+				Lib.debug('d', "Loading page from stack/arg");
 				//Lib.debug(dbgProcess, "filling from " + phy_addr);
 				//Lib.debug(dbgProcess, "filling to" +( phy_addr + pageSize));
 				Arrays.fill(memory, curr_ppn * pageSize, curr_ppn *pageSize + pageSize, (byte) 0); // --------------------------------------------------------------
