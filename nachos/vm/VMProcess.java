@@ -450,6 +450,7 @@ public class VMProcess extends UserProcess {
 
 				Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0); // --------------------------------------------------------------
 			}
+			pageTable[page_to_load].valid = true;
 		}
 
 		VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
