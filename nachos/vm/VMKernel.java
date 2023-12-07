@@ -111,13 +111,13 @@ public class VMKernel extends UserKernel {
 		return output;
 	}
 
-	public static void releaseSPN(int spn){
-		//boolean status = Machine.interrupt().disable();
-		locky.acquire();
-		slinky.push(spn);
-		locky.release();
-		//Machine.interrupt().restore(status);
-	}
+	// public static void releaseSPN(int spn){
+	// 	//boolean status = Machine.interrupt().disable();
+	// 	locky.acquire();
+	// 	slinky.push(spn);
+	// 	locky.release();
+	// 	//Machine.interrupt().restore(status);
+	// }
 
 	/**
 	 * Initialize this kernel.

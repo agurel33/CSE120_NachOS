@@ -206,6 +206,7 @@ public class VMProcess extends UserProcess {
 				System.arraycopy(data, offset, memory, physicalAddress, amount);
 				total_amount += amount;
 				Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
+				pageTable[virtualPageNum].dirty = true;
 			}
 		}
 		else {
@@ -225,8 +226,9 @@ public class VMProcess extends UserProcess {
 			amount = Math.min(length, pageSize - offset_physical);
 			System.arraycopy(data, offset, memory, physicalAddress, amount);
 			total_amount = amount;
+			pageTable[virtualPageNum].dirty = true;
 		}
-
+		
 		userLocky.release();
 		return total_amount;
 	}
@@ -420,8 +422,13 @@ public class VMProcess extends UserProcess {
 			//System.out.println("Bye bye!: " + page_to_swap);
 
 			VMKernel.VMkernel.getEntry(ppn).used = false;
-
-			int spn = VMKernel.getSPN();
+			int spn;
+			if(!VMKernel.seenTable.contains(page_to_swap)) {
+				spn = VMKernel.getSPN();
+			}
+			else {
+				spn = VMKernel.swapTable.get(page_to_swap);
+			}
 			VMKernel.swapTable.put(page_to_swap, spn);
 			//System.out.println(bye_bye + " bye!");
 			VMKernel.seenTable.add(page_to_swap);
@@ -431,8 +438,9 @@ public class VMProcess extends UserProcess {
 			//Lib.debug(dbgProcess, "file offset: " +(spn * pageSize));
 			//Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
 			//Lib.debug(dbgProcess, "storing in: " +( ppn * pageSize));
-
-			VMKernel.swap.write(spn * pageSize, memory, old_phys_addr, pageSize); // --------------------------------------------------------------
+			if(pageTable[page_to_swap].dirty || !VMKernel.seenTable.contains(page_to_swap)) {
+				VMKernel.swap.write(spn * pageSize, memory, old_phys_addr, pageSize); // --------------------------------------------------------------
+			}
 			//Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
 			//VMKernel.releasePage(pageTable[bye_bye].ppn);
 			pageTable[page_to_load].ppn = ppn;
