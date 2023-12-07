@@ -29,6 +29,7 @@ public class VMProcess extends UserProcess {
 	}
 
 	public boolean execute(String name, String[] args) {
+		
 		if (!this.load(name, args))
 			return false;
 
@@ -397,7 +398,7 @@ public class VMProcess extends UserProcess {
 			ppn = VMKernel.getNextOpenPage();
 			pageTable[page_to_load].ppn = ppn;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
-			Lib.debug(dbgProcess, "New page, got ppn: " + ppn);
+			//Lib.debug(dbgProcess, "New page, got ppn: " + ppn);
 		} 
 		else {
 			//System.out.println("Swapping now");
@@ -410,7 +411,7 @@ public class VMProcess extends UserProcess {
 			clocky += 1;
 			clocky = clocky%Machine.processor().getNumPhysPages();
 
-			Lib.debug(dbgProcess, "Swapping Page, got ppn: " + ppn);
+			//Lib.debug(dbgProcess, "Swapping Page, got ppn: " + ppn);
 
 
 
@@ -426,12 +427,12 @@ public class VMProcess extends UserProcess {
 			int old_phys_addr = pageTable[page_to_swap].ppn * pageSize;
 			//System.out.println("Bye_bye: " + bye_bye + ", and its ppn?: " + pageTable[bye_bye].ppn);
 			//System.out.println("Write spn!:" + spn  + " PPN: " + phys_page);
-			Lib.debug(dbgProcess, "file offset: " +(spn * pageSize));
-			Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
-			Lib.debug(dbgProcess, "storing in: " +( ppn * pageSize));
+			//Lib.debug(dbgProcess, "file offset: " +(spn * pageSize));
+			//Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
+			//Lib.debug(dbgProcess, "storing in: " +( ppn * pageSize));
 
 			VMKernel.swap.write(spn * pageSize, memory, old_phys_addr, pageSize); // --------------------------------------------------------------
-			Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
+			//Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
 			//VMKernel.releasePage(pageTable[bye_bye].ppn);
 			pageTable[page_to_load].ppn = ppn;
 			VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
@@ -441,21 +442,21 @@ public class VMProcess extends UserProcess {
 		//VMKernel.VMkernel.getEntry(ppn).valid = true;
 		
 		if(previous_fault) {
-			Lib.debug(dbgProcess, "Loading page from swap");
+			//Lib.debug(dbgProcess, "Loading page from swap");
 			//free ppn already, write from swap to physical 
 			int old_spn = VMKernel.swapTable.get(page_to_load);
 			//System.out.println("Old spn before write to memory: " + old_spn);
 			//System.out.println("Read spn!:" + old_spn + " PPN: " + ppn);
-			Lib.debug(dbgProcess, "file offset: " + (old_spn * pageSize));
-			Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
-			Lib.debug(dbgProcess, "storing in: " + (ppn * pageSize));
+			//Lib.debug(dbgProcess, "file offset: " + (old_spn * pageSize));
+			//Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
+			//Lib.debug(dbgProcess, "storing in: " + (ppn * pageSize));
 
 			VMKernel.swap.read(old_spn * pageSize, memory,ppn * pageSize, pageSize); // --------------------------------------------------------------
 			pageTable[page_to_load].valid = true;
 			//VMKernel.releaseSPN(old_spn);
 		}
 		else {
-			Lib.debug(dbgProcess, "Loading page from coff");
+			//Lib.debug(dbgProcess, "Loading page from coff");
 			int coff_pages = 0;
 			for(int i=0; i < coff.getNumSections(); i++) {
 				CoffSection section = coff.getSection(i);
@@ -464,38 +465,39 @@ public class VMProcess extends UserProcess {
 			if(page_to_load >= 0 && page_to_load <= coff_pages) {
 				//load coff page
 				boolean finish = false;
-				Lib.debug(dbgProcess, "# of sections:" + coff.getNumSections());
+				//Lib.debug(dbgProcess, "# of sections:" + coff.getNumSections());
 					for(int i = 0; i < coff.getNumSections() && !finish; i++) {
-						Lib.debug(dbgProcess, "In outerloop, pass #" + i);
+						//Lib.debug(dbgProcess, "In outerloop, pass #" + i);
 						CoffSection section = coff.getSection(i);
-						Lib.debug(dbgProcess, "Curr Section length: " + section.getLength());
+						//Lib.debug(dbgProcess, "Curr Section length: " + section.getLength());
 						for(int a=0; a < section.getLength(); a++) {
 							int vpn = section.getFirstVPN() + a;
 							if(vpn == page_to_load) {
-								Lib.debug(dbgProcess, "Found vpn");
-								Lib.debug(dbgProcess, "section: " + a + " ppn: " + pageTable[page_to_load].ppn);
+								//Lib.debug(dbgProcess, "Found vpn");
+								//Lib.debug(dbgProcess, "section: " + a + " ppn: " + pageTable[page_to_load].ppn);
 								section.loadPage(a, pageTable[page_to_load].ppn); // --------------------------------------------------------------
 								pageTable[page_to_load].valid = true;
 								finish = true;
 								break;
 							}
 						}
-						Lib.debug(dbgProcess, "Finished inner loop #" + i);
+						//Lib.debug(dbgProcess, "Finished inner loop #" + i);
 					}
 			}
 			else {
-				Lib.debug(dbgProcess, "Loading page from stack/arg");
+				//Lib.debug(dbgProcess, "Loading page from stack/arg");
 				//load new page fill w/ zeros
 				int page_desired = pageTable[page_to_load].ppn;
 				pageTable[page_to_load].valid = true;
 				int phy_addr = page_desired * pageSize;
-				Lib.debug(dbgProcess, "filling from " + phy_addr);
-				Lib.debug(dbgProcess, "filling to" +( phy_addr + pageSize));
+				//Lib.debug(dbgProcess, "filling from " + phy_addr);
+				//Lib.debug(dbgProcess, "filling to" +( phy_addr + pageSize));
 
 				Arrays.fill(memory, phy_addr, phy_addr + pageSize, (byte) 0); // --------------------------------------------------------------
 			}
 		}
 		userLocky.release();
+		Lib.debug(dbgProcess, "Exiting requestPage --------------");
 		//System.out.println("End of LoadProcess");
 		//System.out.println();
 	}
