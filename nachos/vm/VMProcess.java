@@ -418,7 +418,7 @@ public class VMProcess extends UserProcess {
 			//Lib.debug(dbgProcess, "Number of page to load: " + page_to_load);
 
 			if(page_to_load >= 0 && page_to_load <= coff_pages) {
-				Lib.debug(dbgProcess, "Loading page from coff");
+				Lib.debug(dbgProcess, "Loading page from coff: " + curr_ppn);
 				//Lib.debug(dbgProcess, "Demand paging for COFF");
 				//load coff page
 				boolean finish = false;
