@@ -31,6 +31,7 @@ public class VMKernel extends UserKernel {
 
 
 	public VMKernel() {
+		UserKernel.numProc += 1;
 		String schedulerName = Config.getString("ThreadedKernel.scheduler");
 		scheduler = (Scheduler) Lib.constructObject(schedulerName);
 
