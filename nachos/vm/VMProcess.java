@@ -373,12 +373,11 @@ public class VMProcess extends UserProcess {
 	}
 
 	private void requestPage(int addy) {
-		Lib.debug(dbgProcess, "Entering requestPage");
+		
 		userLocky.acquire();
 		byte[] memory = Machine.processor().getMemory(); // --------------------------------------------------------------
 		int page_to_load = addy / 1024;
-		Lib.debug(dbgProcess, "addy:" + addy + ", page:" + page_to_load);
-
+		Lib.debug(dbgProcess, "Entering requestPage for page: " + page_to_load);
 		boolean previous_fault = false;
 
 		if(swapTable.containsKey(page_to_load)) {
@@ -412,9 +411,6 @@ public class VMProcess extends UserProcess {
 				CoffSection section = coff.getSection(i);
 				coff_pages += section.getLength();
 			}
-			Lib.debug(dbgProcess, "Number of COFF pages: " + coff_pages);
-			Lib.debug(dbgProcess, "Number of page to load: " + page_to_load);
-
 			if(page_to_load >= 0 && page_to_load <= coff_pages) {
 				//Lib.debug(dbgProcess, "Loading page from coff: " + curr_ppn);
 				//Lib.debug(dbgProcess, "Demand paging for COFF");
