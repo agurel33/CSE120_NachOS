@@ -394,7 +394,7 @@ public class VMProcess extends UserProcess {
 		int curr_ppn = pageTable[page_to_load].ppn;
 
 		//clean UNTIL HERE!!!
-		
+		Lib.debug('d', "Current ppn: " + curr_ppn + ", trying to load page: " + page_to_load);
 		if(swapTable.containsKey(page_to_load)) {
 			//Lib.debug(dbgProcess, "Loading page from swap");
 			//Lib.debug(dbgProcess, "file offset: " + (old_spn * pageSize));
