@@ -333,9 +333,10 @@ public class VMProcess extends UserProcess {
 		// }
 		pageTable = new TranslationEntry[numPages];
 
+		Lib.debug('d', "Number of total pages: " + numPages);
+
 		for(int i = 0; i < numPages; i++) {
-			Lib.debug('d', "Number of total pages: " + numPages);
-			pageTable[i] = new TranslationEntry(i, -1, false, false, false, false);
+			pageTable[i] = new TranslationEntry(i, i, false, false, false, false);
 		}
 		return true;
 	}

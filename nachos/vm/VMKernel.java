@@ -221,7 +221,7 @@ public class VMKernel extends UserKernel {
 
 	public static int getPPNfromClock() {
 		while(VMkernel.getEntry(clocky).TE.used == true) {
-			VMkernel.getEntry(clocky).TE.used  = false;
+			VMkernel.getEntry(clocky).TE.used = false;
 			clocky += 1;
 			clocky = clocky%Machine.processor().getNumPhysPages();
 		}
