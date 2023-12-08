@@ -62,7 +62,8 @@ public class VMProcess extends UserProcess {
 
 		// for now, just assume that virtual addresses equal physical addresses
 		//TODO
-		if (vaddr < 0 ) {
+		int addressForVPN = numPages * pageSize;
+		if (vaddr < 0 || vaddr > addressForVPN) {
 			userLocky.release();
 			return 0;
 		}
@@ -133,7 +134,8 @@ public class VMProcess extends UserProcess {
 		byte[] memory = Machine.processor().getMemory();
 
 		// for now, just assume that virtual addresses equal physical addresses
-		if (vaddr < 0) {
+		int addressForVPN = numPages * pageSize;
+		if (vaddr < 0 || vaddr > addressForVPN) {
 			userLocky.release();
 			return 0;
 		}
