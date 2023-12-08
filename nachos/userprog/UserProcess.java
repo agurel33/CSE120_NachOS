@@ -744,7 +744,7 @@ public class UserProcess {
 			return -77;
 		}
 		int greatSuccess = writeVirtualMemory(pt, temp);
-		//Lib.debug('c', "amount being written: " + greatSuccess + ", amount needed: " + size);
+		Lib.debug('c', "amount being written: " + greatSuccess + ", amount needed: " + size);
 		if(greatSuccess != size) {
 			return -33;
 		}
