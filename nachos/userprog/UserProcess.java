@@ -694,8 +694,9 @@ public class UserProcess {
 			return -1;
 		}
 		byte[] memory = Machine.processor().getMemory();
+		int addressForVPN = numPages * pageSize; 
 
-		if(pt < 0) {
+		if(pt < 0 || pt > addressForVPN) {
 			return -1;
 		}
 		byte[] temp = new byte[size];
@@ -703,16 +704,16 @@ public class UserProcess {
 		Lib.debug('c', "amount being read: " + success + ", amount needed: " + size);
 		if(success != size) {
 			//System.out.println(success);
-			return -7;
+			return -1;
 		}
 		if(fileTable[fd] == null) {
 			//System.out.println(fd);
-			return -2;
+			return -1;
 		}
 		int greatSuccess = fileTable[fd].write(temp,0,size);
 		if(greatSuccess != size) {
 			//System.out.println(greatSuccess);
-			return -3;
+			return -1;
 		}
 		//Lib.debug('c', "Exiting handleWrite");
 		//Lib.debug('c', "--------------------------------------------------------");
@@ -722,31 +723,32 @@ public class UserProcess {
 
 	private int handleRead(int fd, int pt, int size) {
 		if(fd < 0 || fd > 15) {
-			return -11;
+			return -1;
 		}
 		if(size == 0) {
 			return 0;
 		}
 		if(size < 1) {
-			return -12;
+			return -1;
 		}
 		byte[] memory = Machine.processor().getMemory();
 
-		if(pt < 0) {
-			return -13;
+		int addressForVPN = numPages * pageSize; 		
+		if(pt < 0 || pt > addressForVPN) {
+			return -1;
 		}
 		byte[] temp = new byte[size];
 		if(fileTable[fd] == null) {
-			return -22;
+			return -1;
 		}
 		int success = fileTable[fd].read(temp,0,size);
 		if(success != size) {
-			return -77;
+			return -1;
 		}
 		int greatSuccess = writeVirtualMemory(pt, temp);
 		Lib.debug('c', "amount being written: " + greatSuccess + ", amount needed: " + size);
 		if(greatSuccess != size) {
-			return -33;
+			return -1;
 		}
 		//Lib.debug('c', "Exiting handleRead");
 		//Lib.debug('c', "--------------------------------------------------------");
@@ -775,7 +777,7 @@ public class UserProcess {
 			fileTable[index] = newfile;
 			return index;
 		}
-		return -300;
+		return -1;
 	}
 
 	private int handleOpen(int name_pointer) {
@@ -797,7 +799,7 @@ public class UserProcess {
 			fileTable[index] = newfile;
 			return index;
 		}
-		return -400;
+		return -1;
 	}
 
 	private int handleClose(int fd) {
