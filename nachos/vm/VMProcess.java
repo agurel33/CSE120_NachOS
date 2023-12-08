@@ -169,9 +169,6 @@ public class VMProcess extends UserProcess {
 				}
 
 				amount = Math.min(length, pageSize - offset_physical);
-				if(saber == pagesNeeded - 1) {
-					amount = length - total_amount;
-				}
 				offset_physical = 0;
 				System.arraycopy(memory, physicalAddress, data, offset, amount);
 				total_amount += amount;
