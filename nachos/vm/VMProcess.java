@@ -368,7 +368,6 @@ public class VMProcess extends UserProcess {
 			//start
 			requestPage(Machine.processor().readRegister(Processor.regBadVAddr));
 			return;
-			break;
 		default:
 			super.handleException(cause);
 			break;
