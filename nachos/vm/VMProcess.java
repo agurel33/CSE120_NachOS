@@ -377,7 +377,7 @@ public class VMProcess extends UserProcess {
 	private void requestPage(int addy) {
 		Lib.debug('d',"requesting files");
 
-		userLocky.acquire();
+		//userLocky.acquire();
 		byte[] memory = Machine.processor().getMemory(); // --------------------------------------------------------------
 		int page_to_load = addy / 1024;
 		//Lib.debug(dbgProcess, "Entering requestPage for page: " + page_to_load);
@@ -433,7 +433,7 @@ public class VMProcess extends UserProcess {
 		}
 		pageTable[page_to_load].valid = true;
 		VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
-		userLocky.release();
+		//userLocky.release();
 		Lib.debug('d', "Exiting requestPage --------------");
 		//System.out.println("End of LoadProcess");
 		//System.out.println();
