@@ -62,13 +62,13 @@ public class VMProcess extends UserProcess {
 
 		// for now, just assume that virtual addresses equal physical addresses
 		//TODO
-		if (vaddr < 0 || vaddr >= memory.length) {
+		if (vaddr < 0 ) {
 			userLocky.release();
 			return 0;
 		}
 
 		if(length > pageSize) {
-			int pagesNeeded = (int) Math.ceil(length / pageSize);
+			int pagesNeeded = (int) Math.ceil((double)length / (double)pageSize);
 			if(length > ((numPages - 9) * 1024)) {
 				userLocky.release();
 				Lib.debug('c', "AHHHHHHHHH");
@@ -133,7 +133,7 @@ public class VMProcess extends UserProcess {
 		byte[] memory = Machine.processor().getMemory();
 
 		// for now, just assume that virtual addresses equal physical addresses
-		if (vaddr < 0 || vaddr >= memory.length) {
+		if (vaddr < 0) {
 			userLocky.release();
 			return 0;
 		}
