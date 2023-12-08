@@ -75,10 +75,11 @@ public class VMProcess extends UserProcess {
 				return -10000001;
 			}
 			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
-			int offset_physical = Processor.offsetFromAddress(vaddr);
+			
 
 			for(int saber = 0; saber < pagesNeeded; saber++) {
 				int virtualPageNum = Processor.pageFromAddress(vaddr + saber*pageSize);
+				int offset_physical = Processor.offsetFromAddress(vaddr + + saber*pageSize);
 				Lib.debug('w',"curr virtual page: " + virtualPageNum);
 				if(pageTable[virtualPageNum].valid != true) {
 					requestPage(vaddr + saber*pageSize);
@@ -138,7 +139,7 @@ public class VMProcess extends UserProcess {
 		}
 		
 		if(length > pageSize) {
-			int offset_physical = Processor.offsetFromAddress(vaddr);
+			
 			//System.out.println("offset!: " + offset_physical);
 			int pagesNeeded = (int) Math.ceil((double)length / (double)pageSize);
 			if(length > ((numPages - 9) * 1024)) {
@@ -150,6 +151,7 @@ public class VMProcess extends UserProcess {
 			
 			for(int saber = 0; saber < pagesNeeded; saber++) {
 				int virtualPageNum = Processor.pageFromAddress(vaddr + saber*pageSize);
+				int offset_physical = Processor.offsetFromAddress(vaddr + saber*pageSize);
 				if(pageTable[virtualPageNum].valid != true) {
 					requestPage(vaddr + saber*pageSize);
 				}
