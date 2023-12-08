@@ -80,7 +80,7 @@ public class VMProcess extends UserProcess {
 			if(length > ((numPages - 9) * 1024)) {
 				userLocky.release();
 				Lib.debug('c', "AHHHHHHHHH");
-				return -1;
+				return -10000001;
 			}
 			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
 			int offset_physical = Processor.offsetFromAddress(vaddr);
@@ -158,7 +158,8 @@ public class VMProcess extends UserProcess {
 			int pagesNeeded = length / pageSize + remainder2;
 			if(length > ((numPages - 9) * 1024)) {
 				userLocky.release();
-				return -1;
+				Lib.debug('c', "AHHHHHHHHH");
+				return -10000000;
 			}
 			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
 			
