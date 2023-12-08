@@ -315,6 +315,7 @@ public class VMProcess extends UserProcess {
 			total_amount = amount;
 		}
 
+		
 		userLocky.release();
 		return total_amount;
 	}
