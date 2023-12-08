@@ -70,7 +70,7 @@ public class VMProcess extends UserProcess {
 
 		if(length > pageSize) {
 			int pagesNeeded = (int) Math.ceil((double)length / (double)pageSize);
-			if(length > ((numPages - 9) * 1024)) {
+			if(length > addressForVPN) {
 				userLocky.release();
 				Lib.debug('c', "AHHHHHHHHH");
 				return -10000001;
@@ -144,7 +144,7 @@ public class VMProcess extends UserProcess {
 			
 			//System.out.println("offset!: " + offset_physical);
 			int pagesNeeded = (int) Math.ceil((double)length / (double)pageSize);
-			if(length > ((numPages - 9) * 1024)) {
+			if(length > addressForVPN) {
 				userLocky.release();
 				Lib.debug('c', "AHHHHHHHHH");
 				return -10000000;
