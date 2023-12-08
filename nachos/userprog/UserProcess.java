@@ -775,7 +775,7 @@ public class UserProcess {
 			fileTable[index] = newfile;
 			return index;
 		}
-		return -1;
+		return -300;
 	}
 
 	private int handleOpen(int name_pointer) {
@@ -797,7 +797,7 @@ public class UserProcess {
 			fileTable[index] = newfile;
 			return index;
 		}
-		return -1;
+		return -400;
 	}
 
 	private int handleClose(int fd) {
