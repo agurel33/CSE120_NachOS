@@ -264,7 +264,7 @@ public class VMProcess extends UserProcess {
 		}
 	}
 
-	private void requestPage(int addy) {
+	public void requestPage(int addy) {
 		int page_to_load = Processor.pageFromAddress(addy);
 
 		int coff_pages = 0;
