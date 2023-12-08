@@ -702,7 +702,7 @@ public class UserProcess {
 		int success = readVirtualMemory(pt, temp, 0, size);
 		if(success != size) {
 			//System.out.println(success);
-			return -1;
+			return -17;
 		}
 		if(fileTable[fd] == null) {
 			//System.out.println(fd);
@@ -718,30 +718,30 @@ public class UserProcess {
 
 	private int handleRead(int fd, int pt, int size) {
 		if(fd < 0 || fd > 15) {
-			return -11;
+			return -1;
 		}
 		if(size == 0) {
 			return 0;
 		}
 		if(size < 1) {
-			return -12;
+			return -1;
 		}
 		byte[] memory = Machine.processor().getMemory();
 
 		if(pt < 0 || pt > memory.length) {
-			return -13;
+			return -1;
 		}
 		byte[] temp = new byte[size];
 		if(fileTable[fd] == null) {
-			return -14;
+			return -1;
 		}
 		int success = fileTable[fd].read(temp,0,size);
 		if(success != size) {
-			return -15;
+			return -1;
 		}
 		int greatSuccess = writeVirtualMemory(pt, temp);
 		if(greatSuccess != size) {
-			return -16;
+			return -1;
 		}
 		return greatSuccess;
 	}
