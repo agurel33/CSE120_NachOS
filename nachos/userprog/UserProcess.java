@@ -700,7 +700,7 @@ public class UserProcess {
 		}
 		byte[] temp = new byte[size];
 		int success = readVirtualMemory(pt, temp, 0, size);
-		Lib.debug('c', "amount being read: " + success);
+		Lib.debug('c', "amount being read: " + success + ", amount needed: " + size);
 		if(success != size) {
 			//System.out.println(success);
 			return -1;
@@ -741,7 +741,7 @@ public class UserProcess {
 			return -1;
 		}
 		int greatSuccess = writeVirtualMemory(pt, temp);
-		Lib.debug('c', "amount being written: " + greatSuccess);
+		Lib.debug('c', "amount being written: " + greatSuccess + ", amount needed: " + size);
 		if(greatSuccess != size) {
 			return -1;
 		}

@@ -129,7 +129,7 @@ public class VMProcess extends UserProcess {
 	}
 
 	public int readVirtualMemory(int vaddr, byte[] data, int offset, int length) {
-		Lib.debug('c', "Reading VM!");
+		//Lib.debug('c', "Reading VM!");
 		userLocky.acquire();
 		int total_amount = 0;
 		int amount;
