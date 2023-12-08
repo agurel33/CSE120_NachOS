@@ -724,24 +724,24 @@ public class UserProcess {
 			return 0;
 		}
 		if(size < 1) {
-			return -1;
+			return -12;
 		}
 		byte[] memory = Machine.processor().getMemory();
 
 		if(pt < 0 || pt > memory.length) {
-			return -1;
+			return -13;
 		}
 		byte[] temp = new byte[size];
 		if(fileTable[fd] == null) {
-			return -1;
+			return -14;
 		}
 		int success = fileTable[fd].read(temp,0,size);
 		if(success != size) {
-			return -1;
+			return -15;
 		}
 		int greatSuccess = writeVirtualMemory(pt, temp);
 		if(greatSuccess != size) {
-			return -1;
+			return -16;
 		}
 		return greatSuccess;
 	}
