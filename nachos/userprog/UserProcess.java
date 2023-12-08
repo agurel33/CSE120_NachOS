@@ -714,6 +714,9 @@ public class UserProcess {
 			//System.out.println(greatSuccess);
 			return -3;
 		}
+		Lib.debug('c', "Exiting handleWrite");
+		Lib.debug('c', "--------------------------------------------------------");
+
 		return greatSuccess;
 	}
 
@@ -745,6 +748,8 @@ public class UserProcess {
 		if(greatSuccess != size) {
 			return -33;
 		}
+		Lib.debug('c', "Exiting handleRead");
+		Lib.debug('c', "--------------------------------------------------------");
 		return greatSuccess;
 	}
 
