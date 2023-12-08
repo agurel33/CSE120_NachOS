@@ -72,8 +72,8 @@ public class VMProcess extends UserProcess {
 			int pagesNeeded = (int) Math.ceil((double)length / (double)pageSize);
 			if(length > addressForVPN) {
 				userLocky.release();
-				Lib.debug('c', "AHHHHHHHHH");
-				return -10000001;
+				//Lib.debug('c', "AHHHHHHHHH");
+				return -1;
 			}
 			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
 			
@@ -111,7 +111,7 @@ public class VMProcess extends UserProcess {
 
 			if (physicalAddress < 0 || physicalAddress >= memory.length) {
 				userLocky.release();
-				Lib.debug('c', "why are we here");
+				//Lib.debug('c', "why are we here");
 				return 0;
 			}
 
@@ -146,8 +146,8 @@ public class VMProcess extends UserProcess {
 			int pagesNeeded = (int) Math.ceil((double)length / (double)pageSize);
 			if(length > addressForVPN) {
 				userLocky.release();
-				Lib.debug('c', "AHHHHHHHHH");
-				return -10000000;
+				//Lib.debug('c', "AHHHHHHHHH");
+				return -1;
 			}
 			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
 			
