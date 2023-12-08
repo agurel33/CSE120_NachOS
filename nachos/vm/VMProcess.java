@@ -129,7 +129,7 @@ public class VMProcess extends UserProcess {
 	}
 
 	public int readVirtualMemory(int vaddr, byte[] data, int offset, int length) {
-		Lib.debug('d', "Reading VM!");
+		Lib.debug('c', "Reading VM!");
 		userLocky.acquire();
 		int total_amount = 0;
 		int amount;
@@ -144,7 +144,6 @@ public class VMProcess extends UserProcess {
 		
 		if(length > pageSize) {
 			int offset_physical = Processor.offsetFromAddress(vaddr);
-			int offy = offset_physical;
 			//System.out.println("offset!: " + offset_physical);
 			int remainder = length + offset_physical % pageSize;
 			int remainder2;
@@ -158,7 +157,7 @@ public class VMProcess extends UserProcess {
 			int pagesNeeded = length / pageSize + remainder2;
 			if(length > ((numPages - 9) * 1024)) {
 				userLocky.release();
-				return -1;
+				return -10;
 			}
 			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
 			
