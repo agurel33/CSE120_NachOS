@@ -616,7 +616,7 @@ public class UserProcess {
 		// ...and leave it as the top of handleExit so that we
 		// can grade your implementation.
 
-		Lib.debug(dbgProcess, "UserProcess.handleExit (" + status + ")");
+		Lib.debug('d', "UserProcess.handleExit (" + status + ")");
 
 		System.out.println("We entereed handleExit");
 
