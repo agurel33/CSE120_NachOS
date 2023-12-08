@@ -79,6 +79,7 @@ public class VMProcess extends UserProcess {
 			int pagesNeeded = length / pageSize + remainder2;
 			if(length > ((numPages - 9) * 1024)) {
 				userLocky.release();
+				Lib.debug('c', "AHHHHHHHHH");
 				return -1;
 			}
 			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
