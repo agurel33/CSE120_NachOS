@@ -718,7 +718,7 @@ public class UserProcess {
 
 	private int handleRead(int fd, int pt, int size) {
 		if(fd < 0 || fd > 15) {
-			return -1;
+			return -11;
 		}
 		if(size == 0) {
 			return 0;
