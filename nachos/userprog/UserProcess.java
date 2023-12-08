@@ -703,7 +703,7 @@ public class UserProcess {
 		Lib.debug('c', "amount being read: " + success + ", amount needed: " + size);
 		if(success != size) {
 			//System.out.println(success);
-			return -1;
+			return -7;
 		}
 		if(fileTable[fd] == null) {
 			//System.out.println(fd);
@@ -737,11 +737,11 @@ public class UserProcess {
 		}
 		byte[] temp = new byte[size];
 		if(fileTable[fd] == null) {
-			return -1;
+			return -22;
 		}
 		int success = fileTable[fd].read(temp,0,size);
 		if(success != size) {
-			return -22;
+			return -77;
 		}
 		int greatSuccess = writeVirtualMemory(pt, temp);
 		Lib.debug('c', "amount being written: " + greatSuccess + ", amount needed: " + size);
