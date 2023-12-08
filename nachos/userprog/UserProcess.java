@@ -695,7 +695,7 @@ public class UserProcess {
 		}
 		byte[] memory = Machine.processor().getMemory();
 
-		if(pt < 0 || pt > memory.length) {
+		if(pt < 0) {
 			return -1;
 		}
 		byte[] temp = new byte[size];
@@ -732,7 +732,7 @@ public class UserProcess {
 		}
 		byte[] memory = Machine.processor().getMemory();
 
-		if(pt < 0 || pt > memory.length) {
+		if(pt < 0) {
 			return -13;
 		}
 		byte[] temp = new byte[size];
