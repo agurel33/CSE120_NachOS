@@ -148,6 +148,7 @@ public class VMProcess extends UserProcess {
 			amount = Math.min(length, pageSize - offset_physical);
 			System.arraycopy(data, offset, memory, physicalAddress, amount);
 			total_amount += amount;
+			Lib.debug('c', "printing curr total amount(outside recursive in write): " + total_amount);
 			pageTable[virtualPageNum].dirty = true;
 		}
 		
@@ -251,6 +252,7 @@ public class VMProcess extends UserProcess {
 			amount = Math.min(length, pageSize - offset_physical);
 			System.arraycopy(memory, physicalAddress, data, offset, amount);
 			total_amount += amount;
+			Lib.debug('c', "printing curr total amount(outside recursive in read): " + total_amount);
 		}
 
 		
