@@ -79,7 +79,7 @@ public class VMProcess extends UserProcess {
 				userLocky.release();
 				return 0;
 			}
-			amount = Math.min(length, pageSize - offset);
+			amount = Math.min(length, pageSize);
 			System.arraycopy(data, offset, memory, physicalAddress, amount);//not right?
 
 			int new_vaddr = vaddr + pageSize;
@@ -173,6 +173,10 @@ public class VMProcess extends UserProcess {
 		
 		if(length > pageSize) {
 			//int virtual_offset = Processor.offsetFromAddress(vaddr);
+			int new_offset = 0;
+			if(offset % 1024 == 0) {
+
+			}
 			int virtualPageNum = Processor.pageFromAddress(vaddr);
 			if(pageTable[virtualPageNum].valid != true) {
 				requestPage(vaddr + pageSize);
@@ -184,7 +188,7 @@ public class VMProcess extends UserProcess {
 				userLocky.release();
 				return 0;
 			}
-			amount = Math.min(length, pageSize - offset);
+			amount = Math.min(length, pageSize);
 			System.arraycopy(memory, physicalAddress, data, offset, amount);
 
 			int new_vaddr = vaddr + pageSize;
