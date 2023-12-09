@@ -72,6 +72,9 @@ public class VMProcess extends UserProcess {
 		}
 		int virtual_offset = vaddr % pageSize; // why everytime
 		int virtualPageNum = vaddr / pageSize;
+		if(virtualPageNum > numPages) {
+			return -1;
+		}
 		if(pageTable[virtualPageNum].valid != true) {
 			requestPage(vaddr);
 		}
@@ -183,6 +186,9 @@ public class VMProcess extends UserProcess {
 
 		int virtual_offset = vaddr % pageSize; // why everytime
 		int virtualPageNum = vaddr / pageSize;
+		if(virtualPageNum > numPages) {
+			return -1;
+		}
 		if(pageTable[virtualPageNum].valid != true) {
 			requestPage(vaddr);
 		}
