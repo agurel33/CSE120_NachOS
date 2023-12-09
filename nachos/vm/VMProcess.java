@@ -69,46 +69,63 @@ public class VMProcess extends UserProcess {
 		}
 
 		if(length > pageSize) {
-			int new_length = length;
-
-			int first_offset = Processor.offsetFromAddress(vaddr);
-			int pagesNeeded = (int) Math.ceil((double)(length + first_offset) / (double)pageSize);
-			if(length > addressForVPN) {
-				userLocky.release();
-				//Lib.debug('c', "AHHHHHHHHH");
-				return -1;
+			int virtualPageNum = Processor.pageFromAddress(vaddr);
+			if(pageTable[virtualPageNum].valid != true) {
+				requestPage(vaddr + pageSize);
 			}
-			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
+			int physcialPageNum = pageTable[virtualPageNum].ppn;
+			int physicalAddress = pageSize * physcialPageNum;
+			if (physicalAddress < 0 || physicalAddress >= memory.length) {
+				userLocky.release();
+				return 0;
+			}
+			amount = Math.min(length, pageSize);
+			System.arraycopy(data, offset, memory, physicalAddress, amount);//not right?
+
+			int new_vaddr = vaddr + pageSize;
+			int new_offset = offset + pageSize;
+			int new_length = length - pageSize;
+			writeVirtualMemory(new_vaddr, data, new_offset, new_length);
+			// int new_length = length;
+
+			// int first_offset = Processor.offsetFromAddress(vaddr);
+			// int pagesNeeded = (int) Math.ceil((double)(length + first_offset) / (double)pageSize);
+			// if(length > addressForVPN) {
+			// 	userLocky.release();
+			// 	//Lib.debug('c', "AHHHHHHHHH");
+			// 	return -1;
+			// }
+			// Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
 			
 
-			for(int saber = 0; saber < pagesNeeded; saber++) {
-				int virtualPageNum = Processor.pageFromAddress(vaddr + saber*pageSize);
-				int offset_physical = 0;
-				if(saber == 0) {
-					offset_physical = Processor.offsetFromAddress(vaddr + saber*pageSize);
-				}
-				if(saber == pagesNeeded - 1) {
-					offset_physical = first_offset; //wtf
-				}
-				Lib.debug('w',"curr virtual page: " + virtualPageNum);
-				if(pageTable[virtualPageNum].valid != true) {
-					requestPage(vaddr + saber*pageSize);
-				}
-				int physcialPageNum = pageTable[virtualPageNum].ppn;
-				int physicalAddress = pageSize * physcialPageNum + offset_physical;
+			// for(int saber = 0; saber < pagesNeeded; saber++) {
+			// 	int virtualPageNum = Processor.pageFromAddress(vaddr + saber*pageSize);
+			// 	int offset_physical = 0;
+			// 	if(saber == 0) {
+			// 		offset_physical = Processor.offsetFromAddress(vaddr + saber*pageSize);
+			// 	}
+			// 	if(saber == pagesNeeded - 1) {
+			// 		offset_physical = first_offset; //wtf
+			// 	}
+			// 	Lib.debug('w',"curr virtual page: " + virtualPageNum);
+			// 	if(pageTable[virtualPageNum].valid != true) {
+			// 		requestPage(vaddr + saber*pageSize);
+			// 	}
+			// 	int physcialPageNum = pageTable[virtualPageNum].ppn;
+			// 	int physicalAddress = pageSize * physcialPageNum + offset_physical;
 
-				if (physicalAddress < 0 || physicalAddress >= memory.length) {
-					userLocky.release();
-					return 0;
-				}
-				amount = Math.min(new_length, pageSize - offset_physical);//here?
-				//offset_physical = 0;//???
-				System.arraycopy(data, offset_physical, memory, physicalAddress, amount);//not right?
-				new_length -= amount;
-				total_amount += amount;
-				Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
-				pageTable[virtualPageNum].dirty = true;
-			}
+			// 	if (physicalAddress < 0 || physicalAddress >= memory.length) {
+			// 		userLocky.release();
+			// 		return 0;
+			// 	}
+			// 	amount = Math.min(new_length, pageSize - offset_physical);//here?
+			// 	//offset_physical = 0;//???
+			// 	System.arraycopy(data, offset_physical, memory, physicalAddress, amount);//not right?
+			// 	new_length -= amount;
+			// 	total_amount += amount;
+			// 	Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
+			// 	pageTable[virtualPageNum].dirty = true;
+			// }
 		}
 		else {
 			int virtualPageNum = Processor.pageFromAddress(vaddr);
@@ -151,45 +168,64 @@ public class VMProcess extends UserProcess {
 		}
 		
 		if(length > pageSize) {
-			int new_length = length;
-			
-			//System.out.println("offset!: " + offset_physical);
-			int first_offset = Processor.offsetFromAddress(vaddr);
-			int pagesNeeded = (int) Math.ceil((double)(length + first_offset) / (double)pageSize);
-			if(length > addressForVPN) {
-				userLocky.release();
-				//Lib.debug('c', "AHHHHHHHHH");
-				return -1
-				;
+			//int virtual_offset = Processor.offsetFromAddress(vaddr);
+			int virtualPageNum = Processor.pageFromAddress(vaddr);
+			if(pageTable[virtualPageNum].valid != true) {
+				requestPage(vaddr + pageSize);
 			}
-			Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
-			
-			for(int saber = 0; saber < pagesNeeded; saber++) {
-				int virtualPageNum = Processor.pageFromAddress(vaddr + saber*pageSize);
-				int offset_physical = 0;
-				if(saber == 0) {
-					offset_physical = Processor.offsetFromAddress(vaddr + saber*pageSize);
-				}
-				if(saber == pagesNeeded - 1) {
-					offset_physical = first_offset;
-				}
-				if(pageTable[virtualPageNum].valid != true) {
-					requestPage(vaddr + saber*pageSize);
-				}
-				int physcialPageNum = pageTable[virtualPageNum].ppn;
-				int physicalAddress = pageSize * physcialPageNum + offset_physical;
+			int physcialPageNum = pageTable[virtualPageNum].ppn;
+			int physicalAddress = pageSize * physcialPageNum;
 
-				if (physicalAddress < 0 || physicalAddress >= memory.length) {
-					userLocky.release();
-					return 0;
-				}
-				amount = Math.min(new_length, pageSize - offset_physical);
-				//offset_physical = 0;
-				System.arraycopy(memory, physicalAddress, data, offset_physical, amount);
-				new_length -= amount;
-				total_amount += amount;
-				Lib.debug('c', "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
+			if (physicalAddress < 0 || physicalAddress >= memory.length) {
+				userLocky.release();
+				return 0;
 			}
+			amount = Math.min(length, pageSize);
+			System.arraycopy(memory, physicalAddress, data, offset, amount);
+
+			int new_vaddr = vaddr + pageSize;
+			int new_offset = offset + pageSize;
+			int new_length = length - pageSize;
+			readVirtualMemory(new_vaddr, data, new_offset, new_length);
+			// int new_length = length;
+			
+			// //System.out.println("offset!: " + offset_physical);
+			// int first_offset = Processor.offsetFromAddress(vaddr);
+			// int pagesNeeded = (int) Math.ceil((double)(length + first_offset) / (double)pageSize);
+			// if(length > addressForVPN) {
+			// 	userLocky.release();
+			// 	//Lib.debug('c', "AHHHHHHHHH");
+			// 	return -1
+			// 	;
+			// }
+			// Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
+			
+			// for(int saber = 0; saber < pagesNeeded; saber++) {
+			// 	int virtualPageNum = Processor.pageFromAddress(vaddr + saber*pageSize);
+			// 	int offset_physical = 0;
+			// 	if(saber == 0) {
+			// 		offset_physical = Processor.offsetFromAddress(vaddr + saber*pageSize);
+			// 	}
+			// 	if(saber == pagesNeeded - 1) {
+			// 		offset_physical = first_offset;
+			// 	}
+			// 	if(pageTable[virtualPageNum].valid != true) {
+			// 		requestPage(vaddr + saber*pageSize);
+			// 	}
+			// 	int physcialPageNum = pageTable[virtualPageNum].ppn;
+			// 	int physicalAddress = pageSize * physcialPageNum + offset_physical;
+
+			// 	if (physicalAddress < 0 || physicalAddress >= memory.length) {
+			// 		userLocky.release();
+			// 		return 0;
+			// 	}
+			// 	amount = Math.min(new_length, pageSize - offset_physical);
+			// 	//offset_physical = 0;
+			// 	System.arraycopy(memory, physicalAddress, data, offset_physical, amount);
+			// 	new_length -= amount;
+			// 	total_amount += amount;
+			// 	Lib.debug('c', "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
+			// }
 		}
 		else {
 			int virtualPageNum = Processor.pageFromAddress(vaddr);
