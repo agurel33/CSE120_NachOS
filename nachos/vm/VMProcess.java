@@ -69,8 +69,8 @@ public class VMProcess extends UserProcess {
 		}
 
 		if(length > pageSize) {
-			//int first_offset = Processor.offsetFromAddress(vaddr);
-			int pagesNeeded = (int) Math.ceil((double)(length ) / (double)pageSize);
+			int first_offset = Processor.offsetFromAddress(vaddr);
+			int pagesNeeded = (int) Math.ceil((double)(length + first_offset) / (double)pageSize);
 			if(length > addressForVPN) {
 				userLocky.release();
 				//Lib.debug('c', "AHHHHHHHHH");
@@ -147,8 +147,8 @@ public class VMProcess extends UserProcess {
 		if(length > pageSize) {
 			
 			//System.out.println("offset!: " + offset_physical);
-			//int first_offset = Processor.offsetFromAddress(vaddr);
-			int pagesNeeded = (int) Math.ceil((double)(length) / (double)pageSize);
+			int first_offset = Processor.offsetFromAddress(vaddr);
+			int pagesNeeded = (int) Math.ceil((double)(length + first_offset) / (double)pageSize);
 			if(length > addressForVPN) {
 				userLocky.release();
 				//Lib.debug('c', "AHHHHHHHHH");
