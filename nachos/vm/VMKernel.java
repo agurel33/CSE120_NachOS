@@ -187,7 +187,6 @@ public class VMKernel extends UserKernel {
 	}
 
 	public void newEntry(VMProcess process, TranslationEntry TE) {
-		//System.out.println("Adding (vpn,ppn): " + TE.vpn + ", " + TE.ppn);
 		for(invertedPageTableEntry item: IPT) {
 			if(item != null && item.TE.ppn == TE.ppn) {
 				item.TE = TE;
@@ -202,11 +201,9 @@ public class VMKernel extends UserKernel {
 	public int vpnFromPpn(int ppn) {
 		for(invertedPageTableEntry item: IPT) {
 			if(item != null && item.TE.ppn == ppn) {
-				//System.out.println("ppn found! vpn=" + item.TE.vpn);
 				return item.TE.vpn;
 			}
 		}
-		//System.out.println("ppn not found");
 		return -1;
 	}
 
@@ -226,10 +223,8 @@ public class VMKernel extends UserKernel {
 			clocky = clocky%Machine.processor().getNumPhysPages();
 		}
 		int ppn = clocky;
-		//Lib.debug('d',"evicting: " + ppn);
 		clocky += 1;
 		clocky = clocky%Machine.processor().getNumPhysPages();
-		//Lib.debug('d',"new clock value: " + clocky);
 		eviction(VMkernel.getEntry(ppn));
 		return ppn;
 	}
@@ -237,7 +232,6 @@ public class VMKernel extends UserKernel {
 	private static int clocky = 0;
 
 	public static void eviction(invertedPageTableEntry IPTE) {
-		Lib.debug('c', "Evicting a page!");
 		VMProcess currProcess = IPTE.process;
 		int spn;
 		int ppn = IPTE.TE.ppn;
@@ -252,10 +246,7 @@ public class VMKernel extends UserKernel {
 			spn = currProcess.swapTable.get(IPTE.TE.vpn);
 			spnExisted = true;
 		}
-		Lib.debug('d',"dirty bit: " + IPTE.TE.dirty);
 		if(IPTE.TE.dirty || !spnExisted) {
-			Lib.debug('d',"writing to swap file");
-			Lib.debug('d',"for vpn: " + IPTE.TE.vpn);
 			swap.write(spn * pageSize, memory, ppn * pageSize, pageSize); // --------------------------------------------------------------
 		}
 		IPTE.TE.valid = false;

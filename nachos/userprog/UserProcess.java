@@ -32,7 +32,6 @@ public class UserProcess {
 	public HashMap<Integer,Integer> status_of_children;
 
 	public UserProcess() {
-		//int numPhysPages = Machine.processor().getNumPhysPages();
 		if(IDLock == null) {
 			IDLock = new Lock();
 		}
@@ -48,7 +47,6 @@ public class UserProcess {
 		processID = nextProcess;
 		nextProcess++;
 		UserKernel.inputHashMap(processID, this);
-		//System.out.println("Printing ID: " + processID);
 		IDLock.release();
 		parentID = processID;
 
@@ -66,9 +64,6 @@ public class UserProcess {
 		}
 
 		UserKernel.numProc += 1;
-		//Needs to be in a lock
-		// for (int i = 0; i < numPhysPages; i++)
-		// 	pageTable[i] = new TranslationEntry(i, i, true, false, false, false);
 	}
 
 	public UserProcess(int parentID) {
@@ -92,7 +87,6 @@ public class UserProcess {
 		processID = nextProcess;
 		nextProcess++;
 		UserKernel.inputHashMap(processID, this);
-		//System.out.println("Printing ID: " + processID);
 		IDLock.release();
 		
 
@@ -236,7 +230,6 @@ public class UserProcess {
 
 		byte[] memory = Machine.processor().getMemory();
 
-		// for now, just assume that virtual addresses equal physical addresses
 		if (vaddr < 0 || vaddr >= memory.length) {
 			userLock.release();
 			return 0;
@@ -526,8 +519,7 @@ public class UserProcess {
 			return false;
 		}
 		pageTable = new TranslationEntry[numPages];
-		// load sections
-		//Lib.debug(dbgProcess, "Number of sections: " + coff.getNumSections());
+
 		int counter = 0;
 		for (int s = 0; s < coff.getNumSections(); s++) {
 			CoffSection section = coff.getSection(s);
@@ -537,24 +529,18 @@ public class UserProcess {
 
 			for (int i = 0; i < section.getLength(); i++) {
 				int vpn = section.getFirstVPN() + i;
-				//Lib.debug(dbgProcess, "Entering page #: " + counter);
 				pageTable[counter] = new TranslationEntry(vpn, UserKernel.getNextOpenPage(), true, section.isReadOnly(), false, false);
-				//Lib.debug(dbgProcess, "Curr VPN: " + vpn + ", Curr PNP: " + pageTable[vpn].ppn);
-				// for now, just assume virtual addresses=physical addresses
 				section.loadPage(i, pageTable[counter].ppn);
 				counter++;
 			}
-			//Lib.debug(dbgProcess, "finished loading COFF, counter is: " + counter);
 		}
 
 		for(int abbi_sucks = 0; abbi_sucks < stackPages; abbi_sucks++) {
 			pageTable[counter] = new TranslationEntry(counter, UserKernel.getNextOpenPage(), true, false, false, false);
 			counter++;
-			//Lib.debug(dbgProcess, "loaded " + abbi_sucks + "th stack");
 		}
 		pageTable[counter] = new TranslationEntry(counter,UserKernel.getNextOpenPage(),true,false,false,false);
 
-		//Lib.debug(dbgProcess, "loaded all sections");
 		return true;
 	}
 
@@ -616,7 +602,6 @@ public class UserProcess {
 		// ...and leave it as the top of handleExit so that we
 		// can grade your implementation.
 
-		Lib.debug('d', "UserProcess.handleExit (" + status + ")");
 
 		//System.out.println("We entereed handleExit");
 
@@ -636,7 +621,6 @@ public class UserProcess {
 		if(parent111 != null) {
 			parent111.status_of_children.put(processID, status);
 		}
-		//System.out.println("do we get here -1");
 
 		for(int y = 0; y < pageTable.length; y++) {
 			TranslationEntry curry = pageTable[y];
@@ -652,7 +636,6 @@ public class UserProcess {
 				childProcessy.parentID = -1;
 			}
 		}
-		//System.out.println("do we get here 1");
 
 
 		if(parentID != -1 && parentID != processID) {
@@ -665,14 +648,11 @@ public class UserProcess {
 				Machine.interrupt().restore(banana);
 			}
 		}
-		//System.out.println("do we get here 2");
 
 
 		UserKernel.numProc -= 1;
 		UserKernel.removeProcess(processID);
-		//System.out.println("curr num processes: " + UserKernel.numProc);
 
-		//System.out.println("We are leaving handleExit");
 		
 		if(UserKernel.numProc == 0) {
 			Kernel.kernel.terminate();
@@ -701,22 +681,17 @@ public class UserProcess {
 		}
 		byte[] temp = new byte[size];
 		int success = readVirtualMemory(pt, temp, 0, size);
-		Lib.debug('c', "amount being read: " + success + ", amount needed: " + size);
 		if(success != size) {
-			//System.out.println(success);
 			return -1;
 		}
 		if(fileTable[fd] == null) {
-			//System.out.println(fd);
 			return -1;
 		}
 		int greatSuccess = fileTable[fd].write(temp,0,size);
 		if(greatSuccess != size) {
-			//System.out.println(greatSuccess);
 			return -1;
 		}
-		//Lib.debug('c', "Exiting handleWrite");
-		//Lib.debug('c', "--------------------------------------------------------");
+
 
 		return greatSuccess;
 	}
@@ -746,12 +721,9 @@ public class UserProcess {
 			return -1;
 		}
 		int greatSuccess = writeVirtualMemory(pt, temp);
-		Lib.debug('c', "amount being written: " + greatSuccess + ", amount needed: " + size);
 		if(greatSuccess != size) {
 			return -1;
 		}
-		//Lib.debug('c', "Exiting handleRead");
-		//Lib.debug('c', "--------------------------------------------------------");
 		return greatSuccess;
 	}
 
@@ -830,7 +802,6 @@ public class UserProcess {
 	}
 
 	private int handleExec(int file_pointer, int num_args, int array_pointer) {
-		//System.out.println("We entereed handleExec");
 		byte[] memory = Machine.processor().getMemory();
 		if(file_pointer <= 0 || file_pointer > memory.length) {
 			return -1;
@@ -865,9 +836,7 @@ public class UserProcess {
 		UserProcess processy = newUserProcess();
 		processy.processID = processID;
 		IDLock.acquire();
-		//System.out.println("next process id: " + nextProcess);
 		myChildren.add(nextChild);
-		//System.out.println(file_name);
 		boolean success = processy.execute(file_name, args_array);
 		IDLock.release();
 
@@ -875,14 +844,11 @@ public class UserProcess {
 		if(!success) {
 			return -1;
 		}
-
-		//System.out.println("We are leaving handleExec");
 		return nextChild;
 	}
 
 	private int handleJoin(int childId, int status_pointer) {
 		Integer status;
-		//System.out.println("We entereed handleJoin");
 		if(!myChildren.contains(childId)) {
 			return -1;
 		}
@@ -892,8 +858,6 @@ public class UserProcess {
 			return -1;
 		}
 
-		//UserKernel.printHashMap();
-		//System.out.println(UserKernel.getHashMap(childId).processID);
 		UserProcess childprocess = UserKernel.getHashMap(childId);
 		if(childprocess == null) {
 			if(!UserKernel.finished_keys.contains(childId)) {
@@ -909,14 +873,6 @@ public class UserProcess {
 		}
 
 		myChildren.remove(myChildren.indexOf(childId));
-
-		// byte[] memory = Machine.processor().getMemory();
-		// if(status_pointer < 0 || status_pointer > memory.length) {
-		// 	return - 1;
-		// }
-		// String status = readVirtualMemoryString(status_pointer, 256);
-		
-
 		if(status == null) {
 			return -1;
 		}
@@ -925,9 +881,6 @@ public class UserProcess {
 			byte[] statty = Lib.bytesFromInt(status);
 			writeVirtualMemory(status_pointer, statty);
 		}
-		//System.out.println("We are leaving handleJoin");
-
-
 		return status;
 	}
 

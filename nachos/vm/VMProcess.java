@@ -53,18 +53,14 @@ public class VMProcess extends UserProcess {
 	
 
 	public int writeVirtualMemory(int vaddr, byte[] data, int offset, int length) {
-		//System.out.println("entering write vm");
 		if(length == 0) {
 			return 0;
 		}
-		Lib.debug('c', "Writing VM!");
 		userLocky.acquire();
 		int amount;
 		Lib.assertTrue(offset >= 0 && length >= 0 && offset + length <= data.length);
 		byte[] memory = Machine.processor().getMemory();
 
-		// for now, just assume that virtual addresses equal physical addresses
-		//TODO
 		int addressForVPN = numPages * pageSize;
 		if (vaddr < 0 || vaddr > addressForVPN) {
 			userLocky.release();
@@ -82,12 +78,10 @@ public class VMProcess extends UserProcess {
 		int physcialPageNum = pageTable[virtualPageNum].ppn;
 		int physicalAddress = pageSize * physcialPageNum + virtual_offset;
 		if (physicalAddress < 0 || physicalAddress >= memory.length) {
-			Lib.debug('c', "ATTEMPTED TO ALLOCATE IMPOSSIBLE PAGE!");
 			userLocky.release();
 			return 0;
 		}
 		amount = Math.min(length, pageSize - virtual_offset);
-		//System.out.println("Writing " + amount + " bytes to " + vaddr + " address");
 		System.arraycopy(data, offset, memory, physicalAddress, amount);
 
 		int new_vaddr = vaddr + amount;
@@ -98,76 +92,9 @@ public class VMProcess extends UserProcess {
 
 		Lib.debug('c', new_vaddr + ", " + new_offset + ", " + new_length);
 		return writeVirtualMemory(new_vaddr, data, new_offset,new_length) + amount;
-		//Lib.debug('c', "printing curr total amount(in write): " + total_amount);
-
-
-
-
-			// int new_length = length;
-
-			// int first_offset = Processor.offsetFromAddress(vaddr);
-			// int pagesNeeded = (int) Math.ceil((double)(length + first_offset) / (double)pageSize);
-			// if(length > addressForVPN) {
-			// 	userLocky.release();
-			// 	//Lib.debug('c', "AHHHHHHHHH");
-			// 	return -1;
-			// }
-			// Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
-			
-
-			// for(int saber = 0; saber < pagesNeeded; saber++) {
-			// 	int virtualPageNum = Processor.pageFromAddress(vaddr + saber*pageSize);
-			// 	int offset_physical = 0;
-			// 	if(saber == 0) {
-			// 		offset_physical = Processor.offsetFromAddress(vaddr + saber*pageSize);
-			// 	}
-			// 	if(saber == pagesNeeded - 1) {
-			// 		offset_physical = first_offset; //wtf
-			// 	}
-			// 	Lib.debug('w',"curr virtual page: " + virtualPageNum);
-			// 	if(pageTable[virtualPageNum].valid != true) {
-			// 		requestPage(vaddr + saber*pageSize);
-			// 	}
-			// 	int physcialPageNum = pageTable[virtualPageNum].ppn;
-			// 	int physicalAddress = pageSize * physcialPageNum + offset_physical;
-
-			// 	if (physicalAddress < 0 || physicalAddress >= memory.length) {
-			// 		userLocky.release();
-			// 		return 0;
-			// 	}
-			// 	amount = Math.min(new_length, pageSize - offset_physical);//here?
-			// 	//offset_physical = 0;//???
-			// 	System.arraycopy(data, offset_physical, memory, physicalAddress, amount);//not right?
-			// 	new_length -= amount;
-			// 	total_amount += amount;
-			// 	Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
-			// 	pageTable[virtualPageNum].dirty = true;
-			// }
-		// else {
-		// 	int virtualPageNum = Processor.pageFromAddress(vaddr);
-		// 	if(pageTable[virtualPageNum].valid != true) {
-		// 		requestPage(vaddr);
-		// 	}
-		// 	int offset_physical = Processor.offsetFromAddress(vaddr);
-		// 	int physcialPageNum = pageTable[virtualPageNum].ppn;
-		// 	int physicalAddress = pageSize * physcialPageNum + offset_physical;
-
-		// 	if (physicalAddress < 0 || physicalAddress >= memory.length) {
-		// 		userLocky.release();
-		// 		//Lib.debug('c', "why are we here");
-		// 		return 0;
-		// 	}
-
-		// 	amount = Math.min(length, pageSize - offset_physical);
-		// 	System.arraycopy(data, offset, memory, physicalAddress, amount);
-		// 	total_amount += amount;
-		// 	Lib.debug('c', "printing curr total amount(outside recursive in write): " + total_amount);
-		// 	pageTable[virtualPageNum].dirty = true;
-		// }
 	}
 
 	public int readVirtualMemory(int vaddr, byte[] data, int offset, int length) {
-		//System.out.println("entering read vm");
 		if(length == 0) {
 			return 0;
 		}
@@ -178,14 +105,13 @@ public class VMProcess extends UserProcess {
 		Lib.assertTrue(offset >= 0 && length >= 0 && offset + length <= data.length);
 		byte[] memory = Machine.processor().getMemory();
 
-		// for now, just assume that virtual addresses equal physical addresses
 		int addressForVPN = numPages * pageSize;
 		if (vaddr < 0 || vaddr > addressForVPN) {
 			userLocky.release();
 			return 0;
 		}
 
-		int virtual_offset = vaddr % pageSize; // why everytime
+		int virtual_offset = vaddr % pageSize; 
 		int virtualPageNum = vaddr / pageSize;
 		if(virtualPageNum >= numPages) {
 			userLocky.release();
@@ -203,7 +129,6 @@ public class VMProcess extends UserProcess {
 		}
 
 		amount = Math.min(length, pageSize - virtual_offset);
-		//System.out.println("Reading " + amount + " bytes to " + vaddr + " address");
 		System.arraycopy(memory, physicalAddress, data, offset, amount);
 
 		int new_vaddr = vaddr + amount;
@@ -213,45 +138,6 @@ public class VMProcess extends UserProcess {
 
 		Lib.debug('c', new_vaddr + ", " + new_offset + ", " + new_length);
 		return readVirtualMemory(new_vaddr, data, new_offset, new_length) + amount;
-			// int new_length = length;
-			
-			// //System.out.println("offset!: " + offset_physical);
-			// int first_offset = Processor.offsetFromAddress(vaddr);
-			// int pagesNeeded = (int) Math.ceil((double)(length + first_offset) / (double)pageSize);
-			// if(length > addressForVPN) {
-			// 	userLocky.release();
-			// 	//Lib.debug('c', "AHHHHHHHHH");
-			// 	return -1
-			// 	;
-			// }
-			// Lib.debug(dbgProcess, "pages needed: " + pagesNeeded);
-			
-			// for(int saber = 0; saber < pagesNeeded; saber++) {
-			// 	int virtualPageNum = Processor.pageFromAddress(vaddr + saber*pageSize);
-			// 	int offset_physical = 0;
-			// 	if(saber == 0) {
-			// 		offset_physical = Processor.offsetFromAddress(vaddr + saber*pageSize);
-			// 	}
-			// 	if(saber == pagesNeeded - 1) {
-			// 		offset_physical = first_offset;
-			// 	}
-			// 	if(pageTable[virtualPageNum].valid != true) {
-			// 		requestPage(vaddr + saber*pageSize);
-			// 	}
-			// 	int physcialPageNum = pageTable[virtualPageNum].ppn;
-			// 	int physicalAddress = pageSize * physcialPageNum + offset_physical;
-
-			// 	if (physicalAddress < 0 || physicalAddress >= memory.length) {
-			// 		userLocky.release();
-			// 		return 0;
-			// 	}
-			// 	amount = Math.min(new_length, pageSize - offset_physical);
-			// 	//offset_physical = 0;
-			// 	System.arraycopy(memory, physicalAddress, data, offset_physical, amount);
-			// 	new_length -= amount;
-			// 	total_amount += amount;
-			// 	Lib.debug('c', "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
-			// }
 	}
 
 	/**
@@ -261,11 +147,6 @@ public class VMProcess extends UserProcess {
 	 * @return <tt>true</tt> if successful.
 	 */
 	public boolean loadSections() {
-		// if (numPages > Machine.processor().getNumPhysPages() || numPages > UserKernel.linky.size()) {
-		// 	coff.close();
-		// 	Lib.debug(dbgProcess, "\tinsufficient physical memory");
-		// 	return false;
-		// }
 		pageTable = new TranslationEntry[numPages];
 
 		Lib.debug('d', "Number of total pages: " + numPages);
@@ -298,10 +179,8 @@ public class VMProcess extends UserProcess {
 	 * @param cause the user exception that occurred.
 	 */
 	public void handleException(int cause) {
-		//Lib.debug(dbgProcess, "Handling an exception...");
 		switch (cause) {
 		case Processor.exceptionPageFault:
-			//start
 			requestPage(Machine.processor().readRegister(Processor.regBadVAddr));
 			return;
 		default:
@@ -311,34 +190,21 @@ public class VMProcess extends UserProcess {
 	}
 
 	private void requestPage(int addy) {
-		Lib.debug('d',"requesting files");
-
-		//userLocky.acquire();
 		byte[] memory = Machine.processor().getMemory(); // --------------------------------------------------------------
 		int page_to_load = addy / 1024;
-		//Lib.debug(dbgProcess, "Entering requestPage for page: " + page_to_load);
 
 		if (!VMKernel.linky.isEmpty()) {
 			pageTable[page_to_load].ppn = VMKernel.getNextOpenPage();
-			Lib.debug('d', "Physical pages left: " + VMKernel.linky.size());
-			//Lib.debug(dbgProcess, "New page, got ppn: " + ppn);
 		}
 		else {
 			pageTable[page_to_load].ppn = VMKernel.getPPNfromClock();
-			Lib.debug('d', "Got ppn from evicting: " + pageTable[page_to_load].ppn);
 		} 
 		int curr_ppn = pageTable[page_to_load].ppn;
 
 		//clean UNTIL HERE!!!
-		Lib.debug('d', "Current ppn: " + curr_ppn + ", trying to load page: " + page_to_load);
 		if(swapTable.containsKey(page_to_load)) {
-			//Lib.debug(dbgProcess, "Loading page from swap");
-			//Lib.debug(dbgProcess, "file offset: " + (old_spn * pageSize));
-			//Lib.debug(dbgProcess, "size of file: " + VMKernel.swap.length());
-			//Lib.debug(dbgProcess, "storing in: " + (ppn * pageSize));
 			int curr_spn = swapTable.get(page_to_load);
 			int swap_read = VMKernel.swap.read(curr_spn * pageSize, memory,curr_ppn * pageSize, pageSize);
-			Lib.debug('d', "value from swap read: " + swap_read);
 		}
 		else {	
 			boolean done = false;
@@ -350,7 +216,6 @@ public class VMProcess extends UserProcess {
 				for(int j=0; j < section.getLength(); j++) {
 					int section_vpn = section.getFirstVPN() + j;
 					if(page_to_load == section_vpn) {
-						Lib.debug('d', "Loading page from coff: " + j);
 						section.loadPage(j, pageTable[page_to_load].ppn);
 						done = true;
 						break;
@@ -359,20 +224,12 @@ public class VMProcess extends UserProcess {
 			}
 
 			if(!done) {
-				//Lib.debug(dbgProcess, "Demand paging for stack");
-				Lib.debug('d', "Loading page from stack/arg");
-				//Lib.debug(dbgProcess, "filling from " + phy_addr);
-				//Lib.debug(dbgProcess, "filling to" +( phy_addr + pageSize));
 				Arrays.fill(memory, curr_ppn * pageSize, curr_ppn *pageSize + pageSize, (byte) 0); // --------------------------------------------------------------
 			}
 			
 		}
 		pageTable[page_to_load].valid = true;
 		VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
-		//userLocky.release();
-		Lib.debug('d', "Exiting requestPage --------------");
-		//System.out.println("End of LoadProcess");
-		//System.out.println();
 	}
 
 	private static final int pageSize = Processor.pageSize;
