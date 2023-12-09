@@ -79,7 +79,7 @@ public class VMProcess extends UserProcess {
 				userLocky.release();
 				return 0;
 			}
-			amount = Math.min(length, pageSize);
+			amount = Math.min(length, pageSize - offset);
 			System.arraycopy(data, offset, memory, physicalAddress, amount);//not right?
 
 			int new_vaddr = vaddr + pageSize;
@@ -184,7 +184,7 @@ public class VMProcess extends UserProcess {
 				userLocky.release();
 				return 0;
 			}
-			amount = Math.min(length, pageSize);
+			amount = Math.min(length, pageSize - offset);
 			System.arraycopy(memory, physicalAddress, data, offset, amount);
 
 			int new_vaddr = vaddr + pageSize;
