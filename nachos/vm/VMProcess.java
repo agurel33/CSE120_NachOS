@@ -103,7 +103,7 @@ public class VMProcess extends UserProcess {
 				}
 				amount = Math.min(new_length, pageSize - offset_physical);
 				offset_physical = 0;
-				System.arraycopy(data, offset, memory, physicalAddress, amount);
+				System.arraycopy(data, offset_physical, memory, physicalAddress, amount);
 				new_length -= amount;
 				total_amount += amount;
 				Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
@@ -185,7 +185,7 @@ public class VMProcess extends UserProcess {
 				}
 				amount = Math.min(new_length, pageSize - offset_physical);
 				offset_physical = 0;
-				System.arraycopy(memory, physicalAddress, data, offset, amount);
+				System.arraycopy(memory, physicalAddress, data, offset_physical, amount);
 				new_length -= amount;
 				total_amount += amount;
 				Lib.debug('c', "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
