@@ -88,7 +88,7 @@ public class VMProcess extends UserProcess {
 					offset_physical = Processor.offsetFromAddress(vaddr + saber*pageSize);
 				}
 				if(saber == pagesNeeded - 1) {
-					offset_physical = first_offset;
+					offset_physical = first_offset; //wtf
 				}
 				Lib.debug('w',"curr virtual page: " + virtualPageNum);
 				if(pageTable[virtualPageNum].valid != true) {
@@ -101,9 +101,9 @@ public class VMProcess extends UserProcess {
 					userLocky.release();
 					return 0;
 				}
-				amount = Math.min(new_length, pageSize - offset_physical);
-				offset_physical = 0;
-				System.arraycopy(data, offset_physical, memory, physicalAddress, amount);
+				amount = Math.min(new_length, pageSize - offset_physical);//here?
+				//offset_physical = 0;//???
+				System.arraycopy(data, offset_physical, memory, physicalAddress, amount);//not right?
 				new_length -= amount;
 				total_amount += amount;
 				Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
@@ -184,7 +184,7 @@ public class VMProcess extends UserProcess {
 					return 0;
 				}
 				amount = Math.min(new_length, pageSize - offset_physical);
-				offset_physical = 0;
+				//offset_physical = 0;
 				System.arraycopy(memory, physicalAddress, data, offset_physical, amount);
 				new_length -= amount;
 				total_amount += amount;
