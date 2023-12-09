@@ -694,12 +694,14 @@ public class UserProcess {
 			return -1;
 		}
 		byte[] memory = Machine.processor().getMemory();
+		int addressForVPN = numPages * pageSize; 
 
-		if(pt < 0 || pt > memory.length) {
+		if(pt < 0 || pt > addressForVPN) {
 			return -1;
 		}
 		byte[] temp = new byte[size];
 		int success = readVirtualMemory(pt, temp, 0, size);
+		Lib.debug('c', "amount being read: " + success + ", amount needed: " + size);
 		if(success != size) {
 			//System.out.println(success);
 			return -1;
@@ -713,6 +715,9 @@ public class UserProcess {
 			//System.out.println(greatSuccess);
 			return -1;
 		}
+		//Lib.debug('c', "Exiting handleWrite");
+		//Lib.debug('c', "--------------------------------------------------------");
+
 		return greatSuccess;
 	}
 
@@ -728,7 +733,8 @@ public class UserProcess {
 		}
 		byte[] memory = Machine.processor().getMemory();
 
-		if(pt < 0 || pt > memory.length) {
+		int addressForVPN = numPages * pageSize; 		
+		if(pt < 0 || pt > addressForVPN) {
 			return -1;
 		}
 		byte[] temp = new byte[size];
@@ -740,9 +746,12 @@ public class UserProcess {
 			return -1;
 		}
 		int greatSuccess = writeVirtualMemory(pt, temp);
+		Lib.debug('c', "amount being written: " + greatSuccess + ", amount needed: " + size);
 		if(greatSuccess != size) {
 			return -1;
 		}
+		//Lib.debug('c', "Exiting handleRead");
+		//Lib.debug('c', "--------------------------------------------------------");
 		return greatSuccess;
 	}
 
