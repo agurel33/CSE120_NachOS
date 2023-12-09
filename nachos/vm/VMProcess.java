@@ -86,7 +86,7 @@ public class VMProcess extends UserProcess {
 
 			int new_vaddr = vaddr + pageSize - virtual_offset;
 			Lib.debug('c', "offset: " + offset);
-			int new_offset = offset + pageSize;
+			int new_offset = offset + amount;
 			int new_length = length - amount;
 			userLocky.release();
 			Lib.debug('c', new_vaddr + ", " + new_offset + ", " + new_length);
