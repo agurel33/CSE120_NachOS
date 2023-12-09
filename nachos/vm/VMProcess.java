@@ -87,6 +87,7 @@ public class VMProcess extends UserProcess {
 			int new_length = length - pageSize;
 			userLocky.release();
 			writeVirtualMemory(new_vaddr, data, new_offset, new_length);
+			userLocky.acquire();
 			// int new_length = length;
 
 			// int first_offset = Processor.offsetFromAddress(vaddr);
@@ -189,6 +190,7 @@ public class VMProcess extends UserProcess {
 			int new_length = length - pageSize;
 			userLocky.release();
 			readVirtualMemory(new_vaddr, data, new_offset, new_length);
+			userLocky.acquire();
 			// int new_length = length;
 			
 			// //System.out.println("offset!: " + offset_physical);
