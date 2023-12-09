@@ -200,17 +200,23 @@ public class VMProcess extends UserProcess {
 		int page_to_load = addy / 1024;
 
 		if (!VMKernel.linky.isEmpty()) {
+			pageLock.release();
 			pageTable[page_to_load].ppn = VMKernel.getNextOpenPage();
+			pageLock.acquire();
 		}
 		else {
+			pageLock.release();
 			pageTable[page_to_load].ppn = VMKernel.getPPNfromClock();
+			pageLock.acquire();
 		} 
 		int curr_ppn = pageTable[page_to_load].ppn;
 
 		//clean UNTIL HERE!!!
 		if(swapTable.containsKey(page_to_load)) {
 			int curr_spn = swapTable.get(page_to_load);
+			pageLock.release();
 			VMKernel.swap.read(curr_spn * pageSize, memory,curr_ppn * pageSize, pageSize);
+			pageLock.acquire();
 		}
 		else {	
 			boolean done = false;
@@ -222,20 +228,24 @@ public class VMProcess extends UserProcess {
 				for(int j=0; j < section.getLength(); j++) {
 					int section_vpn = section.getFirstVPN() + j;
 					if(page_to_load == section_vpn) {
+						pageLock.release();
 						section.loadPage(j, pageTable[page_to_load].ppn);
+						pageLock.acquire();
 						done = true;
 						break;
 					}
 				}
 			}
 			if(!done) {
-				Arrays.fill(memory, curr_ppn * pageSize, curr_ppn *pageSize + pageSize, (byte) 0); // --------------------------------------------------------------
+				pageLock.release();
+				Arrays.fill(memory, curr_ppn * pageSize, curr_ppn *pageSize + pageSize, (byte) 0);
+				pageLock.acquire();
 			}
 			
 		}
 		pageTable[page_to_load].valid = true;
-		VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
 		pageLock.release();
+		VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
 	}
 
 	private static final int pageSize = Processor.pageSize;
