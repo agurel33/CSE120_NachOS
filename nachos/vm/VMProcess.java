@@ -82,6 +82,7 @@ public class VMProcess extends UserProcess {
 			}
 			amount = Math.min(length, pageSize - virtual_offset);
 			System.arraycopy(data, offset, memory, physicalAddress, amount);//not right?
+			total_amount += amount;
 
 			int new_vaddr = vaddr + pageSize - virtual_offset;
 			int new_offset = offset + pageSize;
@@ -187,6 +188,7 @@ public class VMProcess extends UserProcess {
 			}
 			amount = Math.min(length, pageSize - virtual_offset);
 			System.arraycopy(memory, physicalAddress, data, offset, amount);
+			total_amount += amount;
 
 			int new_vaddr = vaddr + pageSize - virtual_offset;
 			int new_offset = offset + amount;
