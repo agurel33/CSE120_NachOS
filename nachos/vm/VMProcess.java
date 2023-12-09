@@ -84,7 +84,7 @@ public class VMProcess extends UserProcess {
 			System.arraycopy(data, offset, memory, physicalAddress, amount);//not right?
 			total_amount += amount;
 
-			int new_vaddr = vaddr + pageSize - virtual_offset;
+			int new_vaddr = vaddr + amount;
 			Lib.debug('c', "offset: " + offset);
 			int new_offset = offset + amount;
 			int new_length = length - amount;
@@ -192,7 +192,7 @@ public class VMProcess extends UserProcess {
 			System.arraycopy(memory, physicalAddress, data, offset, amount);
 			total_amount += amount;
 
-			int new_vaddr = vaddr + pageSize - virtual_offset;
+			int new_vaddr = vaddr + amount;
 			int new_offset = offset + amount;
 			int new_length = length - amount;
 			userLocky.release();
