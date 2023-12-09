@@ -53,7 +53,7 @@ public class VMProcess extends UserProcess {
 	
 
 	public int writeVirtualMemory(int vaddr, byte[] data, int offset, int length) {
-		System.out.println("entering write vm");
+		//System.out.println("entering write vm");
 		if(length == 0) {
 			return 0;
 		}
@@ -91,7 +91,7 @@ public class VMProcess extends UserProcess {
 		int new_offset = offset + amount;
 		int new_length = length - amount;
 		userLocky.release();
-		
+
 		Lib.debug('c', new_vaddr + ", " + new_offset + ", " + new_length);
 		return writeVirtualMemory(new_vaddr, data, new_offset,new_length) + amount;
 		//Lib.debug('c', "printing curr total amount(in write): " + total_amount);
@@ -163,7 +163,7 @@ public class VMProcess extends UserProcess {
 	}
 
 	public int readVirtualMemory(int vaddr, byte[] data, int offset, int length) {
-		System.out.println("entering read vm");
+		//System.out.println("entering read vm");
 		if(length == 0) {
 			return 0;
 		}
