@@ -20,6 +20,7 @@ public class VMProcess extends UserProcess {
 	private int argc, argv;
 
 	private static Lock userLocky = null;
+	private static Lock pageLock = null;
 	public HashMap<Integer, Integer> swapTable = null;
 	/**
 	 * Allocate a new process.
@@ -31,6 +32,9 @@ public class VMProcess extends UserProcess {
 		}
 		if(swapTable == null) {
 			swapTable = new HashMap<>();
+		}
+		if(pageLock == null) {
+			pageLock = new Lock();
 		}
 	}
 
@@ -190,6 +194,8 @@ public class VMProcess extends UserProcess {
 	}
 
 	private void requestPage(int addy) {
+		pageLock.acquire();
+
 		byte[] memory = Machine.processor().getMemory(); // --------------------------------------------------------------
 		int page_to_load = addy / 1024;
 
@@ -204,7 +210,7 @@ public class VMProcess extends UserProcess {
 		//clean UNTIL HERE!!!
 		if(swapTable.containsKey(page_to_load)) {
 			int curr_spn = swapTable.get(page_to_load);
-			int swap_read = VMKernel.swap.read(curr_spn * pageSize, memory,curr_ppn * pageSize, pageSize);
+			VMKernel.swap.read(curr_spn * pageSize, memory,curr_ppn * pageSize, pageSize);
 		}
 		else {	
 			boolean done = false;
@@ -222,7 +228,6 @@ public class VMProcess extends UserProcess {
 					}
 				}
 			}
-
 			if(!done) {
 				Arrays.fill(memory, curr_ppn * pageSize, curr_ppn *pageSize + pageSize, (byte) 0); // --------------------------------------------------------------
 			}
@@ -230,6 +235,7 @@ public class VMProcess extends UserProcess {
 		}
 		pageTable[page_to_load].valid = true;
 		VMKernel.VMkernel.newEntry(this, pageTable[page_to_load]);
+		pageLock.release();
 	}
 
 	private static final int pageSize = Processor.pageSize;
