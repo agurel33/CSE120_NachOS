@@ -146,7 +146,7 @@ public class VMProcess extends UserProcess {
 
 			amount = Math.min(length, pageSize - offset_physical);
 			System.arraycopy(data, offset, memory, physicalAddress, amount);
-			total_amount = amount;
+			total_amount += amount;
 			pageTable[virtualPageNum].dirty = true;
 		}
 		
@@ -248,7 +248,7 @@ public class VMProcess extends UserProcess {
 
 			amount = Math.min(length, pageSize - offset_physical);
 			System.arraycopy(memory, physicalAddress, data, offset, amount);
-			total_amount = amount;
+			total_amount += amount;
 		}
 
 		
