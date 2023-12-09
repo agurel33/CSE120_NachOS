@@ -85,6 +85,7 @@ public class VMProcess extends UserProcess {
 			int new_vaddr = vaddr + pageSize;
 			int new_offset = offset + pageSize;
 			int new_length = length - pageSize;
+			userLocky.release();
 			writeVirtualMemory(new_vaddr, data, new_offset, new_length);
 			// int new_length = length;
 
@@ -186,6 +187,7 @@ public class VMProcess extends UserProcess {
 			int new_vaddr = vaddr + pageSize;
 			int new_offset = offset + pageSize;
 			int new_length = length - pageSize;
+			userLocky.release();
 			readVirtualMemory(new_vaddr, data, new_offset, new_length);
 			// int new_length = length;
 			
