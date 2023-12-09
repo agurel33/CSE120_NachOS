@@ -82,6 +82,7 @@ public class VMProcess extends UserProcess {
 			return 0;
 		}
 		amount = Math.min(length, pageSize - virtual_offset);
+		System.out.println("Writing " + amount + " bytes to " + vaddr + " address");
 		System.arraycopy(data, offset, memory, physicalAddress, amount);
 
 		int new_vaddr = vaddr + amount;
