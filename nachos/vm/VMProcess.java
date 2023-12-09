@@ -72,7 +72,7 @@ public class VMProcess extends UserProcess {
 			int virtual_offset = Processor.offsetFromAddress(vaddr);
 			int virtualPageNum = Processor.pageFromAddress(vaddr);
 			if(pageTable[virtualPageNum].valid != true) {
-				requestPage(vaddr + pageSize);
+				requestPage(vaddr);
 			}
 			int physcialPageNum = pageTable[virtualPageNum].ppn;
 			int physicalAddress = pageSize * physcialPageNum;
@@ -179,7 +179,7 @@ public class VMProcess extends UserProcess {
 			int virtual_offset = Processor.offsetFromAddress(vaddr);
 			int virtualPageNum = Processor.pageFromAddress(vaddr);
 			if(pageTable[virtualPageNum].valid != true) {
-				requestPage(vaddr + pageSize);
+				requestPage(vaddr);
 			}
 			int physcialPageNum = pageTable[virtualPageNum].ppn;
 			int physicalAddress = pageSize * physcialPageNum;
