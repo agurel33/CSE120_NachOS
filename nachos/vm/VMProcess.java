@@ -69,8 +69,8 @@ public class VMProcess extends UserProcess {
 		}
 
 		if(length > pageSize) {
-			int first_offset = Processor.offsetFromAddress(vaddr);
-			int pagesNeeded = (int) Math.ceil((double)(length + first_offset) / (double)pageSize);
+			//int first_offset = Processor.offsetFromAddress(vaddr);
+			int pagesNeeded = (int) Math.ceil((double)(length ) / (double)pageSize);
 			if(length > addressForVPN) {
 				userLocky.release();
 				//Lib.debug('c', "AHHHHHHHHH");
@@ -81,7 +81,10 @@ public class VMProcess extends UserProcess {
 
 			for(int saber = 0; saber < pagesNeeded; saber++) {
 				int virtualPageNum = Processor.pageFromAddress(vaddr + saber*pageSize);
-				int offset_physical = Processor.offsetFromAddress(vaddr + saber*pageSize);
+				int offset_physical = 0;
+				if(saber == 0) {
+					offset_physical = Processor.offsetFromAddress(vaddr + saber*pageSize);
+				}
 				Lib.debug('w',"curr virtual page: " + virtualPageNum);
 				if(pageTable[virtualPageNum].valid != true) {
 					requestPage(vaddr + saber*pageSize);
@@ -144,8 +147,8 @@ public class VMProcess extends UserProcess {
 		if(length > pageSize) {
 			
 			//System.out.println("offset!: " + offset_physical);
-			int first_offset = Processor.offsetFromAddress(vaddr);
-			int pagesNeeded = (int) Math.ceil((double)(length + first_offset) / (double)pageSize);
+			//int first_offset = Processor.offsetFromAddress(vaddr);
+			int pagesNeeded = (int) Math.ceil((double)(length) / (double)pageSize);
 			if(length > addressForVPN) {
 				userLocky.release();
 				//Lib.debug('c', "AHHHHHHHHH");
@@ -156,7 +159,10 @@ public class VMProcess extends UserProcess {
 			
 			for(int saber = 0; saber < pagesNeeded; saber++) {
 				int virtualPageNum = Processor.pageFromAddress(vaddr + saber*pageSize);
-				int offset_physical = Processor.offsetFromAddress(vaddr + saber*pageSize);
+				int offset_physical = 0;
+				if(saber == 0) {
+					offset_physical = Processor.offsetFromAddress(vaddr + saber*pageSize);
+				}
 				if(pageTable[virtualPageNum].valid != true) {
 					requestPage(vaddr + saber*pageSize);
 				}
@@ -167,7 +173,6 @@ public class VMProcess extends UserProcess {
 					userLocky.release();
 					return 0;
 				}
-
 				amount = Math.min(length, pageSize - offset_physical);
 				offset_physical = 0;
 				System.arraycopy(memory, physicalAddress, data, offset, amount);
