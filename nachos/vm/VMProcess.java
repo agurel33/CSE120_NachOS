@@ -172,7 +172,7 @@ public class VMProcess extends UserProcess {
 				offset_physical = 0;
 				System.arraycopy(memory, physicalAddress, data, offset, amount);
 				total_amount += amount;
-				Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
+				Lib.debug('c', "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
 			}
 		}
 		else {
