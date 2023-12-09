@@ -53,9 +53,11 @@ public class VMProcess extends UserProcess {
 	
 
 	public int writeVirtualMemory(int vaddr, byte[] data, int offset, int length) {
+		if(length == 0) {
+			return 0;
+		}
 		Lib.debug('c', "Writing VM!");
 		userLocky.acquire();
-		int total_amount = 0;
 		int amount;
 		Lib.assertTrue(offset >= 0 && length >= 0 && offset + length <= data.length);
 		byte[] memory = Machine.processor().getMemory();
@@ -67,32 +69,33 @@ public class VMProcess extends UserProcess {
 			userLocky.release();
 			return 0;
 		}
-
-		if(length > pageSize) {
-			int virtual_offset = Processor.offsetFromAddress(vaddr);
-			int virtualPageNum = Processor.pageFromAddress(vaddr);
-			if(pageTable[virtualPageNum].valid != true) {
-				requestPage(vaddr);
-			}
-			int physcialPageNum = pageTable[virtualPageNum].ppn;
-			int physicalAddress = pageSize * physcialPageNum;
-			if (physicalAddress < 0 || physicalAddress >= memory.length) {
-				userLocky.release();
-				return 0;
-			}
-			amount = Math.min(length, pageSize - virtual_offset);
-			System.arraycopy(data, offset, memory, physicalAddress, amount);//not right?
-			total_amount += amount;
-
-			int new_vaddr = vaddr + amount;
-			Lib.debug('c', "offset: " + offset);
-			int new_offset = offset + amount;
-			int new_length = length - amount;
+		int virtual_offset = vaddr % pageSize; // why everytime
+		int virtualPageNum = vaddr / pageSize;
+		if(pageTable[virtualPageNum].valid != true) {
+			requestPage(vaddr);
+		}
+		int physcialPageNum = pageTable[virtualPageNum].ppn;
+		int physicalAddress = pageSize * physcialPageNum + virtual_offset;
+		if (physicalAddress < 0 || physicalAddress >= memory.length) {
+			Lib.debug('c', "ATTEMPTED TO ALLOCATE IMPOSSIBLE PAGE!");
 			userLocky.release();
-			Lib.debug('c', new_vaddr + ", " + new_offset + ", " + new_length);
-			total_amount +=	writeVirtualMemory(new_vaddr, data, new_offset, new_length);
-			//Lib.debug('c', "printing curr total amount(in write): " + total_amount);
-			userLocky.acquire();
+			return 0;
+		}
+		amount = Math.min(length, pageSize - virtual_offset);
+		System.arraycopy(data, offset, memory, physicalAddress, amount);
+
+		int new_vaddr = vaddr + amount;
+		Lib.debug('c', "offset: " + offset);
+		int new_offset = offset + amount;
+		int new_length = length - amount;
+		userLocky.release();
+		Lib.debug('c', new_vaddr + ", " + new_offset + ", " + new_length);
+		return writeVirtualMemory(new_vaddr, data, new_offset,new_length) + amount;
+		//Lib.debug('c', "printing curr total amount(in write): " + total_amount);
+
+
+
+
 			// int new_length = length;
 
 			// int first_offset = Processor.offsetFromAddress(vaddr);
@@ -133,31 +136,27 @@ public class VMProcess extends UserProcess {
 			// 	Lib.debug(dbgProcess, "curr amount at " + saber + "th page: " + amount + ", Total amount: " + total_amount);
 			// 	pageTable[virtualPageNum].dirty = true;
 			// }
-		}
-		else {
-			int virtualPageNum = Processor.pageFromAddress(vaddr);
-			if(pageTable[virtualPageNum].valid != true) {
-				requestPage(vaddr);
-			}
-			int offset_physical = Processor.offsetFromAddress(vaddr);
-			int physcialPageNum = pageTable[virtualPageNum].ppn;
-			int physicalAddress = pageSize * physcialPageNum + offset_physical;
+		// else {
+		// 	int virtualPageNum = Processor.pageFromAddress(vaddr);
+		// 	if(pageTable[virtualPageNum].valid != true) {
+		// 		requestPage(vaddr);
+		// 	}
+		// 	int offset_physical = Processor.offsetFromAddress(vaddr);
+		// 	int physcialPageNum = pageTable[virtualPageNum].ppn;
+		// 	int physicalAddress = pageSize * physcialPageNum + offset_physical;
 
-			if (physicalAddress < 0 || physicalAddress >= memory.length) {
-				userLocky.release();
-				//Lib.debug('c', "why are we here");
-				return 0;
-			}
+		// 	if (physicalAddress < 0 || physicalAddress >= memory.length) {
+		// 		userLocky.release();
+		// 		//Lib.debug('c', "why are we here");
+		// 		return 0;
+		// 	}
 
-			amount = Math.min(length, pageSize - offset_physical);
-			System.arraycopy(data, offset, memory, physicalAddress, amount);
-			total_amount += amount;
-			Lib.debug('c', "printing curr total amount(outside recursive in write): " + total_amount);
-			pageTable[virtualPageNum].dirty = true;
-		}
-		
-		userLocky.release();
-		return total_amount;
+		// 	amount = Math.min(length, pageSize - offset_physical);
+		// 	System.arraycopy(data, offset, memory, physicalAddress, amount);
+		// 	total_amount += amount;
+		// 	Lib.debug('c', "printing curr total amount(outside recursive in write): " + total_amount);
+		// 	pageTable[virtualPageNum].dirty = true;
+		// }
 	}
 
 	public int readVirtualMemory(int vaddr, byte[] data, int offset, int length) {
