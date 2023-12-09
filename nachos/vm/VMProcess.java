@@ -88,8 +88,9 @@ public class VMProcess extends UserProcess {
 			int new_offset = offset + pageSize;
 			int new_length = length - amount;
 			userLocky.release();
+			Lib.debug('c', new_vaddr + ", " + new_offset + ", " + new_length);
 			total_amount +=	writeVirtualMemory(new_vaddr, data, new_offset, new_length);
-			Lib.debug('c', "printing curr total amount(in write): " + total_amount);
+			//Lib.debug('c', "printing curr total amount(in write): " + total_amount);
 			userLocky.acquire();
 			// int new_length = length;
 
@@ -194,8 +195,9 @@ public class VMProcess extends UserProcess {
 			int new_offset = offset + amount;
 			int new_length = length - amount;
 			userLocky.release();
+			Lib.debug('c', new_vaddr + ", " + new_offset + ", " + new_length);
 			total_amount += readVirtualMemory(new_vaddr, data, new_offset, new_length);
-			Lib.debug('c', "printing curr total amount(in read): " + total_amount);
+			//Lib.debug('c', "printing curr total amount(in read): " + total_amount);
 			userLocky.acquire();
 			// int new_length = length;
 			
